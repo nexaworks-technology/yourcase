@@ -1,0 +1,44 @@
+### Upload a document (replace {{TOKEN}} with JWT and adjust multipart)
+POST http://localhost:4000/api/documents/upload
+Authorization: Bearer {{TOKEN}}
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="file"; filename="sample.txt"
+Content-Type: text/plain
+
+Sample text content
+--BOUNDARY--
+
+### List documents with pagination
+GET http://localhost:4000/api/documents?page=1&limit=10
+Authorization: Bearer {{TOKEN}}
+
+### Get by ID
+GET http://localhost:4000/api/documents/{{DOCUMENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+### Analyze
+POST http://localhost:4000/api/documents/{{DOCUMENT_ID}}/analyze
+Authorization: Bearer {{TOKEN}}
+
+### Update metadata
+PUT http://localhost:4000/api/documents/{{DOCUMENT_ID}}
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "documentType": "contract",
+  "tags": ["shareholders", "board"],
+  "metadata": {
+    "jurisdiction": "India"
+  }
+}
+
+### Download
+GET http://localhost:4000/api/documents/{{DOCUMENT_ID}}/download
+Authorization: Bearer {{TOKEN}}
+
+### Delete
+DELETE http://localhost:4000/api/documents/{{DOCUMENT_ID}}
+Authorization: Bearer {{TOKEN}}

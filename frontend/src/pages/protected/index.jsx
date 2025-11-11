@@ -1,5 +1,5 @@
 export { default as DashboardPage } from '../Dashboard'
-export const AIAssistantPage = () => <div className="p-8">AI Assistant workspace</div>
+export { default as AIAssistantPage } from '../AIAssistant'
 export { default as DocumentsPage } from '../Documents'
 export { default as DocumentDetailsPage } from '../DocumentDetails'
 export { default as MattersPage } from '../Matters'

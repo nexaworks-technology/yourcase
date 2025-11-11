@@ -36,14 +36,16 @@ export default function DocumentDetails() {
   const [analyzeError, setAnalyzeError] = useState(null)
   const [metadataToast, setMetadataToast] = useState(null)
 
-  const {
-    data: document,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['document', id],
     queryFn: () => documentService.getDocumentById(id),
+    enabled: Boolean(id),
+  })
+
+  // Load questions separately to match backend routes
+  const { data: questionsData, refetch: refetchQuestions } = useQuery({
+    queryKey: ['document-questions', id],
+    queryFn: () => documentService.getDocumentQuestions(id),
     enabled: Boolean(id),
   })
 
@@ -51,7 +53,7 @@ export default function DocumentDetails() {
     mutationFn: () => documentService.analyzeDocument(id),
     onSuccess: (analysis) => {
       setAnalyzeError(null)
-      queryClient.setQueryData(['document', id], (previous) => ({ ...previous, analysis }))
+      queryClient.invalidateQueries(['document', id])
     },
     onError: (analysisError) => {
       setAnalyzeError(analysisError.message || 'Unable to analyze document at this time.')
@@ -60,9 +62,9 @@ export default function DocumentDetails() {
 
   const updateMetadataMutation = useMutation({
     mutationFn: (payload) => documentService.updateDocument(id, payload),
-    onSuccess: (updated) => {
+    onSuccess: () => {
       setMetadataToast({ type: 'success', message: 'Document metadata saved successfully.' })
-      queryClient.setQueryData(['document', id], (previous) => ({ ...previous, ...updated }))
+      queryClient.invalidateQueries(['document', id])
     },
     onError: (updateError) => {
       setMetadataToast({ type: 'error', message: updateError.message || 'Failed to save metadata.' })
@@ -76,6 +78,9 @@ export default function DocumentDetails() {
       navigate('/documents')
     },
   })
+
+  const document = data?.document
+  const questions = questionsData ?? []
 
   const documentFile = useMemo(() => {
     if (!document?.fileUrl) return null
@@ -107,7 +112,8 @@ export default function DocumentDetails() {
   }
 
   const handleAskQuestion = async (question) => {
-    console.info('Ask AI about document:', question)
+    await documentService.askQuestion(id, question)
+    await refetchQuestions()
   }
 
   if (isLoading) {
@@ -244,7 +250,7 @@ export default function DocumentDetails() {
         </div>
       </div>
 
-      <AskAboutDocumentModal isOpen={showAskModal} onClose={() => setShowAskModal(false)} onSubmit={handleAskQuestion} history={document?.questions} />
+      <AskAboutDocumentModal isOpen={showAskModal} onClose={() => setShowAskModal(false)} onSubmit={handleAskQuestion} history={questions} />
 
       <Modal
         isOpen={showDeleteModal}

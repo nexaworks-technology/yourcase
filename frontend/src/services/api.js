@@ -40,8 +40,13 @@ api.interceptors.response.use(
 
     console.error('API Error:', message)
 
-    return Promise.reject(new Error(message))
+    const err = new Error(message)
+    err.status = error.response?.status
+    err.response = error.response?.data
+
+    return Promise.reject(err)
   },
 )
 
 export default api
+export const API_BASE_URL = baseURL

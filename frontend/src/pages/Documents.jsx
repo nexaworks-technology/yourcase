@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bot, Download, LayoutGrid, List, Plus, Search, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Bot, Download, LayoutGrid, List, Plus, Search, Trash2, Eye } from 'lucide-react'
 import { documentService } from '../services/documentService'
+import { matterService } from '../services/matterService'
 import { useDocumentStore } from '../store/documentStore'
 import { PageHeader } from '../components/layout/PageHeader'
 import { DocumentFilters } from '../components/documents/DocumentFilters'
@@ -12,20 +14,8 @@ import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
 import { cn } from '../utils/cn'
 
-const mattersMock = [
-  { value: 'matter-1', label: 'Series B Financing' },
-  { value: 'matter-2', label: 'Employment Compliance' },
-  { value: 'matter-3', label: 'Litigation Support' },
-]
-
-const documentTypesMock = [
-  { value: 'contract', label: 'Contract' },
-  { value: 'brief', label: 'Brief' },
-  { value: 'research', label: 'Research Memo' },
-  { value: 'financial', label: 'Financial' },
-]
-
 export default function Documents() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const {
     documents,
@@ -45,6 +35,38 @@ export default function Documents() {
   const [searchInput, setSearchInput] = useState(filters.search || '')
   const [showUpload, setShowUpload] = useState(false)
   const [error, setError] = useState(null)
+  const [showBulkTag, setShowBulkTag] = useState(false)
+  const [bulkTags, setBulkTags] = useState('')
+
+  // Load matters for filter and upload metadata
+  const { data: mattersData } = useQuery({
+    queryKey: ['matters-list'],
+    queryFn: async () => {
+      try {
+        const response = await matterService.getMatters({ limit: 100 })
+        return (
+          response.data?.map((m) => ({ value: m._id || m.id, label: m.matterTitle || m.title })) || []
+        )
+      } catch (e) {
+        console.error('Failed to load matters', e)
+        return []
+      }
+    },
+  })
+
+  const matters = mattersData || []
+
+  const documentTypes = [
+    { value: 'contract', label: 'Contract' },
+    { value: 'case-law', label: 'Case Law' },
+    { value: 'evidence', label: 'Evidence' },
+    { value: 'correspondence', label: 'Correspondence' },
+    { value: 'petition', label: 'Petition' },
+    { value: 'judgment', label: 'Judgment' },
+    { value: 'agreement', label: 'Agreement' },
+    { value: 'notice', label: 'Notice' },
+    { value: 'other', label: 'Other' },
+  ]
 
   const { isFetching, refetch } = useQuery({
     queryKey: ['documents', filters, pagination.page, pagination.limit],
@@ -109,13 +131,39 @@ export default function Documents() {
     bulkAnalyzeMutation.mutate(selectedIds)
   }
 
-  const handleBulkDownload = () => {
-    // noop placeholder: normally request backend to create ZIP
-    setError('Bulk download is not yet implemented.')
+  const handleBulkDownload = async () => {
+    try {
+      const blob = await documentService.bulkDownload(selectedIds)
+      const url = window.URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = `documents-${Date.now()}.zip`
+      anchor.click()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(err.message || 'Failed to download documents')
+    }
   }
 
   const handleBulkTag = () => {
-    setError('Bulk tagging is not yet implemented.')
+    setShowBulkTag(true)
+  }
+
+  const handleBulkTagSubmit = async () => {
+    const tags = bulkTags.split(',').map((t) => t.trim()).filter(Boolean)
+    if (!tags.length) {
+      setError('Please enter at least one tag')
+      return
+    }
+    try {
+      await documentService.bulkUpdateTags(selectedIds, tags)
+      setShowBulkTag(false)
+      setBulkTags('')
+      clearSelection()
+      refetch()
+    } catch (err) {
+      setError(err.message || 'Failed to update tags')
+    }
   }
 
   const totalPages = Math.ceil((pagination.total || 0) / pagination.limit)
@@ -156,8 +204,8 @@ export default function Documents() {
       )}
 
       <DocumentFilters
-        matters={mattersMock}
-        documentTypes={documentTypesMock}
+        matters={matters}
+        documentTypes={documentTypes}
         filters={filters}
         onChange={setFilters}
         onReset={resetFilters}
@@ -204,9 +252,16 @@ export default function Documents() {
                 key={document.id}
                 document={document}
                 view="grid"
-                onPreview={() => setError('Preview not implemented')}
+                onPreview={() => navigate(`/documents/${document.id}`)}
                 onAnalyze={() => bulkAnalyzeMutation.mutate([document.id])}
-                onDownload={() => setError('Download not implemented')}
+                onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
+                  const url = window.URL.createObjectURL(blob)
+                  const anchor = document.createElement('a')
+                  anchor.href = url
+                  anchor.download = document.name || 'document'
+                  anchor.click()
+                  window.URL.revokeObjectURL(url)
+                }).catch((downloadError) => setError(downloadError.message))}
                 onDelete={() => deleteMutation.mutate(document.id)}
               />
             ))}
@@ -236,9 +291,16 @@ export default function Documents() {
                 view="list"
                 onSelect={selectDocument}
                 selected={selectedDocuments.has(document.id)}
-                onPreview={() => setError('Preview not implemented')}
+                onPreview={() => navigate(`/documents/${document.id}`)}
                 onAnalyze={() => bulkAnalyzeMutation.mutate([document.id])}
-                onDownload={() => setError('Download not implemented')}
+                onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
+                  const url = window.URL.createObjectURL(blob)
+                  const anchor = document.createElement('a')
+                  anchor.href = url
+                  anchor.download = document.name || 'document'
+                  anchor.click()
+                  window.URL.revokeObjectURL(url)
+                }).catch((downloadError) => setError(downloadError.message))}
                 onDelete={() => deleteMutation.mutate(document.id)}
               />
             ))}
@@ -297,13 +359,47 @@ export default function Documents() {
             <p className="text-sm text-slate-500">Add files to the vault and immediately analyze them with YourCase AI.</p>
             <div className="mt-6">
               <DocumentUpload
-                matters={mattersMock}
-                documentTypes={documentTypesMock}
+                matters={matters}
+                documentTypes={documentTypes}
                 onSuccess={() => {
                   setShowUpload(false)
                   queryClient.invalidateQueries(['documents'])
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBulkTag && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/50 p-6">
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setShowBulkTag(false)}
+              className="absolute right-4 top-4 rounded-full border border-slate-200 p-1 text-slate-500 hover:bg-slate-100"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-semibold text-slate-900">Add Tags to Selected Documents</h3>
+            <p className="text-sm text-slate-500">Enter tags separated by commas</p>
+            <div className="mt-6 space-y-4">
+              <input
+                type="text"
+                value={bulkTags}
+                onChange={(e) => setBulkTags(e.target.value)}
+                placeholder="legal, reviewed, urgent"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              />
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => setShowBulkTag(false)}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleBulkTagSubmit}>
+                  Apply Tags
+                </Button>
+              </div>
             </div>
           </div>
         </div>

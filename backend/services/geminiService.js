@@ -1,5 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai')
 
+let instance
+
 class GeminiService {
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY
@@ -7,15 +9,22 @@ class GeminiService {
       throw new Error('GEMINI_API_KEY is not defined in environment variables')
     }
 
-    this.modelName = 'gemini-pro'
     this.client = new GoogleGenerativeAI(apiKey)
-    this.model = this.client.getGenerativeModel({ model: this.modelName })
+    this.defaultModel = resolveModel(process.env.GEMINI_MODEL) || 'gemini-2.5-flash'
+    this.modelName = this.defaultModel
     this.generationConfig = {
       temperature: 0.7,
       topK: 40,
       topP: 0.95,
       maxOutputTokens: 2048,
     }
+  }
+
+  static getInstance() {
+    if (!instance) {
+      instance = new GeminiService()
+    }
+    return instance
   }
 
   countTokens(text = '') {
@@ -25,20 +34,40 @@ class GeminiService {
 
   async generateResponse(prompt, options = {}) {
     try {
-      const generationConfig = { ...this.generationConfig, ...options }
-      const result = await this.model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig,
-      })
+      const { model: overrideModel, ...cfgOverrides } = options || {}
+      const generationConfig = { ...this.generationConfig, ...cfgOverrides }
 
-      const responseText = result?.response?.text?.() || ''
-      const tokensUsed = this.countTokens(prompt) + this.countTokens(responseText)
+      const tried = new Set()
+      const candidates = [
+        resolveModel(overrideModel),
+        this.defaultModel,
+        ...FALLBACK_MODELS,
+      ].filter(Boolean)
 
-      return {
-        content: responseText,
-        tokensUsed,
-        model: this.modelName,
+      let lastError
+      for (const candidate of candidates) {
+        if (tried.has(candidate)) continue
+        tried.add(candidate)
+        try {
+          const model = this.getModel(candidate)
+          const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig,
+          })
+          const responseText = result?.response?.text?.() || ''
+          const tokensUsed = this.countTokens(prompt) + this.countTokens(responseText)
+          return { content: responseText, tokensUsed, model: candidate }
+        } catch (err) {
+          lastError = err
+          if (!(err && (err.status === 404 || err.status === 400))) {
+            break
+          }
+          // otherwise try next candidate
+        }
       }
+
+      if (lastError) throw lastError
+      throw new Error('Failed to generate AI response')
     } catch (error) {
       console.error('Gemini generateResponse error:', error)
       throw new Error('Failed to generate AI response')
@@ -81,6 +110,8 @@ Document text:\n${text}`,
       }
 
       analysis.analyzedAt = new Date()
+      analysis.tokensUsed = response.tokensUsed
+      analysis.model = response.model
       return analysis
     } catch (error) {
       console.error('Gemini analyzeDocument error:', error)
@@ -109,8 +140,8 @@ Document text:\n${text}`,
       }
 
       const enrichedPrompt = `${contextStrings.join('\n\n')}\n\nUser request:\n${prompt}`.trim()
-
-      return this.generateResponse(enrichedPrompt, context.options)
+      const { model: overrideModel, ...cfgOverrides } = context.options || {}
+      return this.generateResponse(enrichedPrompt, { ...cfgOverrides, model: overrideModel })
     } catch (error) {
       console.error('Gemini generateWithContext error:', error)
       throw new Error('Failed to generate response with context')
@@ -119,7 +150,7 @@ Document text:\n${text}`,
 
   async *streamResponse(prompt) {
     try {
-      const streamResult = await this.model.generateContentStream({
+      const streamResult = await this.getModel().generateContentStream({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: this.generationConfig,
       })
@@ -137,4 +168,23 @@ Document text:\n${text}`,
   }
 }
 
-module.exports = GeminiService
+const MODEL_MAP = new Map([
+  ['gemini-1.5-flash'],
+])
+
+const FALLBACK_MODELS = [
+  'gemini-2.5-flash',
+]
+
+function resolveModel(name) {
+  if (!name) return ''
+  const cleaned = String(name).replace(/^models\//, '')
+  return MODEL_MAP.get(cleaned) || ''
+}
+
+GeminiService.prototype.getModel = function getModel(overrideModel) {
+  const resolved = resolveModel(overrideModel) || this.defaultModel
+  return this.client.getGenerativeModel({ model: resolved })
+}
+
+module.exports = GeminiService.getInstance()

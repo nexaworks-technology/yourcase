@@ -21,7 +21,7 @@ const responseSchema = new mongoose.Schema(
   {
     content: String,
     citations: [mongoose.Schema.Types.Mixed],
-    model: { type: String, default: 'gemini-pro' },
+    model: { type: String, default: '' },
     tokensUsed: Number,
     processingTime: Number,
     confidenceScore: Number,
@@ -51,22 +51,27 @@ const usageSchema = new mongoose.Schema(
 
 const querySchema = new mongoose.Schema(
   {
-    userId: {
+    session: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'ChatSession',
       required: true,
+      index: true,
     },
     firmId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Firm',
       required: true,
+      index: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
     },
     matterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ClientMatter',
-    },
-    sessionId: {
-      type: String,
     },
     queryType: {
       type: String,
@@ -84,6 +89,14 @@ const querySchema = new mongoose.Schema(
     response: {
       type: responseSchema,
       default: () => ({}),
+    },
+    lastPrompt: {
+      type: String,
+      default: ''
+    },
+    lastResponsePreview: {
+      type: String,
+      default: ''
     },
     feedback: {
       type: feedbackSchema,
@@ -116,6 +129,20 @@ const querySchema = new mongoose.Schema(
 querySchema.index({ firmId: 1, userId: 1 })
 querySchema.index({ queryType: 1 })
 querySchema.index({ createdAt: 1 })
+
+querySchema.methods.toClient = function toClient() {
+  return {
+    id: this._id.toString(),
+    sessionId: this.session ? this.session.toString() : null,
+    queryType: this.queryType,
+    prompt: this.prompt,
+    response: this.response,
+    lastPrompt: this.lastPrompt,
+    lastResponsePreview: this.lastResponsePreview,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
+  }
+}
 
 const Query = mongoose.model('Query', querySchema)
 

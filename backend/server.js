@@ -13,6 +13,8 @@ const { generalLimiter } = require('./middleware/rateLimiter')
 const authRoutes = require('./routes/auth.routes')
 const queryRoutes = require('./routes/query.routes')
 const documentRoutes = require('./routes/document.routes')
+const matterRoutes = require('./routes/matter.routes')
+const documentQuestionsRoutes = require('./routes/documentQuestions.routes')
 
 const uploadsDir = path.join(__dirname, 'uploads')
 if (!fs.existsSync(uploadsDir)) {
@@ -43,6 +45,8 @@ app.use('/uploads', express.static(uploadsDir))
 app.use('/api/auth', authRoutes)
 app.use('/api/queries', queryRoutes)
 app.use('/api/documents', documentRoutes)
+app.use('/api/matters', matterRoutes)
+app.use('/api/documents/:documentId/questions', documentQuestionsRoutes)
 
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: 'Route not found' })

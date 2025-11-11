@@ -1,19 +1,7 @@
 const mongoose = require('mongoose')
 
-const analysisSchema = new mongoose.Schema(
-  {
-    summary: String,
-    keyPoints: [String],
-    parties: [String],
-    dates: [Date],
-    amounts: [Number],
-    clauses: [mongoose.Schema.Types.Mixed],
-    risks: [String],
-    recommendations: [String],
-    analyzedAt: Date,
-  },
-  { _id: false },
-)
+// Allow flexible analysis shape to accommodate different document types (contracts, case-law, etc.)
+const analysisSchema = new mongoose.Schema({}, { _id: false, strict: false })
 
 const metadataSchema = new mongoose.Schema(
   {
@@ -76,10 +64,7 @@ const documentSchema = new mongoose.Schema(
     extractedText: {
       type: String,
     },
-    analysis: {
-      type: analysisSchema,
-      default: () => ({}),
-    },
+    analysis: { type: analysisSchema, default: () => ({}) },
     metadata: {
       type: metadataSchema,
       default: () => ({}),

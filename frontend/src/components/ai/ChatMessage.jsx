@@ -22,9 +22,9 @@ export function ChatMessage({ message, isUser, timestamp, onCopy, onRegenerate }
             : 'border-slate-200 bg-white text-slate-800',
         )}
       >
-        <ReactMarkdown
-          className="prose prose-sm max-w-none text-inherit"
-          components={{
+        <div className="prose prose-sm max-w-none text-inherit">
+          <ReactMarkdown
+            components={{
             code({ inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
@@ -37,10 +37,11 @@ export function ChatMessage({ message, isUser, timestamp, onCopy, onRegenerate }
                 </code>
               )
             },
-          }}
-        >
-          {message}
-        </ReactMarkdown>
+            }}
+          >
+            {message}
+          </ReactMarkdown>
+        </div>
 
         <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
           <span>{timestamp}</span>

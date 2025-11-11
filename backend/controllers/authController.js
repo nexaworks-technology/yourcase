@@ -44,18 +44,24 @@ exports.register = async (req, res, next) => {
         return next(new ErrorResponse('Firm information is required for registration', 400))
       }
 
-      firm = await Firm.create({
-        name: firmName,
-        contactEmail: email,
-      })
-    }
+      firm = await Firm.findOne({ name: firmName.trim() })
 
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+      if (!firm) {
+        firm = await Firm.create({
+          name: firmName.trim(),
+          contactEmail: email,
+        })
+      } else {
+        console.log('[Auth] Using existing firm for registration:', {
+          firmId: firm.id,
+          name: firm.name,
+        })
+      }
+    }
 
     user = await User.create({
       email,
-      password: hashedPassword,
+      password,
       firstName,
       lastName,
       role: role || 'lawyer',

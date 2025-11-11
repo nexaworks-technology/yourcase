@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Document, Page, pdfjs } from 'react-pdf'
+import 'react-pdf/dist/Page/TextLayer.css'
+import 'react-pdf/dist/Page/AnnotationLayer.css'
+import { API_BASE_URL } from '../../services/api'
 import {
   Expand,
   FileText,
@@ -21,7 +24,14 @@ import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { cn } from '../../utils/cn'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+// Fix worker fetch by pointing to npm-installed worker bundled with vite
+// react-pdf v10 uses pdfjs-dist. Import the worker directly so Vite bundles it.
+// eslint-disable-next-line import/no-duplicates
+// Use Vite asset URL for the worker so it bundles correctly
+// pdfjs >=5 provides an ESM worker at this path
+// Vite will turn this into a hashed asset URL at build time
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
 const zoomSteps = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
 
@@ -92,16 +102,12 @@ export function DocumentViewer({
         return
       }
 
-      // Placeholder search - would integrate with PDF.js text layer highlights
-      const matches = []
-      for (let i = 1; i <= (numPages || 0); i += 1) {
-        matches.push({ page: i })
-      }
-      setSearchMatches(matches)
+      // Basic search heuristic: navigate page-by-page; real text-layer search would hook into pdfjs text content
+      const next = []
+      for (let i = 1; i <= (numPages || 0); i += 1) next.push({ page: i })
+      setSearchMatches(next)
       setSearchIndex(0)
-      if (matches.length > 0) {
-        setPageNumber(matches[0].page)
-      }
+      if (next.length > 0) setPageNumber(next[0].page)
     },
     [searchQuery, numPages],
   )
@@ -117,6 +123,16 @@ export function DocumentViewer({
     if (!numPages) return []
     return Array.from({ length: numPages }, (_, index) => index + 1)
   }, [numPages])
+
+  // Normalize file source: if it looks like a relative /uploads path, prefix API_BASE_URL
+  const fileSrc = useMemo(() => {
+    if (!file) return null
+    if (typeof file === 'string') {
+      if (file.startsWith('/uploads/')) return `${API_BASE_URL}${file}`
+      return file
+    }
+    return file
+  }, [file])
 
   return (
     <div ref={containerRef} className="flex h-full flex-col rounded-3xl border border-slate-200 bg-white shadow-xl">
@@ -229,7 +245,7 @@ export function DocumentViewer({
           </div>
 
           <div className="flex flex-col items-center gap-6 p-6">
-            <Document file={file} onLoadSuccess={handleDocumentLoadSuccess} loading={<ViewerSkeleton />} error={<ViewerError />}>
+            <Document file={fileSrc} onLoadSuccess={handleDocumentLoadSuccess} loading={<ViewerSkeleton />} error={<ViewerError />}>
               <Page
                 pageNumber={pageNumber}
                 scale={scale}

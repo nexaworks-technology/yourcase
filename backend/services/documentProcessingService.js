@@ -1,7 +1,17 @@
 const fs = require('fs')
 const path = require('path')
+// pdf-parse v2 exposes a class API. Use PDFParse and call getText().
+let PDFParse
+try {
+  ({ PDFParse } = require('pdf-parse'))
+} catch (err) {
+  // In case of unexpected export shapes, fall back to default or nested props
+  const mod = require('pdf-parse')
+  PDFParse = mod.PDFParse || mod.default?.PDFParse || mod
+}
+const mammoth = require('mammoth')
 const Document = require('../models/Document')
-const GeminiService = require('./geminiService')
+let GeminiService
 
 class DocumentProcessingService {
   constructor() {
@@ -68,20 +78,37 @@ class DocumentProcessingService {
     }
 
     doc.extractedText = extractedText
-    doc.status = extractedText ? 'processing' : 'uploaded'
+    // Keep as 'uploaded' until user explicitly requests analysis
+    doc.status = 'uploaded'
     await doc.save()
 
     return doc
   }
 
   async extractTextFromPDF(filePath) {
-    // TODO: Install pdf-parse: npm install pdf-parse
-    return 'PDF text extraction - implement with pdf-parse library'
+    try {
+      const dataBuffer = fs.readFileSync(filePath)
+      if (!PDFParse) throw new Error('PDF parser not available')
+      const parser = new PDFParse({ data: dataBuffer })
+      const result = await parser.getText()
+      if (typeof parser.destroy === 'function') {
+        try { await parser.destroy() } catch (_) {}
+      }
+      return result?.text || ''
+    } catch (error) {
+      console.error('Failed to extract text from PDF:', error)
+      throw new Error('Unable to extract text from PDF file')
+    }
   }
 
   async extractTextFromDocx(filePath) {
-    // TODO: Install mammoth: npm install mammoth
-    return 'DOCX text extraction - implement with mammoth library'
+    try {
+      const result = await mammoth.extractRawText({ path: filePath })
+      return result.value || ''
+    } catch (error) {
+      console.error('Failed to extract text from DOCX:', error)
+      throw new Error('Unable to extract text from DOCX file')
+    }
   }
 
   async extractTextFromTxt(filePath) {
@@ -94,6 +121,14 @@ class DocumentProcessingService {
   }
 
   async analyzeDocumentWithAI(documentId) {
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('AI service not configured')
+    }
+
+    if (!GeminiService) {
+      GeminiService = require('./geminiService')
+    }
+
     const doc = await Document.findById(documentId)
     if (!doc) {
       throw new Error('Document not found')

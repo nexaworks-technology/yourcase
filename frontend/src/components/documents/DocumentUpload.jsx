@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { useDropzone } from 'react-dropzone'
 import { Loader2, Upload, X, Info } from 'lucide-react'
@@ -12,32 +12,75 @@ const ACCEPTED_TYPES = {
   'text/plain': 'TXT',
 }
 
+const MATTER_PLACEHOLDER = '__no_matter__'
+
+const prepareMetadata = (raw = {}) => {
+  const payload = {}
+
+  const matterValue = raw.matter?.value || raw.matter
+  if (matterValue && matterValue !== MATTER_PLACEHOLDER) {
+    payload.matterId = matterValue
+  }
+
+  const typeValue = raw.type?.value || raw.type
+  if (typeValue) {
+    payload.documentType = typeValue
+  }
+
+  if (raw.tags) {
+    const tags = Array.isArray(raw.tags)
+      ? raw.tags
+      : String(raw.tags)
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+
+    if (tags.length) {
+      payload.tags = tags
+    }
+  }
+
+  if (raw.description) {
+    payload.metadata = { notes: raw.description }
+  }
+
+  return payload
+}
+
 export function DocumentUpload({ onSuccess, matters, documentTypes }) {
   const [queue, setQueue] = useState([])
   const [errors, setErrors] = useState([])
   const [metadataModal, setMetadataModal] = useState({ open: false, file: null })
-  const [metadata, setMetadata] = useState({ matter: '', type: '', tags: '', description: '' })
+  const [metadata, setMetadata] = useState({ matter: MATTER_PLACEHOLDER, type: 'other', tags: '', description: '' })
 
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    const nextErrors = rejectedFiles.map((file) => ({
-      name: file.file.name,
-      message: file.errors.map((error) => error.message).join(', '),
-    }))
+  const matterOptions = useMemo(
+    () => [{ value: MATTER_PLACEHOLDER, label: 'No matter' }, ...matters],
+    [matters],
+  )
 
-    const mapped = acceptedFiles.map((file) => ({
-      id: crypto.randomUUID(),
-      file,
-      progress: 0,
-      status: 'pending',
-      metadata: metadataModal.file ? metadata : {},
-    }))
+  const onDrop = useCallback(
+    (acceptedFiles, rejectedFiles) => {
+      const nextErrors = rejectedFiles.map((file) => ({
+        name: file.file.name,
+        message: file.errors.map((error) => error.message).join(', '),
+      }))
 
-    setQueue((prev) => [...prev, ...mapped])
-    if (nextErrors.length) setErrors((prev) => [...prev, ...nextErrors])
-    if (mapped.length && !metadataModal.open) {
-      setMetadataModal({ open: true, file: mapped[0] })
-    }
-  }, [metadata, metadataModal])
+      const mapped = acceptedFiles.map((file) => ({
+        id: crypto.randomUUID(),
+        file,
+        progress: 0,
+        status: 'pending',
+        metadata,
+      }))
+
+      setQueue((prev) => [...prev, ...mapped])
+      if (nextErrors.length) setErrors((prev) => [...prev, ...nextErrors])
+      if (mapped.length && !metadataModal.open) {
+        setMetadataModal({ open: true, file: mapped[0] })
+      }
+    },
+    [metadata, metadataModal.open],
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -45,14 +88,16 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
     maxSize: MAX_SIZE,
   })
 
-  const startUpload = async (item, metadataOverrides = {}) => {
+  const startUpload = async (item, overrides = {}) => {
     setQueue((prev) => prev.map((queueItem) => (queueItem.id === item.id ? { ...queueItem, status: 'uploading' } : queueItem)))
     try {
       const response = await documentService.uploadDocument(
         item.file,
-        { ...item.metadata, ...metadataOverrides },
+        prepareMetadata({ ...item.metadata, ...overrides }),
         (progress) => {
-          setQueue((prev) => prev.map((queueItem) => (queueItem.id === item.id ? { ...queueItem, progress } : queueItem)))
+          setQueue((prev) =>
+            prev.map((queueItem) => (queueItem.id === item.id ? { ...queueItem, progress } : queueItem)),
+          )
         },
       )
       setQueue((prev) => prev.filter((queueItem) => queueItem.id !== item.id))
@@ -60,6 +105,7 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
     } catch (error) {
       console.error(error)
       setQueue((prev) => prev.map((queueItem) => (queueItem.id === item.id ? { ...queueItem, status: 'error' } : queueItem)))
+      setErrors((prev) => [...prev, { name: item.file.name, message: error.message }])
     }
   }
 
@@ -173,10 +219,8 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                   value={metadata.matter}
                   onChange={(event) => setMetadata((prev) => ({ ...prev, matter: event.target.value }))}
                   className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                  required
                 >
-                  <option value="">Select a matter</option>
-                  {matters.map((matter) => (
+                  {matterOptions.map((matter) => (
                     <option key={matter.value} value={matter.value}>
                       {matter.label}
                     </option>
@@ -192,7 +236,6 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                   className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                   required
                 >
-                  <option value="">Select a type</option>
                   {documentTypes.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}

@@ -16,16 +16,37 @@ const loginValidation = [
 const documentUploadValidation = [
   body('matterId').optional().isMongoId().withMessage('Invalid matter ID'),
   body('documentType')
-    .isIn(['contract', 'case-law', 'evidence', 'correspondence', 'other'])
+    .optional()
+    .isIn(['contract', 'case-law', 'evidence', 'correspondence', 'petition', 'judgment', 'agreement', 'notice', 'other'])
     .withMessage('Invalid document type'),
-  body('tags').optional().isArray().withMessage('Tags must be an array'),
+  body('tags')
+    .optional()
+    .custom((value) => Array.isArray(value) || typeof value === 'string')
+    .withMessage('Tags must be provided as an array or comma-separated string'),
+]
+
+const documentQuestionValidation = [
+  body('question').isString().trim().isLength({ min: 5 }).withMessage('Question must be at least 5 characters long'),
+  body('tags')
+    .optional()
+    .custom((value) => Array.isArray(value) || typeof value === 'string')
+    .withMessage('Tags must be provided as an array or comma-separated string'),
 ]
 
 const queryValidation = [
-  body('prompt').notEmpty().withMessage('Prompt is required').trim().isLength({ min: 10 }).withMessage('Prompt must be at least 10 characters'),
   body('queryType')
     .isIn(['research', 'drafting', 'analysis', 'compliance', 'chat'])
     .withMessage('Invalid query type'),
+  body('prompt')
+    .notEmpty()
+    .withMessage('Prompt is required')
+    .custom((value, { req }) => {
+      const min = req.body.queryType === 'chat' ? 3 : 10
+      if (typeof value !== 'string' || value.trim().length < min) {
+        throw new Error(`Prompt must be at least ${min} characters`)
+      }
+      return true
+    }),
   body('matterId').optional().isMongoId().withMessage('Invalid matter ID'),
 ]
 
@@ -44,6 +65,7 @@ module.exports = {
   registerValidation,
   loginValidation,
   documentUploadValidation,
+  documentQuestionValidation,
   queryValidation,
   validate,
 }
