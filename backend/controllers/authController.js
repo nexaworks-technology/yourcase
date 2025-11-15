@@ -14,6 +14,10 @@ function generateToken(id) {
   })
 }
 
+function escapeRegex(str = '') {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 exports.register = async (req, res, next) => {
   try {
     const { email, password, firstName, lastName, role, firmId, firmName } = req.body
@@ -105,12 +109,25 @@ exports.login = async (req, res, next) => {
       return next(new ErrorResponse('Please provide email and password', 400))
     }
 
-    const user = await User.findOne({ email }).select('+password')
+    const normalizedEmail = String(email).trim().toLowerCase()
+    // Case-insensitive lookup in case legacy data didn't normalize
+    const user = await User.findOne({ email: { $regex: `^${escapeRegex(normalizedEmail)}$`, $options: 'i' } }).select('+password')
     if (!user) {
       return next(new ErrorResponse('Invalid credentials', 401))
     }
 
-    const isMatch = await bcrypt.compare(password, user.password)
+    // Prefer model method (ensures consistent behavior)
+    let isMatch = user.password ? await user.comparePassword(password) : false
+
+    // Development-time recovery if a legacy plaintext password slipped in
+    if (!isMatch && user.password && !user.password.startsWith('$2') && process.env.NODE_ENV !== 'production') {
+      if (user.password === password) {
+        const salt = await bcrypt.genSalt(10)
+        user.password = await bcrypt.hash(password, salt)
+        await user.save({ validateBeforeSave: false })
+        isMatch = true
+      }
+    }
     if (!isMatch) {
       return next(new ErrorResponse('Invalid credentials', 401))
     }

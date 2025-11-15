@@ -53,9 +53,17 @@ export default function DocumentDetails() {
     mutationFn: () => documentService.analyzeDocument(id),
     onSuccess: (analysis) => {
       setAnalyzeError(null)
+      // Optimistically update current document cache so UI shows results immediately
+      queryClient.setQueryData(['document', id], (prev) => {
+        if (!prev || !prev.document) return prev
+        console.log('[DocumentDetails] analyze:onSuccess', { id, gotAnalysis: Boolean(analysis) })
+        return { ...prev, document: { ...prev.document, analysis } }
+      })
+      // Also refetch to ensure server state matches
       queryClient.invalidateQueries(['document', id])
     },
     onError: (analysisError) => {
+      console.error('[DocumentDetails] analyze:onError', analysisError)
       setAnalyzeError(analysisError.message || 'Unable to analyze document at this time.')
     },
   })
@@ -87,8 +95,14 @@ export default function DocumentDetails() {
     return document.fileUrl
   }, [document])
 
-  const handleAnalyze = () => analyzeMutation.mutate()
-  const handleRegenerate = () => analyzeMutation.mutate()
+  const handleAnalyze = () => {
+    console.log('[DocumentDetails] handleAnalyze called for', id)
+    analyzeMutation.mutate()
+  }
+  const handleRegenerate = () => {
+    console.log('[DocumentDetails] handleRegenerate called for', id)
+    analyzeMutation.mutate()
+  }
   const handleExport = (format) => {
     console.info('Export analysis as', format)
   }
@@ -141,7 +155,7 @@ export default function DocumentDetails() {
     analysis: (
       <AnalysisPanel
         analysis={document?.analysis}
-        loading={analyzeMutation.isLoading}
+        loading={analyzeMutation.isPending}
         onAnalyze={handleAnalyze}
         onRegenerate={handleRegenerate}
         onExport={handleExport}
@@ -191,6 +205,16 @@ export default function DocumentDetails() {
         }
         actions={actionButtons}
       />
+
+      {analyzeError && (
+        <Alert
+          variant="error"
+          title="Analysis failed"
+          message={analyzeError}
+          dismissible
+          onClose={() => setAnalyzeError(null)}
+        />
+      )}
 
       {metadataToast && (
         <Alert

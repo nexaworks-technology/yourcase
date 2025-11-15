@@ -123,7 +123,12 @@ export const documentService = {
   },
 
   async analyzeDocument(id) {
+    console.log('[documentService] analyzeDocument:start', id)
     const response = await api.post(`/api/documents/${id}/analyze`)
+    console.log('[documentService] analyzeDocument:success', id, {
+      hasAnalysis: Boolean(response.analysis),
+      keys: response.analysis ? Object.keys(response.analysis) : [],
+    })
     return response.analysis ?? response
   },
 

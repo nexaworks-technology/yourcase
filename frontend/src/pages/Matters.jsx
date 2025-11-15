@@ -91,7 +91,21 @@ export default function Matters() {
   const createMutation = useMutation({
     mutationFn: (payload) => matterService.createMatter(payload),
     onSuccess: (created) => {
-      addMatter(created)
+      // Normalize created shape
+      const normalized = {
+        id: created._id || created.id,
+        matterNumber: created.matterNumber,
+        clientName: created.clientName,
+        title: created.matterTitle || created.title,
+        type: created.matterType || created.type,
+        status: created.status,
+        priority: created.priority,
+        assignedLawyers: created.assignedLawyers || [],
+        startDate: created.startDate,
+        nextHearing: created.courtDetails?.nextHearing,
+        tags: created.tags || [],
+      }
+      addMatter(normalized)
       queryClient.invalidateQueries(['matters'])
       setNotice({ type: 'success', message: 'Matter created successfully.' })
     },

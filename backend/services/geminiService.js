@@ -102,17 +102,20 @@ Document text:\n${text}`,
 
       const response = await this.generateResponse(prompt, { maxOutputTokens: 3072 })
 
-      let analysis
+      let raw
       try {
-        analysis = JSON.parse(response.content)
+        raw = JSON.parse(response.content)
       } catch (parseError) {
-        analysis = { summary: response.content }
+        raw = { summary: response.content }
       }
 
-      analysis.analyzedAt = new Date()
-      analysis.tokensUsed = response.tokensUsed
-      analysis.model = response.model
-      return analysis
+      const normalized = normalizeAnalysis(raw, analysisType)
+      normalized.analyzedAt = new Date()
+      normalized.tokensUsed = response.tokensUsed
+      normalized.model = response.model
+      // keep raw as well for future panels
+      normalized.raw = raw
+      return normalized
     } catch (error) {
       console.error('Gemini analyzeDocument error:', error)
       throw new Error('Failed to analyze document')
@@ -166,6 +169,51 @@ Document text:\n${text}`,
       throw new Error('Failed to stream AI response')
     }
   }
+}
+
+function normalizeAnalysis(raw = {}, type = 'contract') {
+  const out = {
+    summary: '',
+    keyPoints: [],
+    parties: [],
+    dates: null,
+    financials: null,
+    clauses: [],
+    risks: [],
+    recommendations: [],
+  }
+
+  // Common mappings
+  if (typeof raw.summary === 'string') out.summary = raw.summary
+  if (Array.isArray(raw.keyPoints)) out.keyPoints = raw.keyPoints
+  if (Array.isArray(raw.parties)) out.parties = raw.parties
+  if (Array.isArray(raw.recommendations)) out.recommendations = raw.recommendations
+  if (Array.isArray(raw.risks)) out.risks = raw.risks
+  if (Array.isArray(raw.clauses)) out.clauses = raw.clauses
+
+  // Case-law mapping
+  if (type === 'case-law') {
+    if (!out.summary && typeof raw.facts === 'string') {
+      out.summary = raw.facts
+    }
+    if (Array.isArray(raw.legalIssues)) {
+      out.keyPoints = out.keyPoints.concat(raw.legalIssues)
+    }
+    if (typeof raw.judgment === 'string') {
+      out.keyPoints.push(`Judgment: ${raw.judgment}`)
+    }
+    if (Array.isArray(raw.precedents)) {
+      out.clauses = out.clauses.concat(
+        raw.precedents.map((p) => (typeof p === 'string' ? { title: 'Precedent', summary: p } : p)),
+      )
+    }
+  }
+
+  // Fallback summary
+  if (!out.summary && typeof raw === 'string') out.summary = raw
+  if (!out.summary) out.summary = 'Analysis completed.'
+
+  return out
 }
 
 const MODEL_MAP = new Map([

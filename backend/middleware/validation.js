@@ -50,6 +50,30 @@ const queryValidation = [
   body('matterId').optional().isMongoId().withMessage('Invalid matter ID'),
 ]
 
+// Matter validations
+const createMatterValidation = [
+  body('clientName').trim().notEmpty().withMessage('Client name is required'),
+  body('matterTitle').trim().notEmpty().withMessage('Matter title is required'),
+  body('matterType')
+    .trim()
+    .isIn(['litigation', 'corporate', 'compliance', 'contracts', 'tax', 'ipr', 'real-estate', 'family', 'criminal'])
+    .withMessage('Invalid matter type'),
+  body('startDate').optional().isISO8601().withMessage('Invalid start date'),
+  body('priority').optional().isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority'),
+]
+
+const updateMatterValidation = [
+  body('clientName').optional().trim().notEmpty().withMessage('Client name cannot be empty'),
+  body('matterTitle').optional().trim().notEmpty().withMessage('Matter title cannot be empty'),
+  body('matterType')
+    .optional()
+    .trim()
+    .isIn(['litigation', 'corporate', 'compliance', 'contracts', 'tax', 'ipr', 'real-estate', 'family', 'criminal'])
+    .withMessage('Invalid matter type'),
+  body('startDate').optional().isISO8601().withMessage('Invalid start date'),
+  body('priority').optional().isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority'),
+]
+
 function validate(req, res, next) {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -67,5 +91,7 @@ module.exports = {
   documentUploadValidation,
   documentQuestionValidation,
   queryValidation,
+  createMatterValidation,
+  updateMatterValidation,
   validate,
 }

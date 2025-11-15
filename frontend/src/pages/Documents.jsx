@@ -93,16 +93,21 @@ export default function Documents() {
     },
   })
 
-  const bulkAnalyzeMutation = useMutation({
-    mutationFn: (ids) => Promise.all(ids.map((id) => documentService.analyzeDocument(id))),
+  const analyzeOne = useMutation({
+    mutationFn: (id) => documentService.analyzeDocument(id),
     onSuccess: () => {
-      clearSelection()
-      refetch()
+      queryClient.invalidateQueries(['documents'])
     },
-    onError: (mutationError) => {
-      setError(mutationError?.message ?? 'Failed to trigger analysis')
-    },
+    onError: (e) => setError(e?.message || 'Failed to analyze document'),
   })
+
+  const handleAnalyzeSingle = async (id) => {
+    try {
+      await analyzeOne.mutateAsync(id)
+    } catch (_) {
+      // error is handled in onError
+    }
+  }
 
   const handleSearchSubmit = (event) => {
     event.preventDefault()
@@ -127,8 +132,18 @@ export default function Documents() {
     Promise.all(selectedIds.map((id) => deleteMutation.mutateAsync(id))).finally(() => queryClient.invalidateQueries(['documents']))
   }
 
-  const handleBulkAnalyze = () => {
-    bulkAnalyzeMutation.mutate(selectedIds)
+  const handleBulkAnalyze = async () => {
+    try {
+      for (const id of selectedIds) {
+        // sequential to reduce backend load and avoid race on status
+        // eslint-disable-next-line no-await-in-loop
+        await analyzeOne.mutateAsync(id)
+      }
+      clearSelection()
+      refetch()
+    } catch (e) {
+      setError(e?.message || 'Failed to trigger analysis')
+    }
   }
 
   const handleBulkDownload = async () => {
@@ -228,7 +243,7 @@ export default function Documents() {
             <Button variant="ghost" size="sm" icon={Download} onClick={handleBulkDownload}>
               Bulk download
             </Button>
-            <Button variant="ghost" size="sm" icon={Bot} onClick={handleBulkAnalyze} loading={bulkAnalyzeMutation.isLoading}>
+            <Button variant="ghost" size="sm" icon={Bot} onClick={handleBulkAnalyze} loading={analyzeOne.isLoading}>
               Analyze with AI
             </Button>
             <Button variant="ghost" size="sm" icon={Plus} onClick={handleBulkTag}>
@@ -253,7 +268,7 @@ export default function Documents() {
                 document={document}
                 view="grid"
                 onPreview={() => navigate(`/documents/${document.id}`)}
-                onAnalyze={() => bulkAnalyzeMutation.mutate([document.id])}
+                onAnalyze={() => handleAnalyzeSingle(document.id)}
                 onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
                   const url = window.URL.createObjectURL(blob)
                   const anchor = document.createElement('a')
@@ -292,7 +307,7 @@ export default function Documents() {
                 onSelect={selectDocument}
                 selected={selectedDocuments.has(document.id)}
                 onPreview={() => navigate(`/documents/${document.id}`)}
-                onAnalyze={() => bulkAnalyzeMutation.mutate([document.id])}
+                onAnalyze={() => handleAnalyzeSingle(document.id)}
                 onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
                   const url = window.URL.createObjectURL(blob)
                   const anchor = document.createElement('a')
