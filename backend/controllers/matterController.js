@@ -1,4 +1,5 @@
 const ClientMatter = require('../models/ClientMatter')
+const mongoose = require('mongoose')
 const { ErrorResponse } = require('../middleware/errorHandler')
 const Document = require('../models/Document')
 const Query = require('../models/Query')
@@ -114,6 +115,13 @@ exports.createMatter = async (req, res, next) => {
       ? matterNumber
       : `MAT-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
 
+    // sanitize assignedLawyers: keep only valid ObjectId strings
+    let sanitizedAssigned = undefined
+    if (Array.isArray(assignedLawyers)) {
+      const filtered = assignedLawyers.filter((v) => typeof v === 'string' && mongoose.Types.ObjectId.isValid(v))
+      if (filtered.length > 0) sanitizedAssigned = filtered
+    }
+
     const created = await ClientMatter.create({
       firmId,
       matterNumber: number,
@@ -125,7 +133,7 @@ exports.createMatter = async (req, res, next) => {
       description,
       status,
       priority,
-      assignedLawyers,
+      assignedLawyers: sanitizedAssigned,
       startDate,
       endDate,
       courtDetails,
@@ -145,6 +153,9 @@ exports.updateMatter = async (req, res, next) => {
     const firmId = req.user?.firmId
     const { matterId } = req.params
     const updates = req.body || {}
+    if (Array.isArray(updates.assignedLawyers)) {
+      updates.assignedLawyers = updates.assignedLawyers.filter((v) => typeof v === 'string' && mongoose.Types.ObjectId.isValid(v))
+    }
     const found = await ClientMatter.findById(matterId).populate('assignedLawyers', 'firstName lastName email avatar')
     if (!found || String(found.firmId) !== String(firmId)) {
       return next(new ErrorResponse('Matter not found', 404))

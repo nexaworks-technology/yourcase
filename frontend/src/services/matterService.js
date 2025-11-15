@@ -1,8 +1,29 @@
 import { api } from './api'
 
 export const matterService = {
+  _normalizeType(label) {
+    if (!label) return undefined
+    const map = {
+      'Litigation': 'litigation',
+      'Corporate': 'corporate',
+      'Compliance': 'compliance',
+      'Contracts': 'contracts',
+      'Tax': 'tax',
+      'IPR': 'ipr',
+      'Real Estate': 'real-estate',
+      'Family Law': 'family',
+      'Criminal': 'criminal',
+    }
+    return map[label] || String(label).toLowerCase()
+  },
+
   async createMatter(matterData) {
-    const res = await api.post('/api/matters', matterData)
+    const payload = { ...matterData }
+    if (payload.title && !payload.matterTitle) payload.matterTitle = payload.title
+    if (payload.type && !payload.matterType) payload.matterType = matterService._normalizeType(payload.type)
+    delete payload.title
+    delete payload.type
+    const res = await api.post('/api/matters', payload)
     return res.data ?? res
   },
 
@@ -29,7 +50,12 @@ export const matterService = {
   },
 
   async updateMatter(id, data) {
-    const res = await api.put(`/api/matters/${id}`, data)
+    const payload = { ...data }
+    if (payload.title) payload.matterTitle = payload.title
+    if (payload.type) payload.matterType = matterService._normalizeType(payload.type)
+    delete payload.title
+    delete payload.type
+    const res = await api.put(`/api/matters/${id}`, payload)
     return res.data ?? res
   },
 
@@ -40,6 +66,10 @@ export const matterService = {
 
   async assignLawyers(matterId, lawyerIds = []) {
     return api.post(`/api/matters/${matterId}/assign`, { lawyerIds })
+  },
+
+  async searchFirmUsers(query, limit = 10) {
+    return api.get(`/api/matters/users/search`, { params: { q: query, limit } })
   },
 
   async getMatterDocuments(matterId) {

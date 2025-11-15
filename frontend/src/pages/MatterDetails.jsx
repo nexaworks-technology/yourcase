@@ -256,24 +256,42 @@ export default function MatterDetails() {
     </div>
   )
 
+  const { data: docsRes } = useQuery({
+    queryKey: ['matter', id, 'documents'],
+    queryFn: () => matterService.getMatterDocuments(id),
+    enabled: Boolean(id),
+  })
+
   const documentsTab = (
     <DocumentsModule
       matterId={id}
-      documents={matter.documents}
+      documents={docsRes?.items || docsRes?.data || []}
       onUpload={() => setNotice({ type: 'info', message: 'Document upload from matter details coming soon.' })}
     />
   )
 
+  const { data: queriesRes } = useQuery({
+    queryKey: ['matter', id, 'queries'],
+    queryFn: () => matterService.getMatterQueries(id),
+    enabled: Boolean(id),
+  })
+
   const queriesTab = (
     <QueryList
-      queries={matter.queries}
+      queries={queriesRes?.items || queriesRes?.data || []}
       onAsk={() => setNotice({ type: 'info', message: 'Launching AI assistant with matter context soon.' })}
     />
   )
 
+  const { data: timelineRes } = useQuery({
+    queryKey: ['matter', id, 'timeline'],
+    queryFn: () => matterService.getMatterTimeline(id),
+    enabled: Boolean(id),
+  })
+
   const timelineTab = (
     <MatterTimeline
-      events={(matter.timeline || []).map((e) => ({ ...e }))}
+      events={timelineRes?.items || timelineRes?.data || []}
       onAddEvent={(payload) => setNotice({ type: 'info', message: 'Timeline events persistence coming soon.' }) || payload}
       onExport={handleExport}
     />
@@ -281,10 +299,11 @@ export default function MatterDetails() {
 
   const teamTab = (
     <TeamManagement
-      team={matter.team}
-      onAddMember={() => setNotice({ type: 'info', message: 'Team invitations coming soon.' })}
-      onRemoveMember={() => setNotice({ type: 'info', message: 'Removing members coming soon.' })}
-      onUpdateRole={() => setNotice({ type: 'info', message: 'Updating roles coming soon.' })}
+      matterId={id}
+      team={matter.team || []}
+      onTeamChanged={() => {
+        queryClient.invalidateQueries(['matter', id])
+      }}
     />
   )
 

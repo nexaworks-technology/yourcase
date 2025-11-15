@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Archive,
@@ -33,6 +34,7 @@ const lawyersMock = [
 ]
 
 export default function Matters() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const {
     matters,
@@ -90,22 +92,8 @@ export default function Matters() {
 
   const createMutation = useMutation({
     mutationFn: (payload) => matterService.createMatter(payload),
-    onSuccess: (created) => {
-      // Normalize created shape
-      const normalized = {
-        id: created._id || created.id,
-        matterNumber: created.matterNumber,
-        clientName: created.clientName,
-        title: created.matterTitle || created.title,
-        type: created.matterType || created.type,
-        status: created.status,
-        priority: created.priority,
-        assignedLawyers: created.assignedLawyers || [],
-        startDate: created.startDate,
-        nextHearing: created.courtDetails?.nextHearing,
-        tags: created.tags || [],
-      }
-      addMatter(normalized)
+    onSuccess: () => {
+      // Rely on refetch to get server-populated assignedLawyers
       queryClient.invalidateQueries(['matters'])
       setNotice({ type: 'success', message: 'Matter created successfully.' })
     },
@@ -395,7 +383,7 @@ export default function Matters() {
               <MatterCard
                 key={matter.id || matter._id}
                 matter={matter}
-                onView={() => setNotice({ type: 'info', message: 'Matter detail view coming soon.' })}
+                onView={() => navigate(`/matters/${matter.id || matter._id}`)}
                 onEdit={() => {
                   setNotice({ type: 'info', message: 'Matter editing surface coming soon.' })
                 }}
@@ -473,7 +461,7 @@ export default function Matters() {
                       <td className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 dark:text-slate-500">{matter.documentsCount ?? 0}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => setNotice({ type: 'info', message: 'Matter detail view coming soon.' })}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/matters/${matterId}`)}>
                             View
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => setNotice({ type: 'info', message: 'Matter editing surface coming soon.' })}>
