@@ -24,16 +24,22 @@ export function Input({
 
   const isPassword = type === 'password'
   const displayType = isPassword && isPasswordVisible ? 'text' : type
-  const showClear = type !== 'password' && value
+  const showClear = type !== 'password' && Boolean(value)
 
   const handleTogglePassword = () => setIsPasswordVisible((prev) => !prev)
   const handleClear = () => onChange?.({ target: { value: '' } })
 
   return (
     <div className={cn('relative w-full', disabled && 'opacity-60', className)}>
+      {label && (
+        <label htmlFor={inputId} className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-600">
+          {label}
+          {required && <span className="ml-1 text-rose-500">*</span>}
+        </label>
+      )}
       <div
         className={cn(
-          'group relative flex h-14 w-full items-center rounded-xl border bg-white px-4 shadow-sm transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100',
+          'group relative flex h-11 w-full items-center rounded-xl border bg-white px-4 shadow-sm transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100',
           error && 'border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-100',
           success && !error && 'border-emerald-500 focus-within:ring-emerald-100',
           disabled && 'pointer-events-none bg-slate-50 text-slate-400',
@@ -41,33 +47,20 @@ export function Input({
       >
         {Icon && <Icon className="mr-3 h-4 w-4 text-slate-400" aria-hidden="true" />}
 
-        <div className="flex w-full flex-col">
-          {label && (
-            <label
-              htmlFor={inputId}
-              className={cn(
-                'pointer-events-none text-xs font-medium uppercase tracking-wide text-slate-500 transition-all duration-200',
-                (value ?? '') !== '' || placeholder ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0',
-              )}
-            >
-              {label}
-            </label>
-          )}
-          <input
-            id={inputId}
-            type={displayType}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            className="h-8 w-full bg-transparent text-base text-slate-900 outline-none"
-            disabled={disabled}
-            aria-invalid={Boolean(error)}
-            aria-describedby={helperText ? `${inputId}-helper` : undefined}
-            maxLength={maxLength}
-            required={required}
-            {...props}
-          />
-        </div>
+        <input
+          id={inputId}
+          type={displayType}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="h-8 w-full bg-transparent text-base text-slate-900 outline-none placeholder:text-slate-400"
+          disabled={disabled}
+          aria-invalid={Boolean(error)}
+          aria-describedby={helperText ? `${inputId}-helper` : undefined}
+          maxLength={maxLength}
+          required={required}
+          {...props}
+        />
 
         <div className="ml-3 flex items-center gap-2">
           {isPassword && (

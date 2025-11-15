@@ -54,12 +54,38 @@ app.use((req, res, next) => {
 
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.log(`🚀 YourCase backend is running`)
-  console.log(`📡 Mode: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`🌐 Port: ${PORT}`)
-  console.log(`🔍 Health: http://localhost:${PORT}/health`)
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-})
+// Pin default port to 4000 as requested
+const DEFAULT_PORT = Number(process.env.PORT) || 4000
+
+function startServer(port = DEFAULT_PORT, attemptsLeft = 5) {
+  const server = app
+    .listen(port, () => {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      console.log(`🚀 YourCase backend is running`)
+      console.log(`📡 Mode: ${process.env.NODE_ENV || 'development'}`)
+      console.log(`🌐 Port: ${port}`)
+      console.log(`🔍 Health: http://localhost:${port}/health`)
+      if (port !== DEFAULT_PORT) {
+        console.warn(
+          `⚠️  Requested port ${DEFAULT_PORT} was busy. Started on ${port} instead. Update your frontend API base URL if needed.`,
+        )
+      }
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    })
+    .on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE' && attemptsLeft > 0) {
+        const nextPort = port + 1
+        console.warn(
+          `Port ${port} in use. Retrying on ${nextPort} (attempts left: ${attemptsLeft - 1})...`,
+        )
+        setTimeout(() => startServer(nextPort, attemptsLeft - 1), 500)
+      } else {
+        console.error('Failed to start server:', err)
+        process.exit(1)
+      }
+    })
+
+  return server
+}
+
+startServer()

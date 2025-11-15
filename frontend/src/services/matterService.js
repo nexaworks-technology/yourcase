@@ -2,7 +2,8 @@ import { api } from './api'
 
 export const matterService = {
   async createMatter(matterData) {
-    return api.post('/api/matters', matterData)
+    const res = await api.post('/api/matters', matterData)
+    return res.data ?? res
   },
 
   async getMatters(filters = {}, pagination = {}) {
@@ -13,19 +14,28 @@ export const matterService = {
       sortBy: pagination.sortBy ?? 'createdAt',
       sortOrder: pagination.sortOrder ?? 'desc',
     }
-    return api.get('/api/matters', { params })
+    const res = await api.get('/api/matters', { params })
+    // Normalize backend shape { success, items, meta, stats }
+    return {
+      items: res.items ?? res.data ?? [],
+      meta: res.meta ?? res.pagination ?? {},
+      stats: res.stats,
+    }
   },
 
   async getMatterById(id) {
-    return api.get(`/api/matters/${id}`)
+    const res = await api.get(`/api/matters/${id}`)
+    return res.data ?? res
   },
 
   async updateMatter(id, data) {
-    return api.put(`/api/matters/${id}`, data)
+    const res = await api.put(`/api/matters/${id}`, data)
+    return res.data ?? res
   },
 
   async deleteMatter(id) {
-    return api.delete(`/api/matters/${id}`)
+    const res = await api.delete(`/api/matters/${id}`)
+    return res.data ?? res
   },
 
   async assignLawyers(matterId, lawyerIds = []) {
@@ -51,7 +61,14 @@ export const matterService = {
   },
 
   async exportMatter(id) {
-    return api.get(`/api/matters/${id}/export`, { responseType: 'blob' })
+    // Use raw axios instance to ensure we get a Blob, not interceptor data unwrap
+    const axios = (await import('axios')).default
+    const token = localStorage.getItem('auth_token')
+    const res = await axios.get(`${api.defaults.baseURL}/api/matters/${id}/export`, {
+      responseType: 'blob',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    return res.data
   },
 }
 

@@ -71,6 +71,28 @@ const sections = [
 ]
 
 export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onExport }) {
+  const handleAnalyzeClick = () => {
+    // Debug click pipeline
+    console.log('[AnalysisPanel] Analyze button clicked', {
+      hasOnAnalyze: typeof onAnalyze === 'function',
+      loading,
+      hasSummary: Boolean(analysis?.summary),
+    })
+    if (typeof onAnalyze === 'function') {
+      try {
+        onAnalyze()
+      } catch (err) {
+        console.error('[AnalysisPanel] onAnalyze threw', err)
+      }
+    } else {
+      console.warn('[AnalysisPanel] onAnalyze is not a function', onAnalyze)
+    }
+  }
+
+  const handleRegenerateClick = () => {
+    console.log('[AnalysisPanel] Regenerate clicked')
+    if (typeof onRegenerate === 'function') onRegenerate()
+  }
   const hasAnalysis = Boolean(analysis?.summary)
 
   const confidenceIndicator = useMemo(() => {
@@ -92,7 +114,7 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
           <p className="text-sm text-slate-500">
             Generate AI-driven summaries, key clause detection, risk assessment, and next-step recommendations tailored to your matter.
           </p>
-          <Button variant="primary" size="lg" icon={Sparkles} loading={loading} onClick={onAnalyze}>
+          <Button variant="primary" size="lg" icon={Sparkles} loading={loading} onClick={handleAnalyzeClick}>
             Analyze document with AI
           </Button>
           <p className="text-xs text-slate-400">Estimated analysis time · Less than 30 seconds</p>
@@ -125,7 +147,7 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
           <Button variant="ghost" size="sm" icon={Download} onClick={() => onExport?.('docx')}>
             Export DOCX
           </Button>
-          <Button variant="outline" size="sm" icon={RefreshCcw} onClick={onRegenerate} loading={loading}>
+          <Button variant="outline" size="sm" icon={RefreshCcw} onClick={handleRegenerateClick} loading={loading}>
             Regenerate
           </Button>
         </div>

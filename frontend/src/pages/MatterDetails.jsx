@@ -81,6 +81,17 @@ export default function MatterDetails() {
     mutationFn: () => matterService.exportMatter(id),
     onError: (err) => setNotice({ type: 'error', message: err.message || 'Failed to export matter.' }),
   })
+  const handleExport = async () => {
+    try {
+      const blob = await exportMutation.mutateAsync()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `matter-${matter?.matterNumber || id}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (_) {}
+  }
 
   const statusTone = useMemo(() => {
     switch (matter?.status) {
@@ -262,9 +273,9 @@ export default function MatterDetails() {
 
   const timelineTab = (
     <MatterTimeline
-      events={matter.timeline}
+      events={(matter.timeline || []).map((e) => ({ ...e }))}
       onAddEvent={(payload) => setNotice({ type: 'info', message: 'Timeline events persistence coming soon.' }) || payload}
-      onExport={() => setNotice({ type: 'info', message: 'Timeline export coming soon.' })}
+      onExport={handleExport}
     />
   )
 
@@ -336,7 +347,7 @@ export default function MatterDetails() {
                   <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={() => setNotice({ type: 'info', message: 'Duplicate matter coming soon.' })}>
                     Duplicate
                   </button>
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={() => exportMutation.mutate()}>
+                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={handleExport}>
                     <Download className="h-4 w-4" /> Export
                   </button>
                 </div>
