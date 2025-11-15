@@ -24,8 +24,8 @@ export function ActivityTimeline() {
   const { data, isLoading } = useQuery({ queryKey: ['activity-timeline'], queryFn: fetchActivity })
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-800">Activity timeline</h2>
+    <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Activity timeline</h2>
       {isLoading ? (
         <div className="mt-6 space-y-4">
           <Skeleton variant="text" height={18} />
@@ -42,12 +42,12 @@ export function ActivityTimeline() {
                   <span className="relative z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                  {index !== data.length - 1 && <span className="mt-[-2px] h-full w-0.5 bg-slate-200" aria-hidden="true" />}
+                  {index !== data.length - 1 && <span className="mt-[-2px] h-full w-0.5 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-800">{activity.title}</h3>
-                  <p className="mt-1 text-xs text-slate-500">{activity.description}</p>
-                  <p className="mt-2 text-xs text-slate-400">
+                  <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">{activity.title}</h3>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{activity.description}</p>
+                  <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
                     {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                   </p>
                 </div>

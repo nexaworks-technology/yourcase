@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import { cn } from '../../utils/cn'
 
 const variantStyles = {
-  default: 'bg-slate-100 text-slate-700',
+  default: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300',
   primary: 'bg-blue-100 text-blue-700',
   success: 'bg-emerald-100 text-emerald-700',
   warning: 'bg-amber-100 text-amber-700',

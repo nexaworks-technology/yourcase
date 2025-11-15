@@ -15,12 +15,12 @@ export function Progress({ value = 0, color = 'primary', showLabel = true, class
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {showLabel && (
-        <div className="flex items-center justify-between text-xs font-medium text-slate-500">
+        <div className="flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           <span>Progress</span>
           <span>{clamped}%</span>
         </div>
       )}
-      <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200/60">
+      <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700/60">
         <div
           className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-300', colorMap[color])}
           style={{ width: `${clamped}%` }}
@@ -80,7 +80,7 @@ export function CircularProgress({ value = 0, size = 80, strokeWidth = 8, color 
         />
       </svg>
       {showLabel && (
-        <span className="absolute text-sm font-semibold text-slate-700">{Math.round(value)}%</span>
+        <span className="absolute text-sm font-semibold text-slate-700 dark:text-slate-300">{Math.round(value)}%</span>
       )}
     </div>
   )

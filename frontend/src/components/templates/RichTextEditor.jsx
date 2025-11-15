@@ -23,7 +23,7 @@ export function RichTextEditor({ content, onChange, variables = [], onInsertVari
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm text-slate-600 dark:text-slate-300">
         <Button variant="ghost" size="sm" icon={Bold} disabled>B</Button>
         <Button variant="ghost" size="sm" icon={Italic} disabled>I</Button>
         <Button variant="ghost" size="sm" icon={Underline} disabled>U</Button>
@@ -53,12 +53,12 @@ export function RichTextEditor({ content, onChange, variables = [], onInsertVari
         <textarea
           value={input}
           onChange={handleInputChange}
-          className="min-h-[280px] w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-inner focus:border-blue-500 focus:outline-none"
+          className="min-h-[280px] w-full rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm text-slate-700 dark:text-slate-300 shadow-inner focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
           placeholder="Draft template content using markdown or insert variables for dynamic data."
         />
         {preview && (
-          <div className="min-h-[280px] rounded-3xl border border-slate-200 bg-white p-4 shadow-inner">
-            <article className="prose prose-slate max-w-none text-sm text-slate-700 whitespace-pre-wrap">
+          <div className="min-h-[280px] rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-inner">
+            <article className="prose prose-slate max-w-none text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
               {input || 'Preview will appear here as you compose your template.'}
             </article>
           </div>

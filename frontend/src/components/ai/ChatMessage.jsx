@@ -19,7 +19,7 @@ export function ChatMessage({ message, isUser, timestamp, onCopy, onRegenerate }
           'max-w-2xl space-y-3 rounded-3xl border px-4 py-3 shadow-sm transition-all animate-[fade-in_0.3s_ease-out,slide-up_0.3s_ease-out]',
           isUser
             ? 'border-blue-100 bg-blue-500 text-white'
-            : 'border-slate-200 bg-white text-slate-800',
+            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200',
         )}
       >
         <div className="prose prose-sm max-w-none text-inherit">
@@ -32,7 +32,7 @@ export function ChatMessage({ message, isUser, timestamp, onCopy, onRegenerate }
                   {String(children).replace(/\n$/, '')}
                 </SyntaxHighlighter>
               ) : (
-                <code className={cn('rounded bg-slate-200/60 px-1 py-0.5 text-xs', className)} {...props}>
+                <code className={cn('rounded bg-slate-200 dark:bg-slate-700/60 px-1 py-0.5 text-xs', className)} {...props}>
                   {children}
                 </code>
               )
@@ -43,7 +43,7 @@ export function ChatMessage({ message, isUser, timestamp, onCopy, onRegenerate }
           </ReactMarkdown>
         </div>
 
-        <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
+        <div className="flex items-center justify-between gap-3 text-xs text-slate-400 dark:text-slate-500">
           <span>{timestamp}</span>
           <div className="flex items-center gap-2">
             <Button

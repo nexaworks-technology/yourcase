@@ -26,8 +26,8 @@ export function SettingsSidebar({ active, onChange }) {
           className={cn(
             'flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition',
             active === id
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-600 hover:bg-slate-100',
+              ? 'bg-blue-600 text-white shadow-md dark:bg-blue-500'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-800',
           )}
         >
           {icon({ className: 'h-4 w-4' })}

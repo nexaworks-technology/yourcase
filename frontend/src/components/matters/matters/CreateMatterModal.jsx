@@ -195,7 +195,7 @@ export function CreateMatterModal({ isOpen, onClose, onSubmit, lawyers = [] }) {
           />
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Matter type</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Matter type</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {typeOptions.map((option) => (
                   <button
@@ -203,7 +203,7 @@ export function CreateMatterModal({ isOpen, onClose, onSubmit, lawyers = [] }) {
                     type="button"
                     className={cn('rounded-full border px-3 py-1 text-xs transition', formData.type === option
                       ? 'border-indigo-200 bg-indigo-50 text-indigo-600 shadow-sm'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                     onClick={() => handleChange('type', option)}
                   >
                     {option}
@@ -213,7 +213,7 @@ export function CreateMatterModal({ isOpen, onClose, onSubmit, lawyers = [] }) {
               {errors.type && <p className="mt-1 text-xs text-rose-500">{errors.type}</p>}
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Priority</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Priority</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {priorityOptions.map((option) => (
                   <button
@@ -221,7 +221,7 @@ export function CreateMatterModal({ isOpen, onClose, onSubmit, lawyers = [] }) {
                     type="button"
                     className={cn('flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition', formData.priority === option.toLowerCase()
                       ? 'border-rose-200 bg-rose-50 text-rose-600 shadow-sm'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                     onClick={() => handleChange('priority', option.toLowerCase())}
                   >
                     <Flag className="h-3 w-3" />

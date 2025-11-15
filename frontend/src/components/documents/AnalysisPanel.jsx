@@ -105,19 +105,19 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
 
   if (!hasAnalysis && !loading) {
     return (
-      <Card className="flex h-full flex-col justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 text-center">
+      <Card className="flex h-full flex-col justify-center rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-center">
         <div className="mx-auto max-w-sm space-y-4 px-6 py-10">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
             <Sparkles className="h-8 w-8" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900">Unlock AI document analysis</h3>
-          <p className="text-sm text-slate-500">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Unlock AI document analysis</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Generate AI-driven summaries, key clause detection, risk assessment, and next-step recommendations tailored to your matter.
           </p>
           <Button variant="primary" size="lg" icon={Sparkles} loading={loading} onClick={handleAnalyzeClick}>
             Analyze document with AI
           </Button>
-          <p className="text-xs text-slate-400">Estimated analysis time · Less than 30 seconds</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">Estimated analysis time · Less than 30 seconds</p>
         </div>
       </Card>
     )
@@ -125,18 +125,18 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">AI Analysis</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">AI Analysis</p>
           <div className="flex items-center gap-2">
-            <span className="text-base font-semibold text-slate-900">Latest analysis</span>
+            <span className="text-base font-semibold text-slate-900 dark:text-slate-100">Latest analysis</span>
             {confidenceIndicator && (
               <Badge variant={confidenceIndicator.tone} size="sm">
                 {confidenceIndicator.label} ({Math.round((analysis?.confidence ?? 0) * 100)}%)
               </Badge>
             )}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Generated {analysis?.generatedAt ? new Date(analysis.generatedAt).toLocaleString() : 'moments ago'} by YourCase AI
           </p>
         </div>
@@ -153,7 +153,7 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex-1 overflow-y-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
@@ -167,13 +167,13 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
               }
 
               return (
-                <section key={key} className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+                <section key={key} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 p-4">
                   <header className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl text-slate-600', variantTone[variant])}>
+                      <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 dark:text-slate-300', variantTone[variant])}>
                         {Icon ? <Icon className="h-5 w-5" /> : null}
                       </span>
-                      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
                     </div>
                     <button
                       type="button"
@@ -183,7 +183,7 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
                       Copy
                     </button>
                   </header>
-                  <div className="mt-4 space-y-3 text-sm text-slate-600">
+                  <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
                     {renderContent(content, key)}
                   </div>
                 </section>
@@ -197,7 +197,7 @@ export function AnalysisPanel({ analysis, loading, onAnalyze, onRegenerate, onEx
 }
 
 const variantTone = {
-  default: 'bg-slate-100 text-slate-600',
+  default: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300',
   primary: 'bg-blue-100 text-blue-600',
   secondary: 'bg-indigo-100 text-indigo-600',
   info: 'bg-sky-100 text-sky-600',
@@ -208,16 +208,16 @@ const variantTone = {
 
 function renderContent(content, key) {
   if (typeof content === 'string') {
-    return <p className="leading-relaxed text-slate-700">{content}</p>
+    return <p className="leading-relaxed text-slate-700 dark:text-slate-300">{content}</p>
   }
 
   if (Array.isArray(content)) {
     return (
       <ul className="space-y-2">
         {content.map((item, index) => (
-          <li key={index} className="flex items-start gap-2 rounded-xl bg-white p-3 text-sm shadow-sm">
+          <li key={index} className="flex items-start gap-2 rounded-xl bg-white dark:bg-slate-900 p-3 text-sm shadow-sm">
             <CheckCircle2 className="mt-1 h-4 w-4 text-blue-500" />
-            <span className="leading-relaxed text-slate-600">{typeof item === 'string' ? item : item?.text}</span>
+            <span className="leading-relaxed text-slate-600 dark:text-slate-300">{typeof item === 'string' ? item : item?.text}</span>
           </li>
         ))}
       </ul>
@@ -226,13 +226,13 @@ function renderContent(content, key) {
 
   if (key === 'dates' && content?.timeline) {
     return (
-      <ol className="relative space-y-4 border-l border-slate-200 pl-4">
+      <ol className="relative space-y-4 border-l border-slate-200 dark:border-slate-700 pl-4">
         {content.timeline.map((event, index) => (
           <li key={index} className="ml-4 space-y-1">
             <span className="absolute -left-2 mt-0.5 h-3 w-3 rounded-full border border-blue-500 bg-blue-100" />
             <p className="text-xs font-medium uppercase tracking-wide text-blue-600">{event.label}</p>
-            <p className="text-sm font-semibold text-slate-900">{event.date}</p>
-            {event.description && <p className="text-sm text-slate-500">{event.description}</p>}
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{event.date}</p>
+            {event.description && <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{event.description}</p>}
           </li>
         ))}
       </ol>
@@ -288,7 +288,7 @@ function renderContent(content, key) {
     )
   }
 
-  return <pre className="rounded-xl bg-white p-3 text-xs text-slate-500">{JSON.stringify(content, null, 2)}</pre>
+  return <pre className="rounded-xl bg-white dark:bg-slate-900 p-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{JSON.stringify(content, null, 2)}</pre>
 }
 
 function formatContent(content) {

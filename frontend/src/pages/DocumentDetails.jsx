@@ -142,8 +142,8 @@ export default function DocumentDetails() {
     return (
       <div className="mt-20 flex flex-col items-center gap-4">
         <FileWarning className="h-10 w-10 text-rose-500" />
-        <h2 className="text-lg font-semibold text-slate-900">Unable to load document</h2>
-        <p className="text-sm text-slate-500">{error?.message || 'Please try again later.'}</p>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Unable to load document</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{error?.message || 'Please try again later.'}</p>
         <Button variant="primary" onClick={() => navigate('/documents')} icon={ChevronLeft}>
           Back to documents
         </Button>
@@ -195,12 +195,12 @@ export default function DocumentDetails() {
         title={document?.name || 'Document'}
         description={document?.description || 'Comprehensive AI-powered insights, metadata, and activity for this document.'}
         breadcrumbs={
-          <div className="flex items-center gap-1 text-xs text-slate-500">
-            <button type="button" onClick={() => navigate('/documents')} className="flex items-center gap-1 text-slate-500 hover:text-slate-700">
+          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <button type="button" onClick={() => navigate('/documents')} className="flex items-center gap-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
               <ChevronLeft className="h-3 w-3" /> Documents
             </button>
             <span>·</span>
-            <span className="truncate text-slate-400">{document?.name || id}</span>
+            <span className="truncate text-slate-400 dark:text-slate-500">{document?.name || id}</span>
           </div>
         }
         actions={actionButtons}
@@ -231,21 +231,21 @@ export default function DocumentDetails() {
       <div className="grid h-[calc(100vh-14rem)] gap-6 lg:grid-cols-[3fr_2fr]">
         <DocumentViewer file={documentFile} filename={document?.name} onDownload={handleDownload} onPrint={handlePrint} />
 
-        <div className="flex h-full flex-col rounded-3xl border border-slate-200 bg-white shadow-xl">
-          <nav className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-6 py-4 text-sm font-medium text-slate-500">
+        <div className="flex h-full flex-col rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
+          <nav className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <div className="flex flex-wrap items-center gap-2">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`rounded-full px-4 py-2 capitalize transition ${activeTab === tab ? 'bg-blue-600 text-white shadow-sm' : 'hover:bg-slate-100'}`}
+                  className={`rounded-full px-4 py-2 capitalize transition ${activeTab === tab ? 'bg-blue-600 text-white shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'}`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
-            <button type="button" className="rounded-full border border-slate-200 p-2 text-slate-400 hover:text-slate-600">
+            <button type="button" className="rounded-full border border-slate-200 dark:border-slate-700 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
               <MoreVertical className="h-4 w-4" />
             </button>
           </nav>
@@ -254,8 +254,8 @@ export default function DocumentDetails() {
             {tabContent[activeTab]}
           </div>
 
-          <div className="space-y-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Quick actions</h4>
+          <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-6 py-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Quick actions</h4>
             <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" variant="primary" icon={Sparkles} onClick={() => setShowAskModal(true)}>
                 Ask AI
@@ -292,7 +292,7 @@ export default function DocumentDetails() {
           </div>
         }
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
           This action permanently removes the document and its AI analysis from YourCase. You can re-upload the file later but previous insights will be lost.
         </p>
       </Modal>
@@ -303,21 +303,21 @@ export default function DocumentDetails() {
 function ActivityTimeline({ activity }) {
   if (!activity || activity.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+      <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-6 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
         No activity recorded yet.
       </div>
     )
   }
 
   return (
-    <ol className="relative space-y-4 border-l border-slate-200 pl-4">
+    <ol className="relative space-y-4 border-l border-slate-200 dark:border-slate-700 pl-4">
       {activity.map((item) => (
         <li key={item.id} className="ml-4">
           <span className="absolute -left-2 mt-1 h-3 w-3 rounded-full border border-blue-500 bg-blue-100" />
           <p className="text-xs font-medium uppercase tracking-wide text-blue-600">{item.action}</p>
-          <p className="text-sm font-semibold text-slate-900">{item.user?.name || 'System'}</p>
-          <p className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
-          {item.note && <p className="mt-1 text-sm text-slate-600">{item.note}</p>}
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{item.user?.name || 'System'}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
+          {item.note && <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.note}</p>}
         </li>
       ))}
     </ol>
@@ -329,7 +329,7 @@ ActivityTimeline.propTypes = {}
 function RelatedDocuments({ related, similar }) {
   if ((related?.length ?? 0) === 0 && (similar?.length ?? 0) === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+      <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-6 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
         No related documents yet. Upload more matter files to see connections.
       </div>
     )
@@ -339,13 +339,13 @@ function RelatedDocuments({ related, similar }) {
     <div className="space-y-4">
       {related?.length > 0 && (
         <section>
-          <h4 className="text-sm font-semibold text-slate-900">Same matter</h4>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Same matter</h4>
           <ul className="mt-2 space-y-2">
             {related.map((item) => (
-              <li key={item.id} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+              <li key={item.id} className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
                 <div>
-                  <p className="font-medium text-slate-900">{item.name}</p>
-                  <p className="text-xs text-slate-500">{item.type}</p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{item.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{item.type}</p>
                 </div>
                 <Badge variant="secondary" size="sm">
                   {item.status}
@@ -358,13 +358,13 @@ function RelatedDocuments({ related, similar }) {
 
       {similar?.length > 0 && (
         <section>
-          <h4 className="text-sm font-semibold text-slate-900">Similar documents</h4>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Similar documents</h4>
           <ul className="mt-2 space-y-2">
             {similar.map((item) => (
-              <li key={item.id} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+              <li key={item.id} className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
                 <div>
-                  <p className="font-medium text-slate-900">{item.name}</p>
-                  <p className="text-xs text-slate-500">{item.matches?.join(', ')}</p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{item.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{item.matches?.join(', ')}</p>
                 </div>
                 <Badge variant="primary" size="sm">
                   {Math.round((item.similarity ?? 0) * 100)}% match

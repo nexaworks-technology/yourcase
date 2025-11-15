@@ -4,8 +4,8 @@ import { Button } from '../components/ui/Button'
 
 export default function Forbidden() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 py-12">
-      <div className="max-w-md animate-[fade-in_0.4s_ease-out] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 px-4 py-12">
+      <div className="max-w-md animate-[fade-in_0.4s_ease-out] rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-xl">
         <Alert
           variant="warning"
           title="403 - Access denied"

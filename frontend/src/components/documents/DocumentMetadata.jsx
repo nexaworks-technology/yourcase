@@ -56,15 +56,15 @@ export function DocumentMetadata({
 
   const renderField = (label, value) => (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="text-sm font-semibold text-slate-900">{value || '—'}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{value || '—'}</p>
     </div>
   )
 
   if (!editable || !isEditing) {
     return (
       <div className="space-y-4">
-        <Card className="rounded-2xl border border-slate-200 p-4">
+        <Card className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-3">
               {renderField('Original filename', metadata.originalName)}
@@ -82,27 +82,27 @@ export function DocumentMetadata({
           </div>
         </Card>
 
-        <Card className="rounded-2xl border border-slate-200 p-4">
-          <h4 className="text-sm font-semibold text-slate-900">Matter details</h4>
-          <dl className="mt-3 space-y-2 text-sm text-slate-600">
+        <Card className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Matter details</h4>
+          <dl className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
             <div className="flex justify-between">
-              <dt className="text-slate-500">Matter</dt>
+              <dt className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Matter</dt>
               <dd className="text-blue-600 hover:text-blue-700">{metadata.matter?.name || 'Unassigned'}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Matter ID</dt>
+              <dt className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Matter ID</dt>
               <dd>{metadata.matter?.number || '—'}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Client</dt>
+              <dt className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Client</dt>
               <dd>{metadata.matter?.client || '—'}</dd>
             </div>
           </dl>
         </Card>
 
-        <Card className="rounded-2xl border border-slate-200 p-4">
+        <Card className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-slate-900">Tags</h4>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Tags</h4>
             {editable && (
               <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
                 Manage tags
@@ -117,19 +117,19 @@ export function DocumentMetadata({
                 </Badge>
               ))
             ) : (
-              <p className="text-xs text-slate-400">No tags yet</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">No tags yet</p>
             )}
           </div>
         </Card>
 
         {metadata.customFields && Object.keys(metadata.customFields).length > 0 && (
-          <Card className="rounded-2xl border border-slate-200 p-4">
-            <h4 className="text-sm font-semibold text-slate-900">Custom Fields</h4>
-            <dl className="mt-3 space-y-2 text-sm text-slate-600">
+          <Card className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Custom Fields</h4>
+            <dl className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
               {Object.entries(metadata.customFields).map(([key, value]) => (
                 <div key={key} className="flex justify-between">
-                  <dt className="text-slate-500">{key}</dt>
-                  <dd className="text-slate-900">{value || '—'}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400 dark:text-slate-500">{key}</dt>
+                  <dd className="text-slate-900 dark:text-slate-100">{value || '—'}</dd>
                 </div>
               ))}
             </dl>
@@ -141,7 +141,7 @@ export function DocumentMetadata({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Card className="space-y-4 rounded-2xl border border-slate-200 p-4">
+      <Card className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
         <Input
           label="Document name"
           value={formData.name}
@@ -171,15 +171,15 @@ export function DocumentMetadata({
         />
       </Card>
 
-      <Card className="space-y-3 rounded-2xl border border-slate-200 p-4">
-        <h4 className="text-sm font-semibold text-slate-900">Tags</h4>
+      <Card className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+        <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Tags</h4>
           <div className="flex flex-wrap gap-2">
             {(formData.tags || []).map((tag) => (
               <Badge key={tag} variant="secondary" size="sm" className="flex items-center gap-2">
                 {tag}
                 <button
                   type="button"
-                className="text-xs text-slate-500 hover:text-slate-700"
+                className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300"
                 onClick={() => handleTagRemove(tag)}
               >
                 ×

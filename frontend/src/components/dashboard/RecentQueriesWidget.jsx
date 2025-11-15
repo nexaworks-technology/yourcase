@@ -19,9 +19,9 @@ export function RecentQueriesWidget({ onSelect }) {
   const { data, isLoading } = useQuery({ queryKey: ['recent-queries'], queryFn: fetchRecentQueries })
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-800">Recent AI queries</h2>
+        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Recent AI queries</h2>
         <Badge variant="info" size="sm" dot>
           Live sync
         </Badge>
@@ -42,10 +42,10 @@ export function RecentQueriesWidget({ onSelect }) {
               onClick={() => onSelect?.(query)}
             >
               <div>
-                <p className="text-sm font-medium text-slate-800 group-hover:text-blue-600">
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-blue-600">
                   {query.prompt.length > 80 ? `${query.prompt.slice(0, 80)}…` : query.prompt}
                 </p>
-                <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                <div className="mt-2 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                   <Badge variant="primary" size="sm">{query.type}</Badge>
                   <span>{formatDistanceToNow(new Date(query.createdAt), { addSuffix: true })}</span>
                 </div>

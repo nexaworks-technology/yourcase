@@ -14,7 +14,7 @@ const EVENT_ICONS = {
   hearing: { icon: CalendarDays, tone: 'bg-amber-100 text-amber-600' },
   team: { icon: UserPlus, tone: 'bg-emerald-100 text-emerald-600' },
   milestone: { icon: FileText, tone: 'bg-purple-100 text-purple-600' },
-  note: { icon: FileText, tone: 'bg-slate-100 text-slate-600' },
+  note: { icon: FileText, tone: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' },
 }
 
 export function MatterTimeline({ events = [], onAddEvent, onExport, onFilter }) {
@@ -31,11 +31,11 @@ export function MatterTimeline({ events = [], onAddEvent, onExport, onFilter }) 
     <Card variant="bordered" padding="md" className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Matter timeline</h3>
-          <p className="text-sm text-slate-500">Track every update, hearing, and milestone across the matter lifecycle.</p>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Matter timeline</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Track every update, hearing, and milestone across the matter lifecycle.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600">
+          <div className="flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-700 px-3 py-1 text-xs text-slate-600 dark:text-slate-300">
             <Filter className="h-3.5 w-3.5" />
             <select
               value={filterType}
@@ -67,7 +67,7 @@ export function MatterTimeline({ events = [], onAddEvent, onExport, onFilter }) 
         <div className="absolute left-6 top-0 h-full w-1 rounded-full bg-gradient-to-b from-blue-100 via-slate-100 to-transparent" />
         <div className="space-y-4">
           {sortedEvents.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+            <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
               No timeline events yet. Log hearings, document uploads, and status changes to keep the team aligned.
             </div>
           ) : (
@@ -75,14 +75,14 @@ export function MatterTimeline({ events = [], onAddEvent, onExport, onFilter }) 
               const config = EVENT_ICONS[event.type] || EVENT_ICONS.note
               const Icon = config.icon
               return (
-                <div key={event.id} className="relative ml-12 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div key={event.id} className="relative ml-12 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
                   <span className={`absolute -left-12 flex h-10 w-10 items-center justify-center rounded-full border border-white shadow-sm ${config.tone}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">{event.title}</h4>
-                      <p className="text-xs text-slate-500">
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{event.title}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         {format(new Date(event.date), 'PPP p')} · {event.user || 'System'}
                       </p>
                     </div>
@@ -90,17 +90,17 @@ export function MatterTimeline({ events = [], onAddEvent, onExport, onFilter }) 
                       {event.type}
                     </Badge>
                   </div>
-                  {event.description && <p className="mt-3 text-sm text-slate-600">{event.description}</p>}
+                  {event.description && <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{event.description}</p>}
 
                   {event.attachments?.length > 0 && (
                     <div className="mt-3 space-y-2">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Attachments</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Attachments</p>
                       <div className="flex flex-wrap gap-2">
                         {event.attachments.map((attachment) => (
                           <a
                             key={attachment.id}
                             href={attachment.url}
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50"
+                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50"
                           >
                             <FileText className="h-3.5 w-3.5" />
                             {attachment.name}

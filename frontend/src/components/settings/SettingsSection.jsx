@@ -4,10 +4,10 @@ import { cn } from '../../utils/cn'
 
 export function SettingsSection({ id, title, description, children, onSave, saving, className }) {
   return (
-    <section id={id} className={cn('space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm', className)}>
+    <section id={id} className={cn('space-y-6 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900', className)}>
       <header className="space-y-1">
-        <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-        {description && <p className="text-sm text-slate-500">{description}</p>}
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 dark:text-slate-100">{title}</h2>
+        {description && <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">{description}</p>}
       </header>
       <div className="space-y-4">{children}</div>
       {onSave && (

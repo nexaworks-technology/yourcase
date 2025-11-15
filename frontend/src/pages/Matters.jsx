@@ -255,12 +255,12 @@ export default function Matters() {
   ]
 
   const emptyState = (
-    <div className="rounded-3xl border border-dashed border-slate-300 bg-gradient-to-br from-slate-50 via-white to-slate-100 p-12 text-center shadow-inner">
+    <div className="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-gradient-to-br from-slate-50 via-white to-slate-100 p-12 text-center shadow-inner">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
         <LayoutGrid className="h-7 w-7" />
       </div>
-      <h3 className="mt-6 text-xl font-semibold text-slate-900">No matters yet</h3>
-      <p className="mt-2 text-sm text-slate-500">Create your first client matter to begin managing case documents, hearings, and AI assistance in one workspace.</p>
+      <h3 className="mt-6 text-xl font-semibold text-slate-900 dark:text-slate-100">No matters yet</h3>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Create your first client matter to begin managing case documents, hearings, and AI assistance in one workspace.</p>
       <div className="mt-6 flex justify-center">
         <Button variant="primary" size="lg" onClick={() => setShowCreateModal(true)}>
           Create first matter
@@ -275,7 +275,7 @@ export default function Matters() {
         title="Client Matters"
         description="Track every client engagement, stay ahead of deadlines, and unlock AI insights for legal workstreams."
         breadcrumbs={
-          <div className="flex items-center gap-1 text-xs text-slate-500">
+          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <ArrowLeft className="h-3 w-3" />
             <span>Dashboard</span>
             <ChevronRight className="h-3 w-3" />
@@ -285,13 +285,13 @@ export default function Matters() {
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <form onSubmit={handleSearchSubmit} className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search matters..."
-                className="w-72 rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="w-72 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-10 pr-3 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
               />
             </form>
             <Button variant="primary" size="lg" onClick={() => setShowCreateModal(true)}>
@@ -323,16 +323,16 @@ export default function Matters() {
         {quickStats.map((stat) => (
           <div
             key={stat.label}
-            className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm"
           >
             <div className={cn('inline-flex h-12 w-12 items-center justify-center rounded-2xl', stat.tone)}>
               <stat.icon className="h-5 w-5" />
             </div>
-            <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">{stat.label}</p>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{stat.label}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-900">{stat.value}</span>
+              <span className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{stat.value}</span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">{stat.description}</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{stat.description}</p>
           </div>
         ))}
       </div>
@@ -351,8 +351,8 @@ export default function Matters() {
       />
 
       {selectedArray.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
-          <div className="flex items-center gap-2 text-slate-600">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm shadow-sm">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
             <Badge variant="primary" size="sm">{selectedArray.length} selected</Badge>
             <span>Bulk actions</span>
           </div>
@@ -360,7 +360,7 @@ export default function Matters() {
             <select
               value={bulkStatus}
               onChange={(event) => setBulkStatus(event.target.value)}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
             >
               <option value="active">Mark as Active</option>
               <option value="closed">Mark as Closed</option>
@@ -379,7 +379,7 @@ export default function Matters() {
             <Button variant="ghost" size="sm" icon={FileSpreadsheet} onClick={handleExportCsv}>
               Export CSV
             </Button>
-            <button type="button" onClick={clearSelection} className="text-xs text-slate-400 hover:text-slate-600">
+            <button type="button" onClick={clearSelection} className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
               Clear
             </button>
           </div>
@@ -404,14 +404,14 @@ export default function Matters() {
             ))}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
             <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <thead className="bg-slate-50 dark:bg-slate-900 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <tr>
                   <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-400"
+                      className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
                       checked={selectedArray.length === matters.length && matters.length > 0}
                       onChange={(event) => (event.target.checked ? setSelected(matters.map((matter) => matter.id || matter._id)) : clearSelection())}
                     />
@@ -428,21 +428,21 @@ export default function Matters() {
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+              <tbody className="divide-y divide-slate-100 text-sm text-slate-700 dark:text-slate-300">
                 {matters.map((matter) => {
                   const matterId = matter.id || matter._id
                   const assigned = matter.assignedLawyers || []
                   return (
-                    <tr key={matterId} className="hover:bg-slate-50">
+                    <tr key={matterId} className="hover:bg-slate-50 dark:bg-slate-900">
                       <td className="px-4 py-3">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-400"
+                          className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
                           checked={selectedIds.has(matterId)}
                           onChange={() => toggleSelection(matterId)}
                         />
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-slate-500">{matter.matterNumber}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{matter.matterNumber}</td>
                       <td className="px-4 py-3 font-medium">{matter.clientName}</td>
                       <td className="px-4 py-3">{matter.title}</td>
                       <td className="px-4 py-3">
@@ -451,7 +451,7 @@ export default function Matters() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge size="sm" className="capitalize bg-slate-100 text-slate-600">
+                        <Badge size="sm" className="capitalize bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                           {matter.status}
                         </Badge>
                       </td>
@@ -462,15 +462,15 @@ export default function Matters() {
                             <img key={lawyer.id} src={lawyer.avatar} alt={lawyer.name} className="h-7 w-7 rounded-full border border-white object-cover" />
                           ))}
                           {assigned.length > 3 && (
-                            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white bg-slate-200 text-xs font-semibold text-slate-600">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white bg-slate-200 dark:bg-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300">
                               +{assigned.length - 3}
                             </span>
                           )}
-                          {assigned.length === 0 && <span className="text-xs text-slate-400">Unassigned</span>}
+                          {assigned.length === 0 && <span className="text-xs text-slate-400 dark:text-slate-500">Unassigned</span>}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-500">{matter.startDate ? new Date(matter.startDate).toLocaleDateString() : '—'}</td>
-                      <td className="px-4 py-3 text-center text-slate-500">{matter.documentsCount ?? 0}</td>
+                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400 dark:text-slate-500">{matter.startDate ? new Date(matter.startDate).toLocaleDateString() : '—'}</td>
+                      <td className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 dark:text-slate-500">{matter.documentsCount ?? 0}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm" onClick={() => setNotice({ type: 'info', message: 'Matter detail view coming soon.' })}>
@@ -490,13 +490,13 @@ export default function Matters() {
               </tbody>
             </table>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
               <div className="flex items-center gap-2">
                 <span>Rows per page</span>
                 <select
                   value={pagination.limit}
                   onChange={handleLimitChange}
-                  className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                 >
                   {[10, 12, 24, 36].map((option) => (
                     <option key={option} value={option}>

@@ -26,8 +26,8 @@ export function CourtDetailsCard({ details, hearings = [], onAddHearing }) {
     <Card variant="bordered" padding="md" className="space-y-4">
       <header className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Court details</h3>
-          <p className="text-sm text-slate-500">Stay ahead of hearings and filings for litigation matters.</p>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Court details</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Stay ahead of hearings and filings for litigation matters.</p>
         </div>
         <Button variant="ghost" size="sm" icon={Plus} onClick={onAddHearing}>
           Add hearing
@@ -36,31 +36,31 @@ export function CourtDetailsCard({ details, hearings = [], onAddHearing }) {
 
       <dl className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Court name</dt>
-          <dd className="flex items-center gap-2 text-sm text-slate-700">
-            <MapPin className="h-4 w-4 text-slate-400" />
+          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Court name</dt>
+          <dd className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <MapPin className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             {details?.courtName || 'Not specified'}
           </dd>
         </div>
         <div className="space-y-1">
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Case number</dt>
-          <dd className="flex items-center gap-2 text-sm font-medium text-slate-700">
-            <Gavel className="h-4 w-4 text-slate-400" />
+          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Case number</dt>
+          <dd className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+            <Gavel className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             {details?.caseNumber || 'Pending'}
           </dd>
         </div>
         <div className="space-y-1">
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Presiding judge</dt>
-          <dd className="flex items-center gap-2 text-sm text-slate-700">
-            <Gavel className="h-4 w-4 text-slate-400" />
+          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Presiding judge</dt>
+          <dd className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <Gavel className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             {details?.judgeName || 'Unassigned'}
           </dd>
         </div>
         <div className="space-y-1">
-          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Next hearing</dt>
-          <dd className="flex flex-col gap-2 text-sm text-slate-700">
+          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Next hearing</dt>
+          <dd className="flex flex-col gap-2 text-sm text-slate-700 dark:text-slate-300">
             <span className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-slate-400" />
+              <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               {details?.nextHearing ? new Date(details.nextHearing).toLocaleString() : 'Not scheduled'}
             </span>
             {countdown && (
@@ -75,22 +75,22 @@ export function CourtDetailsCard({ details, hearings = [], onAddHearing }) {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Hearing history</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Hearing history</h4>
           <Button variant="ghost" size="sm" onClick={onAddHearing}>
             Manage hearings
           </Button>
         </div>
         {hearings.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+          <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
             No hearings recorded yet. Add the first hearing to stay on top of appearances.
           </div>
         ) : (
           <ul className="space-y-2">
             {hearings.map((hearing) => (
-              <li key={hearing.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 text-sm shadow-sm">
+              <li key={hearing.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm shadow-sm">
                 <div>
-                  <p className="font-medium text-slate-900">{hearing.title || 'Court appearance'}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{hearing.title || 'Court appearance'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                     {new Date(hearing.date).toLocaleString()} · {hearing.judge || 'Judge TBD'}
                   </p>
                 </div>

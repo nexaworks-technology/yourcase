@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   Home,
   Sparkles,
@@ -10,10 +10,10 @@ import {
   LayoutDashboard,
   BarChart3,
   Settings,
-  ChevronLeft,
+  User,
+  Menu,
+  X,
 } from 'lucide-react'
-import { cn } from '../../utils/cn'
-import { Tooltip } from '../ui/Tooltip'
 
 const navItems = [
   { label: 'Dashboard', to: '/', icon: Home },
@@ -26,67 +26,134 @@ const navItems = [
   { label: 'Settings', to: '/settings', icon: Settings },
 ]
 
-export function Sidebar({ isOpen = true, onToggle }) {
-  const [collapsed, setCollapsed] = useState(!isOpen)
+export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
+  const [expanded, setExpanded] = useState(isOpen)
+  const [hovered, setHovered] = useState(false)
+  const location = useLocation()
 
-  const handleToggle = () => {
-    setCollapsed((prev) => !prev)
-    onToggle?.(!collapsed)
+  useEffect(() => {
+    setExpanded(isOpen)
+  }, [isOpen])
+
+  const handleCollapse = () => {
+    setExpanded(false)
+    onToggle?.(false)
   }
+
+  const handleExpand = () => {
+    setExpanded(true)
+    onToggle?.(true)
+  }
+
+  const isActive = (path) => location.pathname === path
+  const showMenuIcon = !expanded && hovered
+  const collapsed = !expanded
 
   return (
     <aside
-      className={cn(
-        'fixed inset-y-0 left-0 z-[80] hidden flex-col border-r border-slate-200/70 bg-gradient-to-br from-white via-white to-slate-50 shadow-sm transition-all duration-300 lg:flex',
-        collapsed ? 'w-20' : 'w-72',
-      )}
+      className={`${expanded ? 'w-60' : 'w-20'} fixed inset-y-0 left-0 z-[120] hidden flex-col border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 shadow-sm transition-all duration-300 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 lg:flex`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex h-16 items-center justify-between px-4">
-        {!collapsed && (
-          <div>
-            <p className="text-sm font-semibold text-slate-800">YourCase HQ</p>
-            <p className="text-xs text-slate-500">Enterprise workspace</p>
+      <div className="px-4 pb-8 border-b border-gray-100 dark:border-gray-800 mb-5 dark:border-gray-800">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 flex-1">
+            {expanded ? (
+              <>
+                <div className="w-11 h-11 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold dark:bg-gray-100 dark:text-gray-900 dark:text-gray-100">
+                  Logo
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">YourCase HQ</span>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleExpand}
+                className="flex w-full items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 p-2 text-gray-600 dark:text-gray-300 transition hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+                aria-label="Expand sidebar"
+              >
+                {showMenuIcon ? (
+                  <Menu size={20} />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold dark:bg-gray-100 dark:text-gray-900 dark:text-gray-100">
+                    Logo
+                  </div>
+                )}
+              </button>
+            )}
           </div>
-        )}
-        <button
-          type="button"
-          onClick={handleToggle}
-          className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 transition hover:text-slate-700"
-          aria-label="Collapse sidebar"
-        >
-          <ChevronLeft className={cn('h-4 w-4 transition', collapsed && 'rotate-180')} />
-        </button>
-      </div>
-
-      <nav className="mt-4 flex-1 space-y-1 px-2">
-        {navItems.map((item) => (
-          <Tooltip key={item.to} content={item.label} position="right">
-            <NavLink
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-500 transition hover:bg-blue-50 hover:text-blue-600',
-                  isActive && 'bg-blue-50 text-blue-600 border border-blue-100 shadow-sm',
-                )
-              }
+          {expanded && (
+            <button
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 transition-colors p-1 flex items-center justify-center dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-200"
+              onClick={handleCollapse}
+              aria-label="Collapse sidebar"
+              type="button"
             >
-              <item.icon className="h-5 w-5" aria-hidden="true" />
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </NavLink>
-          </Tooltip>
-        ))}
-      </nav>
-
-      <div className={cn('border-t border-slate-100/80 px-4 py-5', collapsed && 'px-1.5')}>
-        <div className="flex items-center gap-3 rounded-2xl bg-slate-100/60 px-3 py-2">
-          <img src="https://i.pravatar.cc/60" alt="User avatar" className="h-10 w-10 rounded-full" />
-          {!collapsed && (
-            <div>
-              <p className="text-sm font-semibold text-slate-800">Alex Garner</p>
-              <p className="text-xs text-slate-500">Enterprise plan</p>
-            </div>
+              <X size={20} />
+            </button>
           )}
         </div>
+      </div>
+
+      <nav className="flex flex-col gap-2 px-3 flex-1">
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const active = isActive(item.to)
+
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors duration-200 ${
+                active
+                  ? expanded
+                    ? 'text-blue-600 bg-blue-50 border border-blue-200 shadow-sm dark:text-blue-400 dark:bg-blue-400/10 dark:border-blue-500/20'
+                    : 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-400/10'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-100 dark:hover:bg-gray-800'
+              } ${collapsed ? 'justify-center' : 'justify-start'}`}
+              title={collapsed ? item.label : ''}
+            >
+              <span className="flex h-6 w-6 items-center justify-center text-base text-inherit">
+                <Icon size={20} className="shrink-0" />
+              </span>
+              <span
+                className={`ml-3 truncate text-gray-900 dark:text-gray-100 transition-all duration-200 group-hover:text-inherit dark:text-gray-100 ${
+                  collapsed ? 'w-0 opacity-0 scale-95' : 'w-auto opacity-100'
+                }`}
+              >
+                {item.label}
+              </span>
+            </Link>
+          )
+        })}
+      </nav>
+
+      <div className={`flex flex-col gap-2 px-3 pt-5 border-t border-gray-100 dark:border-gray-800 dark:border-gray-800 ${expanded ? '' : 'items-center'}`}>
+        <button
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-100 dark:hover:bg-gray-800 ${
+            expanded ? 'justify-start w-full' : 'justify-center'
+          }`}
+          title="Settings"
+          aria-label="Settings"
+          type="button"
+          onClick={onOpenSettings}
+        >
+          <Settings size={24} className="shrink-0" />
+          {expanded && <span>Settings</span>}
+        </button>
+        <button
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-100 dark:hover:bg-gray-800 ${
+            expanded ? 'justify-start w-full' : 'justify-center'
+          }`}
+          title="Profile"
+          aria-label="Profile"
+          type="button"
+        >
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-white shrink-0">
+            <User size={14} />
+          </div>
+          {expanded && <span>Profile</span>}
+        </button>
       </div>
     </aside>
   )
@@ -95,6 +162,17 @@ export function Sidebar({ isOpen = true, onToggle }) {
 Sidebar.propTypes = {
   isOpen: PropTypes.bool,
   onToggle: PropTypes.func,
+  onOpenSettings: PropTypes.func,
   isMobile: PropTypes.bool,
   onClose: PropTypes.func,
 }
+
+Sidebar.defaultProps = {
+  isOpen: true,
+  onToggle: undefined,
+  onOpenSettings: undefined,
+  isMobile: undefined,
+  onClose: undefined,
+}
+
+export default Sidebar

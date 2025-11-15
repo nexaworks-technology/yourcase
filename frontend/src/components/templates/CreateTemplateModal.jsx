@@ -138,11 +138,11 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
           <Input label="Template name" value={template.name} onChange={(event) => handleChange('name', event.target.value)} required />
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Category</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Category</label>
               <select
                 value={template.category}
                 onChange={(event) => handleChange('category', event.target.value)}
-                className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                className="mt-2 h-12 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -152,11 +152,11 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Jurisdiction</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Jurisdiction</label>
               <select
                 value={template.jurisdiction}
                 onChange={(event) => handleChange('jurisdiction', event.target.value)}
-                className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                className="mt-2 h-12 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
               >
                 {jurisdictions.map((jurisdiction) => (
                   <option key={jurisdiction} value={jurisdiction}>
@@ -166,11 +166,11 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Language</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Language</label>
               <select
                 value={template.language}
                 onChange={(event) => handleChange('language', event.target.value)}
-                className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                className="mt-2 h-12 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
               >
                 {languages.map((language) => (
                   <option key={language} value={language}>
@@ -187,7 +187,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
             rows={3}
           />
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tags</label>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Tags</label>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {template.tags.map((tag) => (
                 <Badge key={tag} variant="secondary" size="sm" removable onRemove={() => removeTag(tag)}>
@@ -221,9 +221,9 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
       render: (
         <div className="space-y-4">
           {template.variables.map((variable, index) => (
-            <div key={variable.name + index} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={variable.name + index} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h4 className="text-sm font-semibold text-slate-900">{variable.label || variable.name}</h4>
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{variable.label || variable.name}</h4>
                 <Button variant="ghost" size="sm" icon={Trash2} onClick={() => removeVariable(index)}>
                   Remove
                 </Button>
@@ -232,11 +232,11 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
                 <Input label="Variable name" value={variable.name} onChange={(event) => handleVariableChange(index, 'name', event.target.value)} required />
                 <Input label="Label" value={variable.label} onChange={(event) => handleVariableChange(index, 'label', event.target.value)} />
                 <div>
-                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Type</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Type</label>
                   <select
                     value={variable.type}
                     onChange={(event) => handleVariableChange(index, 'type', event.target.value)}
-                    className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                    className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                   >
                     {variableTypes.map((type) => (
                       <option key={type} value={type}>
@@ -259,7 +259,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
                   rows={2}
                 />
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm text-slate-600">
+                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                     <input
                       type="checkbox"
                       checked={variable.required}
@@ -291,7 +291,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Font family</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Font family</label>
               <select
                 value={template.settings.fontFamily}
                 onChange={(event) =>
@@ -300,7 +300,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
                     settings: { ...prev.settings, fontFamily: event.target.value },
                   }))
                 }
-                className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
               >
                 {['Inter', 'Roboto', 'Times New Roman', 'Georgia', 'Calibri'].map((font) => (
                   <option key={font} value={font}>
@@ -364,7 +364,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
             ))}
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Applicable laws</label>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Applicable laws</label>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {template.settings.laws.map((law) => (
                 <Badge key={law} variant="secondary" size="sm" removable onRemove={() => removeLaw(law)}>
@@ -380,7 +380,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Visibility</label>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Visibility</label>
             <div className="mt-2 flex flex-wrap gap-2">
               {visibilityOptions.map((option) => (
                 <button
@@ -390,7 +390,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
                     'rounded-full border px-3 py-1 text-xs transition',
                     template.settings.visibility === option
                       ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-100',
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800',
                   )}
                   onClick={() =>
                     setTemplate((prev) => ({
@@ -423,7 +423,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, initialTemplate }
                 key={item.title}
                 className={cn(
                   'flex items-center gap-2 rounded-full px-3 py-1 text-xs',
-                  step === index + 1 ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500',
+                  step === index + 1 ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500',
                 )}
               >
                 {index + 1}. {item.title}

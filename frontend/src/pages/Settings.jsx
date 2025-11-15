@@ -15,6 +15,7 @@ import { Switch } from '../components/ui/Switch'
 import { userService } from '../services/userService'
 import { NotificationToggles } from '../components/settings/NotificationToggles'
 import { ThemeSelector } from '../components/settings/ThemeSelector'
+import { useTheme } from '../context/ThemeContext'
 import { useSettingsStore } from '../store/settingsStore'
 
 const initialProfile = {
@@ -67,7 +68,30 @@ export default function Settings() {
   const [activeSection, setActiveSection] = useState('profile')
   const [profile, setProfile] = useState(initialProfile)
   const [notice, setNotice] = useState(null)
-  const { notifications, preferences, theme, accentColor, updateNotifications, updatePreferences, setTheme, setAccentColor } = useSettingsStore()
+  const { notifications, preferences, theme: storedTheme, accentColor: storedAccent, updateNotifications, updatePreferences, setTheme: setStoredTheme, setAccentColor: setStoredAccent } = useSettingsStore()
+  const { theme, accentColor, setTheme, setAccentColor } = useTheme()
+
+  const handleThemeChange = (value) => {
+    setStoredTheme(value)
+    setTheme(value)
+  }
+
+  const handleAccentChange = (value) => {
+    setStoredAccent(value)
+    setAccentColor(value)
+  }
+
+  useEffect(() => {
+    if (storedTheme && storedTheme !== theme) {
+      setTheme(storedTheme)
+    }
+  }, [storedTheme, theme, setTheme])
+
+  useEffect(() => {
+    if (storedAccent && storedAccent !== accentColor) {
+      setAccentColor(storedAccent)
+    }
+  }, [storedAccent, accentColor, setAccentColor])
 
   const profileMutation = useMutation({
     mutationFn: userService.updateProfile,
@@ -96,14 +120,14 @@ export default function Settings() {
         onSave={() => profileMutation.mutate(profile)}
         saving={profileMutation.isLoading}
       >
-        <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
           <img src={profile.avatar} alt={profile.firstName} className="h-20 w-20 rounded-full object-cover" />
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {profile.firstName} {profile.lastName}
             </h3>
-            <p className="text-sm text-slate-500">{profile.email}</p>
-            <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{profile.email}</p>
+            <div className="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <Badge variant="primary" size="sm">
                 Senior Associate
               </Badge>
@@ -169,9 +193,9 @@ export default function Settings() {
         description="Control your account credentials, subscription, and identification."
       >
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">Account information</h4>
-            <dl className="mt-3 space-y-2 text-sm text-slate-600">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Account information</h4>
+            <dl className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
               <div className="flex justify-between"><dt>User ID</dt><dd>#YC-02948</dd></div>
               <div className="flex justify-between"><dt>Email</dt><dd>{profile.email}</dd></div>
               <div className="flex justify-between"><dt>Account type</dt><dd>Professional</dd></div>
@@ -224,14 +248,14 @@ export default function Settings() {
           ]}
           onChange={(id, value) => updateNotifications({ [id]: value })}
         />
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-          <span className="text-xs uppercase tracking-wide text-slate-400">Frequency</span>
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
+          <span className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">Frequency</span>
           {['instant', 'daily', 'weekly'].map((option) => (
             <button
               key={option}
               type="button"
               className={`rounded-full border px-3 py-1 text-xs transition ${
-                notifications.frequency === option ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                notifications.frequency === option ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'
               }`}
               onClick={() => updateNotifications({ frequency: option })}
             >
@@ -248,15 +272,15 @@ export default function Settings() {
         onSave={() => userService.updatePreferences(preferences).then(() => setNotice({ type: 'success', message: 'Preferences updated.' }))}
       >
         <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">AI preferences</h4>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">AI preferences</h4>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Default model</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Default model</label>
                 <select
                   value={preferences.aiModel}
                   onChange={(event) => updatePreferences({ aiModel: event.target.value })}
-                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option value="Gemini Pro">Gemini Pro</option>
                   <option value="Gemini Flash">Gemini Flash</option>
@@ -264,7 +288,7 @@ export default function Settings() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Temperature ({preferences.temperature})</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Temperature ({preferences.temperature})</label>
                 <input
                   type="range"
                   min="0"
@@ -276,7 +300,7 @@ export default function Settings() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Max tokens ({preferences.maxTokens})</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Max tokens ({preferences.maxTokens})</label>
                 <input
                   type="range"
                   min="512"
@@ -288,11 +312,11 @@ export default function Settings() {
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Default query type</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Default query type</label>
                 <select
                   value={preferences.defaultQueryType}
                   onChange={(event) => updatePreferences({ defaultQueryType: event.target.value })}
-                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option>Summary</option>
                   <option>Draft response</option>
@@ -303,20 +327,20 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">UI preferences</h4>
-            <ThemeSelector value={theme} onChange={setTheme} accentColor={accentColor} onAccentChange={setAccentColor} />
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">UI preferences</h4>
+            <ThemeSelector value={theme} onChange={handleThemeChange} accentColor={accentColor} onAccentChange={handleAccentChange} />
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+              <label className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
                 Compact mode
                 <Switch checked={preferences.compactMode} onCheckedChange={(value) => updatePreferences({ compactMode: value })} />
               </label>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Default view</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Default view</label>
                 <select
                   value={preferences.defaultView}
                   onChange={(event) => updatePreferences({ defaultView: event.target.value })}
-                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                 >
                   <option value="grid">Grid</option>
                   <option value="list">List</option>
@@ -325,8 +349,8 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">Regional settings</h4>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Regional settings</h4>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               <Input
                 label="Language"
@@ -351,8 +375,8 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">Editor preferences</h4>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Editor preferences</h4>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               <Input
                 label="Font size"
@@ -367,7 +391,7 @@ export default function Settings() {
                 value={preferences.editorLineSpacing}
                 onChange={(event) => updatePreferences({ editorLineSpacing: Number(event.target.value) })}
               />
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm md:col-span-2">
+              <label className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm md:col-span-2">
                 Auto-save drafts
                 <Switch checked={preferences.autoSave} onCheckedChange={(value) => updatePreferences({ autoSave: value })} />
               </label>
@@ -378,18 +402,18 @@ export default function Settings() {
 
       <SettingsSection id="billing" title="Billing" description="Review plan details, usage metrics, and invoices.">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <header className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-semibold text-slate-900">Professional plan</h4>
-                <p className="text-xs text-slate-500">Billed annually • Next billing 12 Jan 2026</p>
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Professional plan</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Billed annually • Next billing 12 Jan 2026</p>
               </div>
               <Button variant="secondary" size="sm">
                 Upgrade
               </Button>
             </header>
-            <p className="text-2xl font-semibold text-slate-900">₹8,499<span className="text-sm text-slate-500">/month</span></p>
-            <div className="space-y-3 text-sm text-slate-600">
+            <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">₹8,499<span className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">/month</span></p>
+            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <div>
                 <div className="flex items-center justify-between text-xs">
                   <span>API calls</span>
@@ -404,15 +428,15 @@ export default function Settings() {
                 </div>
                 <Progress value={62} className="mt-1" />
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <span>Team members</span>
                 <span>18 / 25</span>
               </div>
             </div>
           </div>
-          <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-sm font-semibold text-slate-900">Payment method</h4>
-            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <div className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Payment method</h4>
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
               <span>Visa ending •••• 4242</span>
               <span>Expires 03/27</span>
             </div>
@@ -421,11 +445,11 @@ export default function Settings() {
             </Button>
           </div>
         </div>
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900">Billing history</h4>
-          <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Billing history</h4>
+          <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+            <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-900 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <tr>
                   <th className="px-4 py-3 text-left">Date</th>
                   <th className="px-4 py-3 text-left">Amount</th>
@@ -457,11 +481,11 @@ export default function Settings() {
       </SettingsSection>
 
       <SettingsSection id="team" title="Team" description="Manage workspace members, roles, and invitations.">
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h4 className="text-sm font-semibold text-slate-900">Team members</h4>
-              <p className="text-xs text-slate-500">Active colleagues who can access this workspace.</p>
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Team members</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Active colleagues who can access this workspace.</p>
             </div>
             <Button variant="primary" size="sm" onClick={() => setNotice({ type: 'info', message: 'Invitations coming soon.' })}>
               Invite member
@@ -469,16 +493,16 @@ export default function Settings() {
           </div>
           <div className="mt-4 space-y-2">
             {teamMembers.map((member) => (
-              <div key={member.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              <div key={member.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                 <img src={member.avatar} alt={member.name} className="h-10 w-10 rounded-full object-cover" />
                 <div>
-                  <p className="font-semibold text-slate-900">{member.name}</p>
-                  <p className="text-xs text-slate-500">{member.email}</p>
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">{member.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{member.email}</p>
                 </div>
                 <Badge variant="secondary" size="sm">
                   {member.role}
                 </Badge>
-                <span className="text-xs text-slate-400">Last active {member.lastActive}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">Last active {member.lastActive}</span>
                 <div className="ml-auto flex items-center gap-2">
                   <Button variant="ghost" size="sm">
                     Edit role
@@ -491,30 +515,30 @@ export default function Settings() {
             ))}
           </div>
         </div>
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900">Pending invitations</h4>
-          <div className="mt-3 space-y-2 text-sm text-slate-600">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Pending invitations</h4>
+          <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
             {pendingInvites.map((invite) => (
-              <div key={invite.email} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <div key={invite.email} className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3">
                 <div>
-                  <p className="font-semibold text-slate-900">{invite.email}</p>
-                  <p className="text-xs text-slate-500">Role: {invite.role}</p>
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">{invite.email}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Role: {invite.role}</p>
                 </div>
-                <span className="text-xs text-slate-400">Invited {invite.invitedAt}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">Invited {invite.invitedAt}</span>
               </div>
             ))}
-            {pendingInvites.length === 0 && <p className="text-xs text-slate-500">No pending invitations.</p>}
+            {pendingInvites.length === 0 && <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No pending invitations.</p>}
           </div>
         </div>
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900">Team settings</h4>
-          <label className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Team settings</h4>
+          <label className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
             Allow members to invite others
             <Switch checked onCheckedChange={() => setNotice({ type: 'info', message: 'Team settings coming soon.' })} />
           </label>
           <div className="mt-3">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Default role</label>
-            <select className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none">
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Default role</label>
+            <select className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none">
               <option>Associate</option>
               <option>Paralegal</option>
               <option>Viewer</option>
@@ -526,17 +550,17 @@ export default function Settings() {
       <SettingsSection id="integrations" title="Integrations" description="Connect YourCase with third-party platforms and webhooks.">
         <div className="grid gap-4 md:grid-cols-2">
           {integrations.map((integration) => (
-            <div key={integration.id} className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div key={integration.id} className="space-y-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-900">{integration.name}</h4>
-                  <p className="text-xs text-slate-500">{integration.description}</p>
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{integration.name}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{integration.description}</p>
                 </div>
                 <Badge variant={integration.status === 'Connected' ? 'success' : 'secondary'} size="sm">
                   {integration.status}
                 </Badge>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <span>Last synced {integration.lastSynced || '—'}</span>
               </div>
               <div className="flex gap-2">
@@ -552,8 +576,8 @@ export default function Settings() {
             </div>
           ))}
         </div>
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900">Webhooks</h4>
+        <div className="space-y-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Webhooks</h4>
           <Input label="Webhook URL" placeholder="https://example.com/webhook" />
           <Textarea label="Events" placeholder="document.created, matter.updated" rows={2} />
           <div className="flex flex-wrap items-center gap-2">
@@ -566,21 +590,21 @@ export default function Settings() {
       </SettingsSection>
 
       <SettingsSection id="api" title="API Keys" description="Generate and manage API credentials for automations.">
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="space-y-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-slate-900">Keys</h4>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Keys</h4>
             <Button variant="primary" size="sm">
               Generate key
             </Button>
           </div>
-          <div className="space-y-2 text-sm text-slate-600">
+          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
             {apiKeys.map((key) => (
-              <div key={key.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <div key={key.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3">
                 <div>
-                  <p className="font-semibold text-slate-900">{key.name}</p>
-                  <p className="text-xs text-slate-500">Created {key.createdAt} · Last used {key.lastUsed}</p>
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">{key.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Created {key.createdAt} · Last used {key.lastUsed}</p>
                 </div>
-                <span className="font-mono text-xs text-slate-500">{key.masked}</span>
+                <span className="font-mono text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{key.masked}</span>
                 <div className="ml-auto flex items-center gap-2">
                   <Button variant="ghost" size="sm">
                     Copy
@@ -592,25 +616,25 @@ export default function Settings() {
               </div>
             ))}
           </div>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Need help? Read the <a href="#" className="text-blue-600">API documentation</a>.
           </div>
         </div>
       </SettingsSection>
 
       <SettingsSection id="about" title="About" description="Release notes, server status, and support resources.">
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="grid gap-3 md:grid-cols-3 text-sm text-slate-600">
+        <div className="space-y-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="grid gap-3 md:grid-cols-3 text-sm text-slate-600 dark:text-slate-300">
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">Version</p>
-              <p className="text-slate-900">v1.8.2</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">Version</p>
+              <p className="text-slate-900 dark:text-slate-100">v1.8.2</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">Last updated</p>
-              <p className="text-slate-900">09 Jan 2025</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">Last updated</p>
+              <p className="text-slate-900 dark:text-slate-100">09 Jan 2025</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">Server status</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">Server status</p>
               <Badge variant="success" size="sm">
                 All systems operational
               </Badge>
@@ -635,7 +659,7 @@ export default function Settings() {
       <PageHeader
         title="Workspace settings"
         description="Fine-tune your YourCase experience, security, and team controls."
-        breadcrumbs={<span className="text-xs text-slate-500">Dashboard · Settings</span>}
+        breadcrumbs={<span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Dashboard · Settings</span>}
       />
 
       {notice && (
@@ -650,7 +674,7 @@ export default function Settings() {
 
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         {!isMobile && (
-          <aside className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <aside className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <SettingsSidebar active={activeSection} onChange={setActiveSection} />
           </aside>
         )}
@@ -660,4 +684,3 @@ export default function Settings() {
   )
 }
 
-export { Settings }

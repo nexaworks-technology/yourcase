@@ -49,9 +49,9 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
   }
 
   return (
-    <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
           <Filter className="h-4 w-4" />
           Filters
           {activeCount > 0 && (
@@ -61,18 +61,18 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
           )}
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-full border border-slate-200 p-1 text-xs">
+          <div className="flex rounded-full border border-slate-200 dark:border-slate-700 p-1 text-xs">
             <button
               type="button"
               onClick={() => onViewToggle('card')}
-              className={cn('rounded-full px-3 py-1 transition', view === 'card' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100')}
+              className={cn('rounded-full px-3 py-1 transition', view === 'card' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
             >
               Cards
             </button>
             <button
               type="button"
               onClick={() => onViewToggle('table')}
-              className={cn('rounded-full px-3 py-1 transition', view === 'table' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100')}
+              className={cn('rounded-full px-3 py-1 transition', view === 'table' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
             >
               Table
             </button>
@@ -85,13 +85,13 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Status</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {statusOptions.map((option) => (
               <button
                 type="button"
                 key={option.value}
-                className={cn('rounded-full border px-3 py-1 text-xs font-medium transition', filters.status === option.value ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                className={cn('rounded-full border px-3 py-1 text-xs font-medium transition', filters.status === option.value ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                 onClick={() => onChange({ status: option.value })}
               >
                 {option.label}
@@ -101,13 +101,13 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Matter type</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Matter type</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {typeOptions.map((option) => (
               <button
                 type="button"
                 key={option}
-                className={cn('rounded-full border px-3 py-1 text-xs transition', filters.types?.includes(option) ? 'border-indigo-200 bg-indigo-50 text-indigo-600 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                className={cn('rounded-full border px-3 py-1 text-xs transition', filters.types?.includes(option) ? 'border-indigo-200 bg-indigo-50 text-indigo-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                 onClick={() => toggleOption('types', option)}
               >
                 {option}
@@ -117,13 +117,13 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Priority</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Priority</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {priorityOptions.map((option) => (
               <button
                 type="button"
                 key={option}
-                className={cn('rounded-full border px-3 py-1 text-xs transition', filters.priorities?.includes(option.toLowerCase()) ? 'border-rose-200 bg-rose-50 text-rose-600 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                className={cn('rounded-full border px-3 py-1 text-xs transition', filters.priorities?.includes(option.toLowerCase()) ? 'border-rose-200 bg-rose-50 text-rose-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                 onClick={() => toggleOption('priorities', option.toLowerCase())}
               >
                 {option}
@@ -133,7 +133,7 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Assigned lawyers</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Assigned lawyers</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {lawyers.map((lawyer) => (
               <button
@@ -141,7 +141,7 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
                 type="button"
                 className={cn('flex items-center gap-2 rounded-full border px-3 py-1 text-xs transition', filters.lawyers?.includes(lawyer.id)
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-600 shadow-sm'
-                  : 'border-slate-200 text-slate-600 hover:bg-slate-100')}
+                  : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800')}
                 onClick={() => toggleOption('lawyers', lawyer.id)}
               >
                 <img src={lawyer.avatar} alt={lawyer.name} className="h-5 w-5 rounded-full object-cover" />
@@ -152,7 +152,7 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Start date</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Start date</p>
           <Input
             type="date"
             value={filters.dateRange?.startDate || ''}
@@ -161,12 +161,12 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Sort by</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Sort by</p>
           <div className="mt-2 flex items-center gap-2">
             <select
               value={filters.sortBy}
               onChange={(event) => onChange({ sortBy: event.target.value })}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
             >
               <option value="createdAt">Created date</option>
               <option value="startDate">Start date</option>
@@ -175,7 +175,7 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
             </select>
             <button
               type="button"
-              className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-sm text-slate-600 transition hover:bg-slate-100"
+              className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 text-sm text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
               onClick={() => onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -186,14 +186,14 @@ export function MatterFilters({ filters, onChange, onReset, activeCount, lawyers
       </div>
 
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Active filters</span>
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Active filters</span>
           {activeFilters.map((chip) => (
-            <span key={chip.key} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+            <span key={chip.key} className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs text-slate-600 dark:text-slate-300">
               {chip.label}
               <button
                 type="button"
-                className="text-slate-400 transition hover:text-slate-700"
+                className="text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300"
                 onClick={() => {
                   if (chip.key === 'status') onChange({ status: 'all' })
                   if (chip.key.startsWith('type-')) toggleOption('types', chip.label)

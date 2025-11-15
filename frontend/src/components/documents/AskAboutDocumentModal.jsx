@@ -42,7 +42,7 @@ export function AskAboutDocumentModal({ isOpen, onClose, onSubmit, history = [] 
       title="Ask AI about this document"
       size="lg"
       footer={
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
           <p>Powered by YourCase legal reasoning models · Context aware</p>
         </div>
       }
@@ -52,8 +52,8 @@ export function AskAboutDocumentModal({ isOpen, onClose, onSubmit, history = [] 
           <div className="flex items-center gap-3">
             <Bot className="h-8 w-8 text-blue-600" />
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Ask contextual questions</h3>
-              <p className="text-xs text-slate-600">YourCase AI will scan the entire document and respond with citations to relevant passages.</p>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Ask contextual questions</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300">YourCase AI will scan the entire document and respond with citations to relevant passages.</p>
             </div>
           </div>
         </Card>
@@ -78,14 +78,14 @@ export function AskAboutDocumentModal({ isOpen, onClose, onSubmit, history = [] 
 
         {history.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-slate-900">Recent questions</h4>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Recent questions</h4>
             <div className="space-y-2">
               {history.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-3 text-sm">
-                  <p className="font-medium text-slate-900">{item.question}</p>
-                  <p className="mt-1 text-xs text-slate-500">Asked {new Date(item.createdAt).toLocaleString()}</p>
+                <div key={item.id} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm">
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{item.question}</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Asked {new Date(item.createdAt).toLocaleString()}</p>
                   {item.answer ? (
-                    <p className="mt-2 text-sm text-slate-600">{item.answer}</p>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.answer}</p>
                   ) : (
                     <div className="mt-2 flex items-center gap-2 text-xs text-blue-600">
                       <Loader2 className="h-4 w-4 animate-spin" />

@@ -50,27 +50,27 @@ function DropdownMenu({ anchorRef, isOpen, onClose, items, position, className, 
     <div
       ref={menuRef}
       className={cn(
-        'absolute z-[120] min-w-[200px] rounded-2xl border border-slate-100 bg-white p-2 shadow-xl transition-all duration-150',
+        'absolute z-[120] min-w-[200px] rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl transition-all duration-150',
         positionMap[position] || positionMap['bottom-left'],
         className,
       )}
     >
       {searchable && (
-        <div className="mb-2 flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-          <Search className="h-4 w-4 text-slate-400" aria-hidden="true" />
+        <div className="mb-2 flex items-center gap-2 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Search className="h-4 w-4 text-slate-400 dark:text-slate-500" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className="w-full border-none bg-transparent text-sm text-slate-800 outline-none"
+            className="w-full border-none bg-transparent text-sm text-slate-800 dark:text-slate-200 outline-none"
           />
         </div>
       )}
       <div className="max-h-72 overflow-y-auto">
         {filteredItems.map((item, index) => {
           if (item.divider) {
-            return <div key={`divider-${index}`} className="my-2 border-t border-slate-100" />
+            return <div key={`divider-${index}`} className="my-2 border-t border-slate-100 dark:border-slate-800" />
           }
 
           if (item.children) {
@@ -78,10 +78,10 @@ function DropdownMenu({ anchorRef, isOpen, onClose, items, position, className, 
               <div key={item.label} className="relative">
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-blue-50"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 transition hover:bg-blue-50"
                 >
                   <span>{item.label}</span>
-                  <ChevronRight className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                  <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500" aria-hidden="true" />
                 </button>
                 <DropdownMenu
                   anchorRef={{ current: menuRef.current }}
@@ -109,7 +109,7 @@ function DropdownMenu({ anchorRef, isOpen, onClose, items, position, className, 
                 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition',
                 item.disabled
                   ? 'cursor-not-allowed opacity-50'
-                  : 'text-slate-700 hover:bg-blue-50 focus:bg-blue-100',
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-50 focus:bg-blue-100',
               )}
             >
               {item.icon && <item.icon className="h-4 w-4" aria-hidden="true" />}

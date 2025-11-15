@@ -194,16 +194,16 @@ export default function Documents() {
       <PageHeader
         title="Document Vault"
         description="Centralized repository for every document across YourCase matters."
-        breadcrumbs={<span className="text-xs text-slate-500">Home · Documents</span>}
+        breadcrumbs={<span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Home · Documents</span>}
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <form onSubmit={handleSearchSubmit} className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className="w-64 rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="w-64 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-10 pr-3 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
                 placeholder="Search documents..."
               />
             </form>
@@ -229,8 +229,8 @@ export default function Documents() {
         activeCount={activeFilterCount}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div className="flex items-center gap-3 text-sm text-slate-600">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
           <span>{pagination.total || documents.length} documents</span>
           {selectedIds.length > 0 && (
             <Badge variant="primary" size="sm">
@@ -252,7 +252,7 @@ export default function Documents() {
             <Button variant="danger" size="sm" icon={Trash2} onClick={handleBulkDelete} loading={deleteMutation.isLoading}>
               Delete
             </Button>
-            <button type="button" onClick={clearSelection} className="text-sm text-slate-500 hover:text-slate-700">
+            <button type="button" onClick={clearSelection} className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
               Clear
             </button>
           </div>
@@ -283,13 +283,13 @@ export default function Documents() {
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   checked={selectedIds.length === documents.length && documents.length > 0}
                   onChange={(event) => (event.target.checked ? selectAll(documents.map((doc) => doc.id)) : clearSelection())}
-                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-400"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
                 />
               </label>
               <span>Document</span>
@@ -323,9 +323,9 @@ export default function Documents() {
         )}
 
         {documents.length === 0 && !isFetching && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">No documents yet</h3>
-            <p className="mt-2 text-sm text-slate-500">Upload your first document to get started with AI-assisted analysis.</p>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-10 text-center shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">No documents yet</h3>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Upload your first document to get started with AI-assisted analysis.</p>
             <div className="mt-4 flex justify-center">
               <Button variant="primary" icon={Plus} onClick={() => setShowUpload(true)}>
                 Upload document
@@ -335,11 +335,11 @@ export default function Documents() {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
             <button
               type="button"
               onClick={() => handlePageChange(pagination.page - 1)}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 hover:bg-slate-100 disabled:opacity-50"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 disabled:opacity-50"
               disabled={pagination.page === 1}
             >
               Previous
@@ -350,7 +350,7 @@ export default function Documents() {
             <button
               type="button"
               onClick={() => handlePageChange(pagination.page + 1)}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 hover:bg-slate-100 disabled:opacity-50"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 disabled:opacity-50"
               disabled={pagination.page === totalPages}
             >
               Next
@@ -361,17 +361,17 @@ export default function Documents() {
 
       {showUpload && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/50 p-6">
-          <div className="relative w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl">
+          <div className="relative w-full max-w-3xl rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-2xl">
             <button
               type="button"
               onClick={() => setShowUpload(false)}
-              className="absolute right-4 top-4 rounded-full border border-slate-200 p-1 text-slate-500 hover:bg-slate-100"
+              className="absolute right-4 top-4 rounded-full border border-slate-200 dark:border-slate-700 p-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
               aria-label="Close upload"
             >
               ×
             </button>
-            <h3 className="text-lg font-semibold text-slate-900">Upload Documents</h3>
-            <p className="text-sm text-slate-500">Add files to the vault and immediately analyze them with YourCase AI.</p>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Upload Documents</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Add files to the vault and immediately analyze them with YourCase AI.</p>
             <div className="mt-6">
               <DocumentUpload
                 matters={matters}
@@ -388,24 +388,24 @@ export default function Documents() {
 
       {showBulkTag && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/50 p-6">
-          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+          <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-2xl">
             <button
               type="button"
               onClick={() => setShowBulkTag(false)}
-              className="absolute right-4 top-4 rounded-full border border-slate-200 p-1 text-slate-500 hover:bg-slate-100"
+              className="absolute right-4 top-4 rounded-full border border-slate-200 dark:border-slate-700 p-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
               aria-label="Close"
             >
               ×
             </button>
-            <h3 className="text-lg font-semibold text-slate-900">Add Tags to Selected Documents</h3>
-            <p className="text-sm text-slate-500">Enter tags separated by commas</p>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Add Tags to Selected Documents</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Enter tags separated by commas</p>
             <div className="mt-6 space-y-4">
               <input
                 type="text"
                 value={bulkTags}
                 onChange={(e) => setBulkTags(e.target.value)}
                 placeholder="legal, reviewed, urgent"
-                className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
               />
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setShowBulkTag(false)}>
