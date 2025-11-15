@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
 import {
@@ -13,6 +13,9 @@ import {
   User,
   Menu,
   X,
+  Bell,
+  UserRound,
+  Mail,
 } from 'lucide-react'
 
 const navItems = [
@@ -29,11 +32,27 @@ const navItems = [
 export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
   const [expanded, setExpanded] = useState(isOpen)
   const [hovered, setHovered] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const location = useLocation()
+  const profileRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     setExpanded(isOpen)
   }, [isOpen])
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!profileOpen) return
+      if (profileRef.current?.contains(event.target) || dropdownRef.current?.contains(event.target)) {
+        return
+      }
+      setProfileOpen(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [profileOpen])
 
   const handleCollapse = () => {
     setExpanded(false)
@@ -128,32 +147,81 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
         })}
       </nav>
 
-      <div className={`flex flex-col gap-2 px-3 pt-5 border-t border-gray-100 dark:border-gray-800 dark:border-gray-800 ${expanded ? '' : 'items-center'}`}>
+      <div className={`relative flex flex-col gap-2 px-3 pt-5 border-t border-gray-100 dark:border-gray-800 ${expanded ? '' : 'items-center'}`}>
         <button
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-100 dark:hover:bg-gray-800 ${
+          ref={profileRef}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium ${
             expanded ? 'justify-start w-full' : 'justify-center'
-          }`}
-          title="Settings"
-          aria-label="Settings"
+          } ${profileOpen ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
+          title="Profile menu"
+          aria-haspopup="menu"
+          aria-expanded={profileOpen}
           type="button"
-          onClick={onOpenSettings}
+          onClick={() => setProfileOpen((prev) => !prev)}
         >
-          <Settings size={24} className="shrink-0" />
-          {expanded && <span>Settings</span>}
-        </button>
-        <button
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-100 dark:hover:bg-gray-800 ${
-            expanded ? 'justify-start w-full' : 'justify-center'
-          }`}
-          title="Profile"
-          aria-label="Profile"
-          type="button"
-        >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-white shrink-0">
-            <User size={14} />
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-white shrink-0">
+            <User size={16} />
           </div>
-          {expanded && <span>Profile</span>}
+          {expanded && (
+            <div className="flex flex-col text-left">
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Moni Roy</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">moni.roy@example.com</span>
+            </div>
+          )}
         </button>
+
+        {profileOpen && (
+          <div
+            ref={dropdownRef}
+            className={`absolute ${expanded ? 'left-3 right-3' : 'left-1/2 -translate-x-1/2 w-56'} bottom-[-0.75rem] translate-y-full rounded-2xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 dark:border-gray-800 dark:bg-slate-900`}
+          >
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Moni Roy</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">moni.roy@example.com</p>
+            </div>
+            <ul className="py-1 text-sm text-gray-700 dark:text-gray-300">
+              <li>
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  onClick={() => {
+                    setProfileOpen(false)
+                    onOpenSettings?.()
+                  }}
+                >
+                  <Settings size={16} className="text-blue-500" />
+                  Settings
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  onClick={() => setProfileOpen(false)}
+                >
+                  <Bell size={16} className="text-amber-500" />
+                  Notifications
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="flex w/full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  onClick={() => setProfileOpen(false)}
+                >
+                  <UserRound size={16} className="text-emerald-500" />
+                  View profile
+                </button>
+              </li>
+              <li className="border-t border-gray-100 dark:border-gray-800">
+                <span className="flex items-center gap-3 px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
+                  <Mail size={14} />
+                  moni.roy@example.com
+                </span>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </aside>
   )
