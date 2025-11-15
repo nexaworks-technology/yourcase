@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
-import { Palette, Sun, Moon, Laptop } from 'lucide-react'
+import { Sun, Moon, Laptop } from 'lucide-react'
 import { cn } from '../../utils/cn'
 
 const themes = [
@@ -9,14 +8,7 @@ const themes = [
   { id: 'system', label: 'System', icon: Laptop },
 ]
 
-export function ThemeSelector({ value, onChange, accentColor, onAccentChange }) {
-  const [color, setColor] = useState(accentColor || '#4F46E5')
-
-  const handleColorChange = (event) => {
-    setColor(event.target.value)
-    onAccentChange?.(event.target.value)
-  }
-
+export function ThemeSelector({ value, onChange }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -37,18 +29,6 @@ export function ThemeSelector({ value, onChange, accentColor, onAccentChange }) 
           </button>
         ))}
       </div>
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <label className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300 dark:text-slate-300">
-          <Palette className="h-4 w-4" />
-          Accent colour
-          <input
-            type="color"
-            value={color}
-            onChange={handleColorChange}
-            className="ml-auto h-10 w-16 cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 dark:border-slate-600"
-          />
-        </label>
-      </div>
     </div>
   )
 }
@@ -56,13 +36,6 @@ export function ThemeSelector({ value, onChange, accentColor, onAccentChange }) 
 ThemeSelector.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  accentColor: PropTypes.string,
-  onAccentChange: PropTypes.func,
-}
-
-ThemeSelector.defaultProps = {
-  accentColor: '#4F46E5',
-  onAccentChange: undefined,
 }
 
 export default ThemeSelector

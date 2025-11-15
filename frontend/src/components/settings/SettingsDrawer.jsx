@@ -73,35 +73,24 @@ const sections = {
     title: "Theme & Appearance",
     description:
       "Switch between light, dark, or system themes for the application.",
-    render: ({ theme, setTheme, accentColor, setAccentColor, onThemeChange, onAccentChange }) => (
+    render: ({ theme, setTheme, onThemeChange }) => (
       <SettingsSection
         title="Appearance"
         description="Choose how YourCase looks on your device."
       >
-        <ThemeSelector
-          value={theme}
-          onChange={onThemeChange || setTheme}
-          accentColor={accentColor}
-          onAccentChange={onAccentChange || setAccentColor}
-        />
+        <ThemeSelector value={theme} onChange={onThemeChange || setTheme} />
       </SettingsSection>
     ),
   },
 };
 
 export function SettingsDrawer({ isOpen, onClose }) {
-  const { theme, setTheme, accentColor, setAccentColor } = useTheme();
-  const { setTheme: setStoredTheme, setAccentColor: setStoredAccent } =
-    useSettingsStore();
+  const { theme, setTheme } = useTheme();
+  const { setTheme: setStoredTheme } = useSettingsStore();
 
   const handleThemeChange = (value) => {
     setStoredTheme(value);
     setTheme(value);
-  };
-
-  const handleAccentChange = (value) => {
-    setStoredAccent(value);
-    setAccentColor(value);
   };
   const [activeTab, setActiveTab] = useState("general");
 
@@ -181,10 +170,7 @@ export function SettingsDrawer({ isOpen, onClose }) {
               {sections[activeTab].render({
                 theme,
                 setTheme,
-                accentColor,
-                setAccentColor,
                 onThemeChange: handleThemeChange,
-                onAccentChange: handleAccentChange,
               })}
             </div>
           </div>

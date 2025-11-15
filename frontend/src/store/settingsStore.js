@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 const defaultState = {
-  theme: 'system',
+  theme: 'light',
   accentColor: '#4F46E5',
   notifications: {
     queryResponses: true,
@@ -21,7 +21,7 @@ const defaultState = {
     temperature: 0.3,
     maxTokens: 1024,
     defaultQueryType: 'Summary',
-    theme: 'system',
+    theme: 'light',
     compactMode: false,
     defaultView: 'grid',
     language: 'English',

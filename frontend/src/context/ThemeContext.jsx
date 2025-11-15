@@ -1,8 +1,16 @@
 import PropTypes from "prop-types";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const ThemeValues = {
-  theme: "system",
+  theme: "light",
   accentColor: "#4F46E5",
   setTheme: () => {},
   setAccentColor: () => {},
@@ -17,53 +25,93 @@ function applyTheme(theme, accentColor) {
   if (typeof window === "undefined") return;
   const root = document.documentElement;
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const nextTheme =
+  const resolvedTheme =
     theme === "system" ? (prefersDark ? "dark" : "light") : theme;
-  root.dataset.theme = nextTheme;
+  root.dataset.theme = resolvedTheme;
   root.style.setProperty("--accent-color", accentColor);
-  root.classList.toggle("dark", nextTheme === "dark");
-  root.setAttribute("data-theme", nextTheme);
+  root.classList.toggle("dark", resolvedTheme === "dark");
+  root.setAttribute("data-theme", resolvedTheme);
 }
 
 export function ThemeProvider({
-  initialTheme = "system",
+  initialTheme = "light",
   initialAccent = "#4F46E5",
   children,
 }) {
-  if (typeof window === "undefined") {
-    return (
-      <ThemeContext.Provider value={ThemeValues}>
-        {children}
-      </ThemeContext.Provider>
-    );
-  }
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("yc_theme") || initialTheme,
-  );
-  const [accentColor, setAccentColor] = useState(
-    () => localStorage.getItem("yc_accent") || initialAccent,
-  );
+  const [themeState, setThemeState] = useState(() => {
+    if (typeof window === "undefined") return initialTheme;
+    const stored = localStorage.getItem("yc_theme");
+    const resolved = stored || initialTheme;
+    applyTheme(resolved, initialAccent);
+    return resolved;
+  });
+
+  const [accentState, setAccentState] = useState(() => {
+    if (typeof window === "undefined") return initialAccent;
+    const stored = localStorage.getItem("yc_accent");
+    const resolved = stored || initialAccent;
+    return resolved;
+  });
+
+  const themeRef = useRef(themeState);
+  const accentRef = useRef(accentState);
 
   useEffect(() => {
-    applyTheme(theme, accentColor);
-    localStorage.setItem("yc_theme", theme);
-    localStorage.setItem("yc_accent", accentColor);
-  }, [theme, accentColor]);
+    themeRef.current = themeState;
+  }, [themeState]);
 
   useEffect(() => {
-    const handler = (event) => {
-      if (theme === "system") {
-        applyTheme(event.matches ? "dark" : "light", accentColor);
+    accentRef.current = accentState;
+  }, [accentState]);
+
+  const updateTheme = useCallback((nextTheme) => {
+    setThemeState((prev) => {
+      const resolved =
+        typeof nextTheme === "function" ? nextTheme(prev) : nextTheme;
+      applyTheme(resolved, accentRef.current);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("yc_theme", resolved);
+      }
+      return resolved;
+    });
+  }, []);
+
+  const updateAccent = useCallback((nextAccent) => {
+    setAccentState((prev) => {
+      const resolved =
+        typeof nextAccent === "function" ? nextAccent(prev) : nextAccent;
+      applyTheme(themeRef.current, resolved);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("yc_accent", resolved);
+      }
+      return resolved;
+    });
+  }, []);
+
+  useEffect(() => {
+    applyTheme(themeState, accentState);
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      if (themeRef.current === "system") {
+        applyTheme("system", accentRef.current);
       }
     };
+
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     media.addEventListener("change", handler);
     return () => media.removeEventListener("change", handler);
-  }, [theme, accentColor]);
+  }, []);
 
   const value = useMemo(
-    () => ({ theme, accentColor, setTheme, setAccentColor }),
-    [theme, accentColor],
+    () => ({
+      theme: themeState,
+      accentColor: accentState,
+      setTheme: updateTheme,
+      setAccentColor: updateAccent,
+    }),
+    [themeState, accentState, updateTheme, updateAccent],
   );
 
   return (
@@ -78,7 +126,7 @@ ThemeProvider.propTypes = {
 };
 
 ThemeProvider.defaultProps = {
-  initialTheme: "system",
+  initialTheme: "light",
   initialAccent: "#4F46E5",
 };
 

@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Eye, EyeOff, X } from 'lucide-react'
 import { cn } from '../../utils/cn'
@@ -17,8 +17,17 @@ export function Input({
   onChange,
   maxLength,
   success,
+  children, // explicitly pick children so it isn't spread to the native input
   ...props
 }) {
+  useEffect(() => {
+    if (children) {
+      // warn in dev if someone passes children to Input — treat children as nodes to render inside the control
+      // This helps surface accidental usage like <Input>some text</Input>
+      // eslint-disable-next-line no-console
+      console.warn('Input: children were passed to <Input>. Children will be rendered inside the control but are not forwarded to the native <input>. Use `icon` or dedicated props for inline content.')
+    }
+  }, [children])
   const inputId = useId()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
@@ -26,8 +35,22 @@ export function Input({
   const displayType = isPassword && isPasswordVisible ? 'text' : type
   const showClear = type !== 'password' && Boolean(value)
 
+  const inputRef = useRef(null)
+  const wrapperRef = useRef(null)
+
   const handleTogglePassword = () => setIsPasswordVisible((prev) => !prev)
   const handleClear = () => onChange?.({ target: { value: '' } })
+
+  const handleWrapperMouseDown = (e) => {
+    if (!inputRef.current) return
+    // If the actual input was clicked, allow default behavior
+    if (e.target === inputRef.current) return
+    // If a button/icon inside the wrapper was clicked, don't steal the event
+    if (e.target.closest && e.target.closest('button')) return
+    // Prevent wrapper from taking focus and programmatically focus the input instead
+    e.preventDefault()
+    inputRef.current.focus()
+  }
 
   return (
     <div className={cn('relative w-full', disabled && 'opacity-60', className)}>
@@ -38,6 +61,8 @@ export function Input({
         </label>
       )}
       <div
+        ref={wrapperRef}
+        onMouseDown={handleWrapperMouseDown}
         className={cn(
           'group relative flex h-11 w-full items-center rounded-xl border bg-white dark:bg-slate-900 px-4 shadow-sm transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100',
           error && 'border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-100',
@@ -48,6 +73,7 @@ export function Input({
         {Icon && <Icon className="mr-3 h-4 w-4 text-slate-400 dark:text-slate-500" aria-hidden="true" />}
 
         <input
+          ref={inputRef}
           id={inputId}
           type={displayType}
           value={value}
@@ -83,6 +109,7 @@ export function Input({
               <X className="h-4 w-4" />
             </button>
           )}
+          {children}
         </div>
       </div>
 

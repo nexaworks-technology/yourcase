@@ -76,22 +76,11 @@ export default function Settings() {
     setTheme(value)
   }
 
-  const handleAccentChange = (value) => {
-    setStoredAccent(value)
-    setAccentColor(value)
-  }
-
   useEffect(() => {
     if (storedTheme && storedTheme !== theme) {
       setTheme(storedTheme)
     }
   }, [storedTheme, theme, setTheme])
-
-  useEffect(() => {
-    if (storedAccent && storedAccent !== accentColor) {
-      setAccentColor(storedAccent)
-    }
-  }, [storedAccent, accentColor, setAccentColor])
 
   const profileMutation = useMutation({
     mutationFn: userService.updateProfile,
@@ -329,7 +318,7 @@ export default function Settings() {
 
           <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">UI preferences</h4>
-            <ThemeSelector value={theme} onChange={handleThemeChange} accentColor={accentColor} onAccentChange={handleAccentChange} />
+            <ThemeSelector value={theme} onChange={handleThemeChange} />
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
                 Compact mode
