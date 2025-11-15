@@ -98,11 +98,11 @@ export default function MatterDetails() {
       case 'active':
         return 'bg-emerald-100 text-emerald-600'
       case 'closed':
-        return 'bg-slate-100 text-slate-600'
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
       case 'on-hold':
         return 'bg-amber-100 text-amber-600'
       case 'archived':
-        return 'bg-slate-200 text-slate-500'
+        return 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 dark:text-slate-500'
       default:
         return 'bg-blue-100 text-blue-600'
     }
@@ -120,8 +120,8 @@ export default function MatterDetails() {
     return (
       <div className="mt-20 flex flex-col items-center gap-4">
         <ShieldAlert className="h-10 w-10 text-rose-500" />
-        <h2 className="text-lg font-semibold text-slate-900">Unable to load matter</h2>
-        <p className="text-sm text-slate-500">{error?.message || 'Please try again later.'}</p>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Unable to load matter</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{error?.message || 'Please try again later.'}</p>
         <Button variant="primary" onClick={() => navigate('/matters')}>
           Back to matters
         </Button>
@@ -147,12 +147,12 @@ export default function MatterDetails() {
         <Card variant="bordered" padding="md" className="space-y-4">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-slate-900">{matter.title}</h2>
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{matter.title}</h2>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="primary" size="sm">
                   {matter.type}
                 </Badge>
-                <Badge size="sm" className="capitalize bg-slate-100 text-slate-600">
+                <Badge size="sm" className="capitalize bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                   {matter.status}
                 </Badge>
                 {matter.tags?.map((tag) => (
@@ -166,23 +166,23 @@ export default function MatterDetails() {
               Edit
             </Button>
           </div>
-          <p className="text-sm text-slate-600">{matter.description || 'No description provided yet.'}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">{matter.description || 'No description provided yet.'}</p>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Start date</dt>
-              <dd className="text-sm text-slate-700">{matter.startDate ? new Date(matter.startDate).toLocaleDateString() : '—'}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Start date</dt>
+              <dd className="text-sm text-slate-700 dark:text-slate-300">{matter.startDate ? new Date(matter.startDate).toLocaleDateString() : '—'}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Expected end</dt>
-              <dd className="text-sm text-slate-700">{matter.expectedEndDate ? new Date(matter.expectedEndDate).toLocaleDateString() : '—'}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Expected end</dt>
+              <dd className="text-sm text-slate-700 dark:text-slate-300">{matter.expectedEndDate ? new Date(matter.expectedEndDate).toLocaleDateString() : '—'}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Current status</dt>
-              <dd className="text-sm text-slate-700 capitalize">{matter.status}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Current status</dt>
+              <dd className="text-sm text-slate-700 dark:text-slate-300 capitalize">{matter.status}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Priority</dt>
-              <dd className="flex items-center gap-2 text-sm text-slate-700">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Priority</dt>
+              <dd className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <Flag className="h-4 w-4" />
                 <span className="capitalize">{matter.priority || 'medium'}</span>
               </dd>
@@ -199,18 +199,18 @@ export default function MatterDetails() {
         )}
 
         <Card variant="bordered" padding="md">
-          <h3 className="text-sm font-semibold text-slate-900">Recent activity</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Recent activity</h3>
           <ul className="mt-4 space-y-3">
             {(matter.activity || []).slice(0, 10).map((item) => (
-              <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+              <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
                 <div>
-                  <p className="font-medium text-slate-900">{item.title}</p>
-                  <p className="text-xs text-slate-500">{item.description}</p>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{item.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{item.description}</p>
                 </div>
-                <span className="text-xs text-slate-400">{new Date(item.date).toLocaleString()}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">{new Date(item.date).toLocaleString()}</span>
               </li>
             ))}
-            {(matter.activity || []).length === 0 && <li className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm text-slate-500">No activity yet.</li>}
+            {(matter.activity || []).length === 0 && <li className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">No activity yet.</li>}
           </ul>
         </Card>
       </div>
@@ -220,11 +220,11 @@ export default function MatterDetails() {
           <div className="flex items-center gap-3">
             <img src={matter.client?.avatar} alt={matter.client?.name} className="h-12 w-12 rounded-full object-cover" />
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">{matter.client?.name}</h3>
-              <p className="text-sm text-slate-500">Client</p>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{matter.client?.name}</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Client</p>
             </div>
           </div>
-          <dl className="space-y-2 text-sm text-slate-600">
+          <dl className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
             <div className="flex items-center justify-between">
               <dt>Email</dt>
               <dd className="text-blue-600">{matter.client?.email || '—'}</dd>
@@ -241,10 +241,10 @@ export default function MatterDetails() {
 
         <div className="grid gap-3">
           {overviewCards.map((card) => (
-            <div key={card.label} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+            <div key={card.label} className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">{card.label}</p>
-                <p className="mt-1 text-xl font-semibold text-slate-900">{card.value}</p>
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">{card.label}</p>
+                <p className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{card.value}</p>
               </div>
               <span className={`flex h-10 w-10 items-center justify-center rounded-full ${card.tone}`}>
                 <card.icon className="h-5 w-5" />
@@ -312,12 +312,12 @@ export default function MatterDetails() {
         title={matter.client?.name || 'Matter details'}
         description={matter.title}
         breadcrumbs={
-          <div className="flex flex-wrap items-center gap-1 text-xs text-slate-500">
-            <button type="button" onClick={() => navigate('/matters')} className="text-slate-500 hover:text-slate-700">
+          <div className="flex flex-wrap items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <button type="button" onClick={() => navigate('/matters')} className="text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
               Matters
             </button>
             <ChevronRight className="h-3 w-3" />
-            <span className="font-mono text-slate-400">{matter.matterNumber || id}</span>
+            <span className="font-mono text-slate-400 dark:text-slate-500">{matter.matterNumber || id}</span>
           </div>
         }
         actions={
@@ -336,18 +336,18 @@ export default function MatterDetails() {
             </Button>
             <div className="relative">
               <details className="group">
-                <summary className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-50">
+                <summary className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:bg-slate-900">
                   More
                   <MoreVertical className="h-4 w-4" />
                 </summary>
-                <div className="absolute right-0 mt-2 w-40 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={() => setShowDeleteConfirm(true)}>
+                <div className="absolute right-0 mt-2 w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-lg">
+                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="h-4 w-4" /> Delete
                   </button>
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={() => setNotice({ type: 'info', message: 'Duplicate matter coming soon.' })}>
+                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={() => setNotice({ type: 'info', message: 'Duplicate matter coming soon.' })}>
                     Duplicate
                   </button>
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" onClick={handleExport}>
+                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={handleExport}>
                     <Download className="h-4 w-4" /> Export
                   </button>
                 </div>
@@ -393,7 +393,7 @@ export default function MatterDetails() {
           </div>
         }
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
           Archiving hides this matter from active views but keeps all documents and timeline events. You can restore it from settings anytime.
         </p>
       </Modal>
@@ -413,7 +413,7 @@ export default function MatterDetails() {
           </div>
         }
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
           This permanently removes the matter, its documents, timeline, and insights. This action cannot be undone. Type DELETE to confirm in future flows.
         </p>
       </Modal>

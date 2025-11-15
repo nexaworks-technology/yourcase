@@ -8,8 +8,8 @@ export function TemplatePreview({ template, onUse, onDownload }) {
     <div className="space-y-5">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">{template.name}</h2>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{template.name}</h2>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <Badge variant="primary" size="sm">{template.category}</Badge>
             <span>{template.jurisdiction}</span>
             <span>{template.language}</span>
@@ -30,9 +30,9 @@ export function TemplatePreview({ template, onUse, onDownload }) {
         </div>
       </header>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-inner">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-inner">
         <article className="prose prose-slate max-w-none">
-          <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-slate-700">
+          <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
             {template.sampleContent || template.content || 'Template preview will appear here once content is defined.'}
           </pre>
         </article>
@@ -40,7 +40,7 @@ export function TemplatePreview({ template, onUse, onDownload }) {
 
       {template.variables?.length > 0 && (
         <section className="space-y-3">
-          <h3 className="text-sm font-semibold text-slate-900">Variables</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Variables</h3>
           <div className="flex flex-wrap gap-2">
             {template.variables.map((variable) => (
               <Badge key={variable.name} variant="secondary" size="sm">

@@ -135,11 +135,11 @@ export function DocumentViewer({
   }, [file])
 
   return (
-    <div ref={containerRef} className="flex h-full flex-col rounded-3xl border border-slate-200 bg-white shadow-xl">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-6 py-4">
+    <div ref={containerRef} className="flex h-full flex-col rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 px-6 py-4">
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold text-slate-900">{filename}</h2>
-          <p className="text-xs text-slate-500">Interactive preview · {numPages ? `${numPages} pages` : 'Loading…'}</p>
+          <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">{filename}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Interactive preview · {numPages ? `${numPages} pages` : 'Loading…'}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="ghost" size="sm" icon={Printer} onClick={onPrint}>
@@ -160,7 +160,7 @@ export function DocumentViewer({
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className="hidden w-20 shrink-0 border-r border-slate-100 bg-slate-50 p-3 md:block">
+        <aside className="hidden w-20 shrink-0 border-r border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-3 md:block">
           <div className="space-y-2">
             {pageThumbnails.map((page) => (
               <button
@@ -168,7 +168,7 @@ export function DocumentViewer({
                 type="button"
                 onClick={() => setPageNumber(page)}
                 className={cn(
-                  'flex h-16 w-full items-center justify-center rounded-xl border border-transparent bg-white text-xs text-slate-500 shadow-sm transition hover:border-blue-200 hover:bg-blue-50',
+                  'flex h-16 w-full items-center justify-center rounded-xl border border-transparent bg-white dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 shadow-sm transition hover:border-blue-200 hover:bg-blue-50',
                   pageNumber === page && 'border-blue-300 bg-blue-50 text-blue-600 shadow-md',
                 )}
               >
@@ -179,19 +179,19 @@ export function DocumentViewer({
           </div>
         </aside>
 
-        <div className="flex-1 overflow-auto bg-slate-50">
-          <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-6 py-3 backdrop-blur">
+        <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900">
+          <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/95 px-6 py-3 backdrop-blur">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" icon={Minus} onClick={() => stepZoom('out')}>
                 Zoom out
               </Button>
-              <span className="min-w-[3rem] text-center text-sm font-medium text-slate-500">{Math.round(scale * 100)}%</span>
+              <span className="min-w-[3rem] text-center text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">{Math.round(scale * 100)}%</span>
               <Button variant="ghost" size="sm" icon={Plus} onClick={() => stepZoom('in')}>
                 Zoom in
               </Button>
               <button
                 type="button"
-                className="rounded-xl border border-slate-200 px-3 py-1 text-sm text-slate-500 transition hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-1 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 onClick={() => setScale(1)}
               >
                 Reset
@@ -200,21 +200,21 @@ export function DocumentViewer({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 onClick={() => setRotation((value) => (value + 90) % 360)}
               >
                 <RotateCw className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 onClick={() => setRotation((value) => (value - 90 + 360) % 360)}
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
             </div>
             <form onSubmit={handleSearch} className="relative flex items-center gap-2">
-              <Search className="absolute left-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <Input
                 type="search"
                 placeholder="Search document"
@@ -222,21 +222,21 @@ export function DocumentViewer({
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="w-64 pl-9"
               />
-              <div className="flex items-center gap-1 text-xs text-slate-500">
+              <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <span>
                   {searchMatches.length > 0 ? searchIndex + 1 : 0}/{searchMatches.length}
                 </span>
                 <button
                   type="button"
                   onClick={() => handleSearchNavigate(-1)}
-                  className="rounded border border-slate-200 px-1 py-0.5 hover:bg-slate-100"
+                  className="rounded border border-slate-200 dark:border-slate-700 px-1 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 >
                   ↑
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSearchNavigate(1)}
-                  className="rounded border border-slate-200 px-1 py-0.5 hover:bg-slate-100"
+                  className="rounded border border-slate-200 dark:border-slate-700 px-1 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 >
                   ↓
                 </button>
@@ -256,21 +256,21 @@ export function DocumentViewer({
               />
             </Document>
             {numPages && (
-              <div className="flex items-center gap-4 rounded-full border border-slate-200 bg-white px-5 py-2 text-sm text-slate-600 shadow-md">
+              <div className="flex items-center gap-4 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2 text-sm text-slate-600 dark:text-slate-300 shadow-md">
                 <button
                   type="button"
-                  className="rounded-full border border-slate-200 px-3 py-1 hover:bg-slate-100"
+                  className="rounded-full border border-slate-200 dark:border-slate-700 px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                   onClick={() => handlePageChange(pageNumber - 1)}
                   disabled={pageNumber <= 1}
                 >
                   Prev
                 </button>
                 <span className="font-medium">
-                  Page {pageNumber} <span className="text-slate-400">of</span> {numPages}
+                  Page {pageNumber} <span className="text-slate-400 dark:text-slate-500">of</span> {numPages}
                 </span>
                 <button
                   type="button"
-                  className="rounded-full border border-slate-200 px-3 py-1 hover:bg-slate-100"
+                  className="rounded-full border border-slate-200 dark:border-slate-700 px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                   onClick={() => handlePageChange(pageNumber + 1)}
                   disabled={pageNumber >= numPages}
                 >
@@ -283,9 +283,9 @@ export function DocumentViewer({
                     max={numPages}
                     value={pageNumber}
                     onChange={(event) => handlePageChange(Number(event.target.value))}
-                    className="h-9 w-16 rounded-lg border border-slate-200 px-3 text-sm focus:border-blue-500 focus:outline-none"
+                    className="h-9 w-16 rounded-lg border border-slate-200 dark:border-slate-700 px-3 text-sm focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                   />
-                  <span className="text-xs text-slate-400">Jump to</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">Jump to</span>
                 </div>
               </div>
             )}
@@ -298,8 +298,8 @@ export function DocumentViewer({
 
 function ViewerSkeleton() {
   return (
-    <div className="flex h-96 w-full max-w-3xl items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-100 animate-pulse">
-      <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+    <div className="flex h-96 w-full max-w-3xl items-center justify-center rounded-3xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 animate-pulse">
+      <Loader2 className="h-8 w-8 animate-spin text-slate-400 dark:text-slate-500" />
     </div>
   )
 }

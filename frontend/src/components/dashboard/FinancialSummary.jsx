@@ -26,8 +26,8 @@ export function FinancialSummary({ summary = {}, history = [], onAddPayment, onG
       <Card variant="bordered" padding="md" className="space-y-4">
         <header className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Financial overview</h3>
-            <p className="text-sm text-slate-500">Track invoices, payments, and outstanding fees.</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Financial overview</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Track invoices, payments, and outstanding fees.</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={onGenerateInvoice}>
@@ -41,10 +41,10 @@ export function FinancialSummary({ summary = {}, history = [], onAddPayment, onG
 
         <div className="grid gap-3 sm:grid-cols-2">
           {stats.map((stat) => (
-            <div key={stat.key} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+            <div key={stat.key} className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">{stat.label}</p>
-                <p className="mt-1 text-xl font-semibold text-slate-900">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">{stat.label}</p>
+                <p className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">
                   {stat.value != null ? `₹${Number(stat.value).toLocaleString()}` : '—'}
                 </p>
               </div>
@@ -59,13 +59,13 @@ export function FinancialSummary({ summary = {}, history = [], onAddPayment, onG
       <Card variant="bordered" padding="md" className="space-y-3">
         <header className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Payment history</h3>
-            <p className="text-xs text-slate-500">Recent invoices and receipts</p>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Payment history</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Recent invoices and receipts</p>
           </div>
         </header>
         <div className="max-h-72 overflow-y-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-slate-900 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <tr>
                 <th className="px-3 py-2 text-left">Date</th>
                 <th className="px-3 py-2 text-left">Description</th>
@@ -76,17 +76,17 @@ export function FinancialSummary({ summary = {}, history = [], onAddPayment, onG
             <tbody className="divide-y divide-slate-100">
               {history.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-3 py-4 text-center text-slate-500">
+                  <td colSpan={4} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400 dark:text-slate-500">
                     No payments recorded yet.
                   </td>
                 </tr>
               )}
               {history.map((entry) => (
                 <tr key={entry.id}>
-                  <td className="px-3 py-2 text-xs text-slate-500">{new Date(entry.date).toLocaleDateString()}</td>
+                  <td className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{new Date(entry.date).toLocaleDateString()}</td>
                   <td className="px-3 py-2">{entry.description || 'Payment'}</td>
-                  <td className="px-3 py-2 text-right font-semibold text-slate-900">₹{Number(entry.amount).toLocaleString()}</td>
-                  <td className="px-3 py-2 text-xs capitalize text-slate-500">{entry.status || 'recorded'}</td>
+                  <td className="px-3 py-2 text-right font-semibold text-slate-900 dark:text-slate-100">₹{Number(entry.amount).toLocaleString()}</td>
+                  <td className="px-3 py-2 text-xs capitalize text-slate-500 dark:text-slate-400 dark:text-slate-500">{entry.status || 'recorded'}</td>
                 </tr>
               ))}
             </tbody>

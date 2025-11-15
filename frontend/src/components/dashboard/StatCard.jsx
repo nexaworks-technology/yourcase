@@ -13,7 +13,7 @@ const colorMap = {
 export function StatCard({ title, value, icon: Icon, trend, color = 'primary', loading, footer, className }) {
   if (loading) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-md">
         <Skeleton variant="text" width="40%" className="mb-4" />
         <Skeleton variant="text" width="60%" height={36} />
         <Skeleton variant="text" width="50%" className="mt-6" />
@@ -22,11 +22,11 @@ export function StatCard({ title, value, icon: Icon, trend, color = 'primary', l
   }
 
   return (
-    <div className={cn('group flex h-full flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg', className)}>
+    <div className={cn('group flex h-full flex-col rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg', className)}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">{title}</p>
-          <h3 className="mt-3 text-3xl font-semibold text-slate-900">{value}</h3>
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">{title}</p>
+          <h3 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{value}</h3>
         </div>
         {Icon && (
           <span className={cn('rounded-2xl bg-gradient-to-br p-3 text-white shadow-md', colorMap[color] || colorMap.primary)}>
@@ -36,7 +36,7 @@ export function StatCard({ title, value, icon: Icon, trend, color = 'primary', l
       </div>
 
       {trend && (
-        <div className="mt-6 inline-flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div className="mt-6 inline-flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           <span className={cn('flex items-center gap-1', trend.direction === 'up' ? 'text-emerald-600' : 'text-rose-500')}>
             {trend.direction === 'up' ? '▲' : '▼'} {trend.value}
           </span>
@@ -44,7 +44,7 @@ export function StatCard({ title, value, icon: Icon, trend, color = 'primary', l
         </div>
       )}
 
-      {footer && <div className="mt-5 text-xs text-slate-400">{footer}</div>}
+      {footer && <div className="mt-5 text-xs text-slate-400 dark:text-slate-500">{footer}</div>}
     </div>
   )
 }

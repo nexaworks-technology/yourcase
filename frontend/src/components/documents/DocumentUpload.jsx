@@ -128,7 +128,7 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
       <div
         {...getRootProps({
           className: cn(
-            'cursor-pointer rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 p-10 text-center transition hover:border-blue-400 hover:bg-blue-50',
+            'cursor-pointer rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 p-10 text-center transition hover:border-blue-400 hover:bg-blue-50',
             isDragActive && 'border-blue-500 bg-blue-50',
           ),
         })}
@@ -136,8 +136,8 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
         <input {...getInputProps()} />
         <Upload className="mx-auto h-10 w-10 text-blue-500" />
         <div className="mt-4 space-y-2">
-          <p className="text-lg font-semibold text-slate-800">Drag files here or click to browse</p>
-          <p className="text-sm text-slate-500">Accepted formats: PDF, DOCX, TXT · Max size 10MB · Multiple uploads supported</p>
+          <p className="text-lg font-semibold text-slate-800 dark:text-slate-200">Drag files here or click to browse</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Accepted formats: PDF, DOCX, TXT · Max size 10MB · Multiple uploads supported</p>
         </div>
       </div>
 
@@ -159,14 +159,14 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
 
       {queue.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-slate-600">Upload queue</h4>
+          <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-300">Upload queue</h4>
           <div className="space-y-2">
             {queue.map((item) => (
-              <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div key={item.id} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{item.file.name}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.file.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       {(item.file.size / (1024 * 1024)).toFixed(2)} MB · {ACCEPTED_TYPES[item.file.type] || item.file.type}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                     <button
                       type="button"
                       onClick={() => cancelUpload(item.id)}
-                      className="rounded-full border border-slate-200 p-1 text-slate-500 transition hover:bg-slate-100"
+                      className="rounded-full border border-slate-200 dark:border-slate-700 p-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                       aria-label="Cancel upload"
                     >
                       <X className="h-4 w-4" />
@@ -189,7 +189,7 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                     <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${item.progress}%` }} />
                   </div>
                 </div>
@@ -201,24 +201,24 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
 
       {metadataModal.open && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/40 p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-xl">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Document metadata</h3>
-                <p className="text-sm text-slate-500">Add context to help YourCase organize your files</p>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Document metadata</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Add context to help YourCase organize your files</p>
               </div>
-              <button type="button" onClick={() => setMetadataModal({ open: false, file: null })} className="rounded-full border border-slate-200 p-1 text-slate-500 hover:bg-slate-100">
+              <button type="button" onClick={() => setMetadataModal({ open: false, file: null })} className="rounded-full border border-slate-200 dark:border-slate-700 p-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <form className="mt-6 space-y-4" onSubmit={handleMetadataSubmit}>
-              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Matter
                 <select
                   value={metadata.matter}
                   onChange={(event) => setMetadata((prev) => ({ ...prev, matter: event.target.value }))}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
                 >
                   {matterOptions.map((matter) => (
                     <option key={matter.value} value={matter.value}>
@@ -228,12 +228,12 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                 </select>
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Document type
                 <select
                   value={metadata.type}
                   onChange={(event) => setMetadata((prev) => ({ ...prev, type: event.target.value }))}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
                   required
                 >
                   {documentTypes.map((type) => (
@@ -244,28 +244,28 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
                 </select>
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Tags (comma separated)
                 <input
                   type="text"
                   value={metadata.tags}
                   onChange={(event) => setMetadata((prev) => ({ ...prev, tags: event.target.value }))}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
                   placeholder="Funding, diligence, contract"
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+              <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Description
                 <textarea
                   value={metadata.description}
                   onChange={(event) => setMetadata((prev) => ({ ...prev, description: event.target.value }))}
-                  className="min-h-[120px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  className="min-h-[120px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
                   placeholder="Add context for the AI assistant"
                 />
               </label>
 
-              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-900 px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <span className="inline-flex items-center gap-2">
                   <Info className="h-4 w-4 text-blue-500" />
                   Context helps the assistant generate better summaries and analysis.
@@ -273,7 +273,7 @@ export function DocumentUpload({ onSuccess, matters, documentTypes }) {
               </div>
 
               <div className="flex items-center justify-end gap-3">
-                <button type="button" onClick={() => setMetadataModal({ open: false, file: null })} className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                <button type="button" onClick={() => setMetadataModal({ open: false, file: null })} className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">
                   Cancel
                 </button>
                 <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">

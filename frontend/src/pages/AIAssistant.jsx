@@ -26,7 +26,7 @@ import { documentService } from '../services/documentService'
 
 const quickActions = [
   { label: 'New Query', description: 'Ask YourCase assistant', icon: Bot, color: 'bg-blue-500/10 text-blue-600' },
-  { label: 'Upload Document', description: 'Analyze new evidence', icon: Upload, color: 'bg-slate-500/10 text-slate-600' },
+  { label: 'Upload Document', description: 'Analyze new evidence', icon: Upload, color: 'bg-slate-50 dark:bg-slate-9000/10 text-slate-600 dark:text-slate-300' },
   { label: 'Create Matter', description: 'Track new engagement', icon: Plus, color: 'bg-emerald-500/10 text-emerald-600' },
   { label: 'Run Workflow', description: 'Automate review', icon: Play, color: 'bg-amber-500/10 text-amber-600' },
 ]
@@ -241,15 +241,15 @@ export default function AIAssistant() {
       )}
 
       <div className="grid min-h-[70vh] gap-6 xl:grid-cols-[320px_1fr_320px]">
-        <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <aside className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <Button size="sm" icon={Sparkles} className="w-full justify-center" onClick={handleNewSession}>
               New chat
             </Button>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
-            <label className="flex items-center gap-2 text-xs text-slate-500">
+          <div className="mt-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+            <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <Search className="h-4 w-4" />
               <input className="w-full border-none bg-transparent text-sm outline-none" placeholder="Search conversations" />
             </label>
@@ -263,7 +263,7 @@ export default function AIAssistant() {
                 <Skeleton variant="text" height={18} />
               </div>
             ) : groupedSessions.length === 0 ? (
-              <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-6 text-center text-xs text-slate-400">
+              <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/70 px-4 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
                 No conversations yet.
               </div>
             ) : (
@@ -273,7 +273,7 @@ export default function AIAssistant() {
                   role="button"
                   tabIndex={0}
                   className={cn(
-                    'w-full rounded-2xl border border-slate-100 px-3 py-3 text-left text-sm text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-200',
+                    'w-full rounded-2xl border border-slate-100 dark:border-slate-800 px-3 py-3 text-left text-sm text-slate-600 dark:text-slate-300 transition hover:border-indigo-200 hover:bg-indigo-50/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-200',
                     session.id === activeSessionId && 'border-indigo-300 bg-indigo-50/70 text-indigo-700',
                   )}
                   onClick={() => loadSession(session.id)}
@@ -285,14 +285,14 @@ export default function AIAssistant() {
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold text-slate-800">
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">
                       {session.title?.slice(0, 60) || 'Conversation'}
                       {(session.title?.length || 0) > 60 ? '…' : ''}
                     </p>
                     <span
                       role='button'
                       tabIndex={0}
-                      className='rounded-full p-1 text-slate-400 transition hover:text-rose-500 focus:outline-none'
+                      className='rounded-full p-1 text-slate-400 dark:text-slate-500 transition hover:text-rose-500 focus:outline-none'
                       onClick={(event) => {
                         event.stopPropagation()
                         handleDeleteSession(session.id)
@@ -308,10 +308,10 @@ export default function AIAssistant() {
                       <Trash2 className="h-4 w-4" />
                     </span>
                   </div>
-                  <div className="mt-1 text-xs text-slate-400">
+                  <div className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                     {session.preview?.slice(0, 80) || '—'}
                   </div>
-                  <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                  <div className="mt-2 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                     <Badge variant="info" size="sm">
                       {session.queryType}
                     </Badge>
@@ -323,13 +323,13 @@ export default function AIAssistant() {
           </div>
         </aside>
 
-        <section className="flex flex-col rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-            <div className="flex items-center gap-3 text-sm text-slate-500">
+        <section className="flex flex-col rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-6 py-4">
+            <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <select
                 value={settings.queryType}
                 onChange={(event) => updateSettings({ queryType: event.target.value })}
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300"
               >
                 <option value="chat">Chat</option>
                 <option value="research">Research</option>
@@ -340,7 +340,7 @@ export default function AIAssistant() {
               <select
                 value={settings.model}
                 onChange={(event) => updateSettings({ model: event.target.value })}
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300"
               >
                 <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
                 <option value="gemini-1.5-pro-002">Gemini 1.5 Pro</option>
@@ -364,27 +364,27 @@ export default function AIAssistant() {
                 />
               ))
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400">
+              <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400 dark:text-slate-500">
                 <Sparkles className="h-8 w-8" />
                 <p>Start a conversation with YourCase AI assistant.</p>
               </div>
             )}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500">
                 <span className="inline-flex h-2 w-2 animate-[pulse_1.4s_linear_infinite] rounded-full bg-blue-500" />
                 YourCase is thinking…
               </div>
             )}
           </div>
 
-          <div className="border-t border-slate-200 px-6 py-4">
+          <div className="border-t border-slate-200 dark:border-slate-700 px-6 py-4">
             {attachedDocuments.length > 0 && (
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 {attachedDocuments.map((doc) => (
                   <Badge key={doc.id || doc._id} variant="secondary" size="sm" className="flex items-center gap-2">
                     {doc.name || doc.originalName || 'Document'}
-                    <button type="button" className="text-slate-400 hover:text-slate-600" onClick={() => detachDocument(doc.id || doc._id)}>
+                    <button type="button" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300" onClick={() => detachDocument(doc.id || doc._id)}>
                       ×
                     </button>
                   </Badge>
@@ -395,26 +395,26 @@ export default function AIAssistant() {
           </div>
         </section>
 
-        <aside className="hidden h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:block">
-          <h2 className="text-lg font-semibold text-slate-800">Context</h2>
+        <aside className="hidden h-full rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm lg:block">
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Context</h2>
 
           <div className="mt-6 space-y-4">
             <div>
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-700">Attached documents</h3>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Attached documents</h3>
                 <Button variant="ghost" size="sm" icon={Paperclip} iconPosition="right" onClick={openAttachModal}>
                   Add
                 </Button>
               </div>
-              <p className="mt-1 text-xs text-slate-500">Bring files into context for smarter answers.</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Bring files into context for smarter answers.</p>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-slate-700">Model settings</h3>
-              <p className="mt-1 text-xs text-slate-500">Adjust precision and creativity.</p>
-              <div className="mt-4 space-y-4 text-xs text-slate-500">
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Model settings</h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Adjust precision and creativity.</p>
+              <div className="mt-4 space-y-4 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 <div>
-                  <label className="font-semibold text-slate-600">Temperature ({settings.temperature})</label>
+                  <label className="font-semibold text-slate-600 dark:text-slate-300">Temperature ({settings.temperature})</label>
                   <input
                     type="range"
                     min="0"
@@ -426,7 +426,7 @@ export default function AIAssistant() {
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-600">Max tokens ({settings.maxTokens})</label>
+                  <label className="font-semibold text-slate-600 dark:text-slate-300">Max tokens ({settings.maxTokens})</label>
                   <input
                     type="range"
                     min="512"
@@ -441,12 +441,12 @@ export default function AIAssistant() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-slate-700">Quick actions</h3>
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Quick actions</h3>
               <div className="mt-4 space-y-4">
                 {quickActions.map((action) => (
                   <div
                     key={action.label}
-                    className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-left transition hover:border-blue-100 hover:bg-blue-50/60 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                    className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/70 px-4 py-3 text-left transition hover:border-blue-100 hover:bg-blue-50/60 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                     role="button"
                     tabIndex={0}
                     onClick={() => {/* future quick actions */}}
@@ -460,8 +460,8 @@ export default function AIAssistant() {
                       <action.icon className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">{action.label}</p>
-                      <p className="text-xs text-slate-500">{action.description}</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{action.label}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{action.description}</p>
                     </div>
                   </div>
                 ))}
@@ -490,20 +490,20 @@ export default function AIAssistant() {
                     key={id}
                     htmlFor={`attach-${id}`}
                     className={cn(
-                      'flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm transition hover:border-indigo-200 hover:bg-indigo-50/70',
+                      'flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm transition hover:border-indigo-200 hover:bg-indigo-50/70',
                       isChecked && 'border-indigo-300 bg-indigo-50',
                     )}
                   >
                     <div>
-                      <p className="font-semibold text-slate-800">{doc.name}</p>
-                      <p className="text-xs text-slate-500">{doc.type || 'Document'} · {doc.size || '—'}</p>
+                      <p className="font-semibold text-slate-800 dark:text-slate-200">{doc.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{doc.type || 'Document'} · {doc.size || '—'}</p>
                     </div>
                     <input
                       id={`attach-${id}`}
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggleDocument(doc)}
-                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500"
                     />
                   </label>
                 )

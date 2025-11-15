@@ -16,15 +16,15 @@ import { Alert } from '../components/ui/Alert'
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md animate-[fade-in_0.4s_ease-out] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
-        <Link to="/login" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500 transition hover:text-slate-700">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md animate-[fade-in_0.4s_ease-out] rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-xl">
+        <Link to="/login" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
           <ArrowLeft className="h-4 w-4" /> Back to login
         </Link>
 
         <div className="space-y-3">
-          <h1 className="text-2xl font-semibold text-slate-900">Forgot password?</h1>
-          <p className="text-sm text-slate-600">Enter your email and we’ll send you a secure link to reset your password.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Forgot password?</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-300">Enter your email and we’ll send you a secure link to reset your password.</p>
         </div>
 
         {submitted && (

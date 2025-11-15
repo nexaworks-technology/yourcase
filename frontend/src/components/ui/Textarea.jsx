@@ -54,16 +54,16 @@ export function Textarea({
     <div className={cn('relative w-full', disabled && 'opacity-60', className)}>
       <div
         className={cn(
-          'group relative rounded-xl border bg-white px-4 py-3 shadow-sm transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100',
+          'group relative rounded-xl border bg-white dark:bg-slate-900 px-4 py-3 shadow-sm transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100',
           error && 'border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-100',
-          disabled && 'pointer-events-none bg-slate-50 text-slate-400',
+          disabled && 'pointer-events-none bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500',
         )}
       >
         {label && (
           <label
             htmlFor={textareaId}
             className={cn(
-              'pointer-events-none text-xs font-medium uppercase tracking-wide text-slate-500 transition-all duration-200',
+              'pointer-events-none text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500 transition-all duration-200',
               internalValue ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0',
             )}
           >
@@ -77,7 +77,7 @@ export function Textarea({
           value={internalValue}
           onChange={handleChange}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent text-base text-slate-900 outline-none"
+          className="w-full resize-none bg-transparent text-base text-slate-900 dark:text-slate-100 outline-none"
           disabled={disabled}
           aria-invalid={Boolean(error)}
           aria-describedby={helperText ? `${textareaId}-helper` : undefined}
@@ -90,7 +90,7 @@ export function Textarea({
         {internalValue && !disabled && (
           <button
             type="button"
-            className="absolute right-3 top-3 text-slate-400 transition-colors hover:text-slate-600"
+            className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 transition-colors hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300"
             onClick={handleClear}
             aria-label="Clear textarea"
           >
@@ -103,7 +103,7 @@ export function Textarea({
         <p
           id={`${textareaId}-helper`}
           className={cn(
-            'mt-2 text-xs text-slate-500 transition-all',
+            'mt-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 transition-all',
             error && 'text-rose-500 animate-[shake_0.3s_ease-in-out]',
           )}
         >
@@ -112,7 +112,7 @@ export function Textarea({
       )}
 
       {(maxLength || showWordCount) && (
-        <p className="mt-1 text-right text-xs text-slate-400">
+        <p className="mt-1 text-right text-xs text-slate-400 dark:text-slate-500">
           {showWordCount && `${wordCount} word${wordCount === 1 ? '' : 's'}`} {maxLength && `• ${length}/${maxLength}`}
         </p>
       )}

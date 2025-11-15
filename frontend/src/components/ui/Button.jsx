@@ -7,7 +7,7 @@ const variants = {
   primary:
     'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg hover:from-blue-600 hover:to-blue-600 hover:shadow-xl active:scale-[0.98] focus-visible:ring-blue-300',
   secondary:
-    'bg-slate-100 text-slate-800 shadow-sm hover:bg-slate-200 hover:text-slate-900 focus-visible:ring-slate-200',
+    'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm hover:bg-slate-200 dark:bg-slate-700 hover:text-slate-900 dark:text-slate-100 focus-visible:ring-slate-200',
   outline:
     'border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-200',
   ghost:
@@ -68,7 +68,7 @@ export const Button = forwardRef(
         )}
         {...props}
       >
-        <span className="pointer-events-none absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-200" aria-hidden="true" />
+        <span className="pointer-events-none absolute inset-0 bg-white dark:bg-slate-900/20 opacity-0 transition-opacity duration-200" aria-hidden="true" />
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (

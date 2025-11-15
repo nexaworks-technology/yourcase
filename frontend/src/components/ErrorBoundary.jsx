@@ -25,8 +25,8 @@ export class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
-          <div className="max-w-lg rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
+          <div className="max-w-lg rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-xl">
             <Alert variant="error" title="Something went wrong" message={this.state.error?.message || 'An unexpected error occurred.'} />
             <div className="mt-6 flex justify-center">
               <Button onClick={this.handleReset}>Reload application</Button>

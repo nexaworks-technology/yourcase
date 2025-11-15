@@ -53,8 +53,8 @@ export function DocumentFilters({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-500">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500">
           <Filter className="h-4 w-4" />
           Filters
           {activeCount > 0 && (
@@ -63,18 +63,18 @@ export function DocumentFilters({
             </Badge>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
           <button
             type="button"
             onClick={onViewToggle}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
           >
             View: {view === 'grid' ? 'Grid' : 'List'}
           </button>
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
           >
             Clear all
             <X className="h-4 w-4" />
@@ -83,12 +83,12 @@ export function DocumentFilters({
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Matter
           <select
             value={filters.matter?.value || ''}
             onChange={(event) => handleSelect('matter', matters.find((matter) => matter.value === event.target.value) || null)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           >
             <option value="">All matters</option>
             {matters.map((matter) => (
@@ -99,7 +99,7 @@ export function DocumentFilters({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Document type
           <select
             multiple
@@ -108,7 +108,7 @@ export function DocumentFilters({
               const selected = Array.from(event.target.selectedOptions).map((option) => option.value)
               handleSelect('types', selected)
             }}
-            className="h-12 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           >
             {documentTypes.map((docType) => (
               <option key={docType.value} value={docType.value}>
@@ -118,12 +118,12 @@ export function DocumentFilters({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Status
           <select
             value={filters.status}
             onChange={(event) => handleSelect('status', event.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           >
             {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -133,22 +133,22 @@ export function DocumentFilters({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Date range
           <input
             type="date"
             value={filters.dateRange?.from || ''}
             onChange={(event) => handleSelect('dateRange', { ...filters.dateRange, from: event.target.value })}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Sort by
           <select
             value={filters.sortBy}
             onChange={(event) => handleSelect('sortBy', event.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -158,12 +158,12 @@ export function DocumentFilters({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500">
+        <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
           Order
           <select
             value={filters.sortOrder}
             onChange={(event) => handleSelect('sortOrder', event.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>

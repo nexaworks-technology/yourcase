@@ -7,8 +7,8 @@ import { Badge } from '../ui/Badge'
 const typeColors = {
   pdf: 'bg-rose-100 text-rose-600',
   docx: 'bg-blue-100 text-blue-600',
-  txt: 'bg-slate-100 text-slate-600',
-  default: 'bg-slate-100 text-slate-500',
+  txt: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300',
+  default: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500',
 }
 
 const statusVariant = {
@@ -58,39 +58,39 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
 
   if (view === 'list') {
     return (
-      <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm">
         <label className="flex items-center justify-center">
-          <input type="checkbox" checked={selected} onChange={() => onSelect?.(id)} className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-400" />
+          <input type="checkbox" checked={selected} onChange={() => onSelect?.(id)} className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400" />
         </label>
         <div className="flex items-center gap-3">
           <FileIcon type={fileType} />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-900">{name}</p>
-            <p className="truncate text-xs text-slate-500">.{extension}</p>
+            <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{name}</p>
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">.{extension}</p>
           </div>
         </div>
-        <div className="text-sm text-slate-600">{type || 'General'}</div>
+        <div className="text-sm text-slate-600 dark:text-slate-300">{type || 'General'}</div>
         <div className="text-sm text-blue-600 hover:text-blue-700">
           {matter?.name || 'Unassigned'}
         </div>
-        <div className="text-sm text-slate-500">{uploadedAt ? formatDistanceToNow(new Date(uploadedAt), { addSuffix: true }) : '—'}</div>
-        <div className="text-sm text-slate-500">{size || '—'}</div>
+        <div className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{uploadedAt ? formatDistanceToNow(new Date(uploadedAt), { addSuffix: true }) : '—'}</div>
+        <div className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{size || '—'}</div>
         <div className="flex items-center justify-end gap-2">
           <Badge variant={statusStyle} size="sm">
             {statusLabel}
           </Badge>
           <div className="relative">
             <details className="group">
-              <summary className="list-none rounded-full border border-slate-200 bg-white p-1 text-slate-500 transition hover:text-slate-700">
+              <summary className="list-none rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
                 ⋮
               </summary>
-              <div className="absolute right-0 mt-2 w-36 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+              <div className="absolute right-0 mt-2 w-36 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-lg">
                 {actions.map(({ icon: Icon, label, onClick, danger }) => (
                   <button
                     key={label}
                     type="button"
                     onClick={onClick}
-                    className={cn('flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100', danger && 'text-rose-600 hover:bg-rose-50')}
+                    className={cn('flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800', danger && 'text-rose-600 hover:bg-rose-50')}
                   >
                     <Icon className="h-4 w-4" />
                     {label}
@@ -105,7 +105,7 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
   }
 
   return (
-    <div className="group relative flex h-full flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <div className="group relative flex h-full flex-col gap-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-start justify-between">
         <FileIcon type={fileType} />
         <Badge variant={statusStyle} size="sm">
@@ -116,33 +116,33 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
         {thumbnailUrl ? (
           <img src={thumbnailUrl} alt={name} className="h-40 w-full rounded-2xl object-cover" />
         ) : (
-          <div className="flex h-40 w-full items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-400">
+          <div className="flex h-40 w-full items-center justify-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-400 dark:text-slate-500">
             No preview available
           </div>
         )}
         <div className="space-y-1">
-          <p className="truncate text-sm font-semibold text-slate-900" title={name}>
+          <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100" title={name}>
             {name}
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             {type || 'General'} · {size || '—'}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             Uploaded {uploadedAt ? formatDistanceToNow(new Date(uploadedAt), { addSuffix: true }) : '—'}
           </p>
         </div>
       </div>
-      <div className="flex items-center justify-between text-xs text-slate-500">
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
         <span>{matter?.name || 'Unassigned matter'}</span>
         <span>.{extension}</span>
       </div>
-      <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-between gap-2 rounded-2xl bg-white/90 p-2 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100">
+      <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-between gap-2 rounded-2xl bg-white dark:bg-slate-900/90 dark:bg-slate-900/90 p-2 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100">
         {actions.map(({ icon: Icon, label, onClick, danger }) => (
           <button
             key={label}
             type="button"
             onClick={onClick}
-            className={cn('inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100', danger && 'text-rose-600 hover:bg-rose-50')}
+            className={cn('inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800', danger && 'text-rose-600 hover:bg-rose-50')}
             aria-label={label}
           >
             <Icon className="h-4 w-4" />

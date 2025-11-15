@@ -39,7 +39,7 @@ export function ProtectedRoute({ roles }) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <Spinner variant="circle" size="lg" />
-        <p className="text-sm text-slate-500">Verifying your session…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Verifying your session…</p>
       </div>
     )
   }
@@ -53,7 +53,7 @@ export function ProtectedRoute({ roles }) {
 
   if (user?.status === 'disabled') {
     return (
-      <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+      <div className="mx-auto max-w-md rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center shadow-sm">
         <Alert variant="warning" title="Account disabled" message="Please contact your administrator for access." />
       </div>
     )
@@ -61,7 +61,7 @@ export function ProtectedRoute({ roles }) {
 
   if (user?.subscriptionStatus === 'expired') {
     return (
-      <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+      <div className="mx-auto max-w-md rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center shadow-sm">
         <Alert
           variant="warning"
           title="Subscription expired"

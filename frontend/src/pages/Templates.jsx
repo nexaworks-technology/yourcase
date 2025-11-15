@@ -145,7 +145,7 @@ export default function Templates() {
               type="button"
               onClick={() => setFilters({ category })}
               className={`rounded-full border px-3 py-1 text-xs transition ${
-                filters.category === category ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                filters.category === category ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'
               }`}
             >
               {category}
@@ -162,27 +162,27 @@ export default function Templates() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
             <input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
               placeholder="Search templates"
-              className="w-64 rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-64 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-2 pl-10 pr-3 text-sm text-slate-700 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
             />
           </form>
           <Badge variant="secondary" size="sm">
             {filtered.length} templates
           </Badge>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
           <span>Sort by</span>
           <select
             value={filters.sortBy || 'popularity'}
             onChange={(event) => setFilters({ sortBy: event.target.value })}
-            className="rounded-full border border-slate-200 px-3 py-1"
+            className="rounded-full border border-slate-200 dark:border-slate-700 px-3 py-1"
           >
             <option value="popularity">Most popular</option>
             <option value="recent">Recently added</option>
@@ -193,14 +193,14 @@ export default function Templates() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
-        <aside className="space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">Filters</h3>
-          <div className="space-y-2 text-sm text-slate-600">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Jurisdiction</label>
+        <aside className="space-y-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Filters</h3>
+          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Jurisdiction</label>
             <select
               value={filters.jurisdiction}
               onChange={(event) => setFilters({ jurisdiction: event.target.value })}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3"
             >
               <option value="All">All</option>
               <option value="All India">All India</option>
@@ -209,12 +209,12 @@ export default function Templates() {
               <option value="Karnataka">Karnataka</option>
             </select>
           </div>
-          <div className="space-y-2 text-sm text-slate-600">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Language</label>
+          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Language</label>
             <select
               value={filters.language}
               onChange={(event) => setFilters({ language: event.target.value })}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3"
             >
               <option value="All">All</option>
               <option value="English">English</option>
@@ -222,24 +222,24 @@ export default function Templates() {
               <option value="Marathi">Marathi</option>
             </select>
           </div>
-          <div className="space-y-2 text-sm text-slate-600">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Created by</label>
+          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Created by</label>
             <select
               value={filters.createdBy}
               onChange={(event) => setFilters({ createdBy: event.target.value })}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3"
             >
               <option value="team">My team</option>
               <option value="me">Me</option>
               <option value="public">Public library</option>
             </select>
           </div>
-          <div className="space-y-2 text-sm text-slate-600">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Rating</label>
+          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Rating</label>
             <select
               value={filters.rating}
               onChange={(event) => setFilters({ rating: Number(event.target.value) })}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3"
             >
               <option value={0}>All</option>
               <option value={4}>4+ stars</option>
@@ -285,7 +285,7 @@ export default function Templates() {
           )}
 
           {filtered.length === 0 && (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center text-sm text-slate-500">
+            <div className="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 p-10 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
               No templates found. Adjust filters or create a new template.
             </div>
           )}

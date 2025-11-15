@@ -29,17 +29,17 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
     <Card variant="bordered" padding="md" className="space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Matter team</h3>
-          <p className="text-sm text-slate-500">Manage who has access, their roles, and collaboration permissions.</p>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Matter team</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Manage who has access, their roles, and collaboration permissions.</p>
         </div>
         <Button variant="primary" size="sm" icon={UserPlus} onClick={() => setShowInvite(true)}>
           Add team member
         </Button>
       </header>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200">
-        <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-700">
-          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+        <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-700 dark:text-slate-300">
+          <thead className="bg-slate-50 dark:bg-slate-900 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <tr>
               <th className="px-4 py-3 text-left">Member</th>
               <th className="px-4 py-3 text-left">Role</th>
@@ -53,19 +53,19 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
           <tbody className="divide-y divide-slate-100">
             {team.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center text-slate-500">
+                <td colSpan={7} className="px-6 py-6 text-center text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   No team members assigned yet. Invite collaborators to get started.
                 </td>
               </tr>
             ) : (
               team.map((member) => (
-                <tr key={member.id} className="hover:bg-slate-50">
+                <tr key={member.id} className="hover:bg-slate-50 dark:bg-slate-900">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img src={member.avatar} alt={member.name} className="h-10 w-10 rounded-full object-cover" />
                       <div>
-                        <p className="font-semibold text-slate-900">{member.name}</p>
-                        <p className="text-xs text-slate-500">{member.title || 'Associate'}</p>
+                        <p className="font-semibold text-slate-900 dark:text-slate-100">{member.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{member.title || 'Associate'}</p>
                       </div>
                     </div>
                   </td>
@@ -73,7 +73,7 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
                     <select
                       value={member.role}
                       onChange={(event) => onUpdateRole?.(member.id, event.target.value)}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
                     >
                       <option value="lead">Lead counsel</option>
                       <option value="associate">Associate</option>
@@ -82,7 +82,7 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
                     </select>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="space-y-1 text-xs text-slate-500">
+                    <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-2">
                         <Mail className="h-3.5 w-3.5" />
                         {member.email}
@@ -95,8 +95,8 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{member.assignedAt ? new Date(member.assignedAt).toLocaleDateString() : '—'}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
+                  <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{member.assignedAt ? new Date(member.assignedAt).toLocaleDateString() : '—'}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                     <div className="flex flex-col gap-1">
                       <span>{member.activity?.documents || 0} documents</span>
                       <span>{member.activity?.queries || 0} queries</span>
@@ -151,11 +151,11 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
             required
           />
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</label>
+            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Role</label>
             <select
               value={invite.role}
               onChange={(event) => setInvite((prev) => ({ ...prev, role: event.target.value }))}
-              className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none"
+              className="mt-2 h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
             >
               <option value="lead">Lead counsel</option>
               <option value="associate">Associate</option>

@@ -38,7 +38,7 @@ export function Tooltip({ content, children, position = 'top', className, delay 
     <div
       role="tooltip"
       className={cn(
-        'pointer-events-none absolute z-[120] rounded-xl border border-slate-100 bg-slate-900 px-3 py-2 text-xs font-medium text-white opacity-0 shadow-lg animate-[fade-in_0.15s_ease-out_forwards] backdrop-blur',
+        'pointer-events-none absolute z-[120] rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-900 px-3 py-2 text-xs font-medium text-white opacity-0 shadow-lg animate-[fade-in_0.15s_ease-out_forwards] backdrop-blur',
         positions[position],
         className,
       )}
@@ -48,10 +48,10 @@ export function Tooltip({ content, children, position = 'top', className, delay 
       <span
         className={cn(
           'absolute h-2 w-2 rotate-45 rounded-sm bg-slate-900',
-          position === 'top' && 'left-1/2 top-full -translate-x-1/2 border-l border-t border-slate-100',
-          position === 'bottom' && 'left-1/2 bottom-full -translate-x-1/2 border-r border-b border-slate-100',
-          position === 'left' && 'top-1/2 left-full -translate-y-1/2 border-t border-r border-slate-100',
-          position === 'right' && 'top-1/2 right-full -translate-y-1/2 border-b border-l border-slate-100',
+          position === 'top' && 'left-1/2 top-full -translate-x-1/2 border-l border-t border-slate-100 dark:border-slate-800',
+          position === 'bottom' && 'left-1/2 bottom-full -translate-x-1/2 border-r border-b border-slate-100 dark:border-slate-800',
+          position === 'left' && 'top-1/2 left-full -translate-y-1/2 border-t border-r border-slate-100 dark:border-slate-800',
+          position === 'right' && 'top-1/2 right-full -translate-y-1/2 border-b border-l border-slate-100 dark:border-slate-800',
         )}
       />
     </div>

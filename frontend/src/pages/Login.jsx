@@ -66,17 +66,17 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 lg:flex-row">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900 lg:flex-row">
       <div className="relative flex w-full flex-1 items-center justify-center px-4 py-10 sm:px-8 lg:w-3/5 lg:px-12">
         <div className="w-full max-w-md animate-[fade-in_0.4s_ease-out]">
-          <Link to="/" className="mb-8 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1 shadow-sm">
+          <Link to="/" className="mb-8 inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 shadow-sm">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            <span className="text-sm font-semibold text-slate-800">YourCase Legal AI</span>
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">YourCase Legal AI</span>
           </Link>
 
           <div className="space-y-3">
-            <h1 className="text-3xl font-semibold text-slate-900">Welcome back</h1>
-            <p className="text-sm text-slate-600">Sign in to access your legal AI workspace.</p>
+            <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Welcome back</h1>
+            <p className="text-sm text-slate-600 dark:text-slate-300">Sign in to access your legal AI workspace.</p>
           </div>
 
           {(error || formErrors.global) && (
@@ -111,14 +111,14 @@ export default function Login() {
               required
             />
 
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <label className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="remember"
                   checked={form.remember}
                   onChange={handleChange}
-                  className="h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-400"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-500 focus:ring-blue-400"
                 />
                 Remember me
               </label>
@@ -131,13 +131,13 @@ export default function Login() {
               Sign in
             </Button>
 
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <span className="h-px flex-1 bg-slate-200" />
+            <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+              <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
               or
-              <span className="h-px flex-1 bg-slate-200" />
+              <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
             </div>
 
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Don&apos;t have an account?{' '}
               <Link to="/register" className="font-semibold text-blue-600 transition hover:text-blue-700">
                 Sign up
@@ -157,7 +157,7 @@ export default function Login() {
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/10 p-6 shadow-xl backdrop-blur">
+          <div className="rounded-3xl bg-white dark:bg-slate-900/10 p-6 shadow-xl backdrop-blur">
             <p className="text-sm text-white/90">
               “We ship legal opinions twice as fast with YourCase. The AI assistant reads thousands of pages and produces briefing points that our partners trust.”
             </p>
