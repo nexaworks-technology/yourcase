@@ -281,6 +281,7 @@ export default function Settings() {
           const [mergeImport, setMergeImport] = useState(false)
           const [importOpen, setImportOpen] = useState(false)
           const [pendingImport, setPendingImport] = useState(null)
+          const [importFormat, setImportFormat] = useState('json') // 'json' | 'csv'
           const [dragOver, setDragOver] = useState(false)
           const [mappingOpen, setMappingOpen] = useState(false)
           const [mappingData, setMappingData] = useState(null) // { headers, rows } from CSV
@@ -338,6 +339,7 @@ export default function Settings() {
                     .map((r) => ({ t: Number(r.t) || Date.now(), m: String(r.m ?? ''), p: !!r.p }))
                     .filter((r) => r.m.length > 0)
                   setPendingImport(items)
+                  setImportFormat('json')
                   setImportOpen(true)
                 } catch (err) {
                   announce('Failed to import JSON', { toast: { variant: 'error' } })
@@ -375,6 +377,32 @@ export default function Settings() {
             a.click()
             a.remove()
             URL.revokeObjectURL(url)
+          }
+
+          const downloadSampleCSV = () => {
+            const now = Date.now()
+            const rows = [
+              { t: now - 600000, m: 'Example: analysis completed successfully', p: false },
+              { t: now - 300000, m: 'Example: document uploaded', p: true },
+              { t: now -  60000, m: 'Example: reminder created', p: false },
+            ]
+            const esc = (s) => {
+              const v = String(s ?? '')
+              return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v
+            }
+            const lines = ['time,message,pinned']
+            for (const r of rows) {
+              lines.push(`${esc(new Date(r.t).toISOString())},${esc(r.m)},${r.p ? 'true' : 'false'}`)
+            }
+            const csv = lines.join('\n')
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+            const a = document.createElement('a')
+            a.href = URL.createObjectURL(blob)
+            a.download = 'recent-toasts.sample.csv'
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(a.href)
           }
 
           const exportJSON = () => {
@@ -580,6 +608,9 @@ export default function Settings() {
                   <Button variant="ghost" size="sm" onClick={downloadSampleJSON} title="Download sample JSON template">
                     <Download className="mr-2 h-4 w-4" /> Sample JSON
                   </Button>
+                  <Button variant="ghost" size="sm" onClick={downloadSampleCSV} title="Download sample CSV template">
+                    <Download className="mr-2 h-4 w-4" /> Sample CSV
+                  </Button>
                   <label className="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 ml-1">
                     <input
                       type="checkbox"
@@ -616,11 +647,13 @@ export default function Settings() {
                           const last10 = uniq.slice(-10)
                           persist(last10)
                           announce(`Imported ${pendingImport.length} and merged → ${last10.length} kept (latest 10)`, { toast: { variant: 'success' } })
+                          try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: importFormat, mode: 'merge', imported: pendingImport.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
                         } else {
                           const items = pendingImport.slice().sort((a, b) => a.t - b.t)
                           const last10 = items.slice(-10)
                           persist(last10)
                           announce(`Imported ${last10.length} toast${last10.length === 1 ? '' : 's'}`, { toast: { variant: 'success' } })
+                          try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: importFormat, mode: 'replace', imported: pendingImport.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
                         }
                         setImportOpen(false)
                         setPendingImport(null)
@@ -628,6 +661,7 @@ export default function Settings() {
                       items={pendingImport}
                       merge={mergeImport}
                       currentRows={rows}
+                      format={importFormat}
                     />
                   )}
                   {mappingOpen && mappingData && (
@@ -638,6 +672,7 @@ export default function Settings() {
                         setMappingOpen(false)
                         setMappingData(null)
                         setPendingImport(mappedItems)
+                        setImportFormat('csv')
                         setImportOpen(true)
                       }}
                       headers={mappingData.headers}
@@ -797,6 +832,7 @@ export default function Settings() {
                         .map((r) => ({ t: Number(r.t) || Date.now(), m: String(r.m ?? ''), p: !!r.p }))
                         .filter((r) => r.m.length > 0)
                       setPendingImport(items)
+                      setImportFormat('json')
                       setImportOpen(true)
                     } else {
                       announce('Unsupported file. Drop a JSON or CSV file.', { toast: { variant: 'error' } })
