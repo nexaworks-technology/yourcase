@@ -36,6 +36,8 @@ class Boundary extends Component {
       attempt: 0,
       waiting: false,
       waitMs: 0,
+      isOnline: typeof navigator !== 'undefined' ? !!navigator.onLine : true,
+      autoRetryWhenOnline: false,
     }
     this._waitTimer = null
     this._tickTimer = null
@@ -51,15 +53,37 @@ class Boundary extends Component {
     console.error('RouteChunkBoundary caught an error', error, info)
   }
 
+  componentDidMount() {
+    window.addEventListener('online', this._onOnline)
+    window.addEventListener('offline', this._onOffline)
+  }
+
   componentWillUnmount() {
     window.clearTimeout(this._waitTimer)
     window.clearInterval(this._tickTimer)
+    window.removeEventListener('online', this._onOnline)
+    window.removeEventListener('offline', this._onOffline)
   }
 
   _computeDelay = () => {
     const base = 500 // ms
     const n = Math.min(this.state.attempt, this._maxAttempts - 1)
     return base * Math.pow(2, n) // 500, 1000, 2000, 4000
+  }
+
+  _onOnline = () => {
+    this.setState({ isOnline: true })
+    if (this.state.autoRetryWhenOnline && !this.state.waiting && this.state.attempt < this._maxAttempts) {
+      this.props.announce?.('Back online. Retrying…', { toast: { duration: 900 } })
+      this.handleRetry()
+    } else {
+      this.props.announce?.('Back online', { toast: { duration: 900 } })
+    }
+  }
+
+  _onOffline = () => {
+    this.setState({ isOnline: false })
+    this.props.announce?.('You went offline', { toast: { duration: 900 } })
   }
 
   handleRetry = () => {
@@ -72,9 +96,12 @@ class Boundary extends Component {
     this.props.announce?.(`Retrying ${this.props.label || 'content'} in ${Math.round(delay/100)/10}s (attempt ${this.state.attempt + 1}/${this._maxAttempts})`, { toast: { duration: 1200 } })
     this.setState({ waiting: true, waitMs: delay })
     window.clearInterval(this._tickTimer)
-    this._tickTimer = window.setInterval(() => {
-      this.setState((s) => ({ waitMs: Math.max(0, s.waitMs - 200) }))
-    }, 200)
+    const reduceMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!reduceMotion) {
+      this._tickTimer = window.setInterval(() => {
+        this.setState((s) => ({ waitMs: Math.max(0, s.waitMs - 200) }))
+      }, 200)
+    }
     window.clearTimeout(this._waitTimer)
     this._waitTimer = window.setTimeout(() => {
       window.clearInterval(this._tickTimer)
@@ -189,6 +216,11 @@ class Boundary extends Component {
         >
           <div className="max-w-xl mx-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <Alert variant="error" title={`Could not load ${this.props.label || 'content'}`} message={this.state.error?.message || 'A network or chunk load error occurred.'} />
+            {!this.state.isOnline && (
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-400/40 dark:bg-amber-900/20 dark:text-amber-200" role="status" aria-live="polite">
+                You appear to be offline. Reconnect and retry, or enable auto‑retry.
+              </div>
+            )}
             <div className="mt-4 flex items-center justify-center gap-3">
               <Button
                 variant="secondary"
@@ -220,6 +252,22 @@ class Boundary extends Component {
               >
                 Report issue
               </Button>
+            </div>
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <label className="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={this.state.autoRetryWhenOnline}
+                  onChange={(e) => {
+                    const v = !!e.target.checked
+                    this.setState({ autoRetryWhenOnline: v })
+                    this.props.announce?.(v ? 'Auto‑retry when online enabled' : 'Auto‑retry when online disabled', { toast: { duration: 900 } })
+                  }}
+                  className="h-3 w-3 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
+                  aria-label="Auto retry when back online"
+                />
+                Retry automatically when back online
+              </label>
             </div>
             <div className="mt-4">
               <Button
