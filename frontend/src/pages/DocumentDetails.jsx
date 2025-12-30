@@ -18,15 +18,19 @@ import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
 import { Modal } from '../components/ui/Modal'
+import { SkeletonCard, SkeletonRow, SkeletonPanel } from '../components/ui/Skeleton'
+import { useLive } from '../components/ui/LiveAnnouncer'
 
-import { DocumentViewer } from '../components/documents/DocumentViewer'
-import { AnalysisPanel } from '../components/documents/AnalysisPanel'
-import { DocumentMetadata } from '../components/documents/DocumentMetadata'
+import { lazy, Suspense } from 'react'
+const DocumentViewer = lazy(() => import('../components/documents/DocumentViewer').then(m => ({ default: m.DocumentViewer || m.default })))
+const AnalysisPanel = lazy(() => import('../components/documents/AnalysisPanel').then(m => ({ default: m.AnalysisPanel || m.default })))
+const DocumentMetadata = lazy(() => import('../components/documents/DocumentMetadata').then(m => ({ default: m.DocumentMetadata || m.default })))
 import { AskAboutDocumentModal } from '../components/documents/AskAboutDocumentModal'
 
 const TABS = ['analysis', 'metadata', 'activity', 'related']
 
 export default function DocumentDetails() {
+  const { announce } = useLive()
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -228,51 +232,77 @@ export default function DocumentDetails() {
 
       {analyzeError && <Alert variant="error" title="Analysis failed" message={analyzeError} dismissible onClose={() => setAnalyzeError(null)} />}
 
-      <div className="grid h-[calc(100vh-14rem)] gap-6 lg:grid-cols-[3fr_2fr]">
-        <DocumentViewer file={documentFile} filename={document?.name} onDownload={handleDownload} onPrint={handlePrint} />
-
-        <div className="flex h-full flex-col rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
-          <nav className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
-            <div className="flex flex-wrap items-center gap-2">
-              {TABS.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-full px-4 py-2 capitalize transition ${activeTab === tab ? 'bg-blue-600 text-white shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'}`}
-                >
-                  {tab}
-                </button>
-              ))}
+      <Suspense fallback={
+        <div className="p-4" role="status" aria-live="polite">
+          {announce('Loading document…')}
+          <div className="space-y-3">
+            <SkeletonRow className="w-64 h-5" />
+            <div className="grid grid-cols-3 gap-3">
+              <SkeletonPanel className="h-40" />
+              <SkeletonPanel className="h-40" />
+              <SkeletonPanel className="h-40" />
             </div>
-            <button type="button" className="rounded-full border border-slate-200 dark:border-slate-700 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
-              <MoreVertical className="h-4 w-4" />
-            </button>
-          </nav>
-
-          <div className="flex-1 overflow-y-auto px-6 py-6">
-            {tabContent[activeTab]}
+            <span className="sr-only">Loading document…</span>
           </div>
+        </div>
+      }>
+        <div className="grid h-[calc(100vh-14rem)] gap-6 lg:grid-cols-[3fr_2fr]">
+          <DocumentViewer file={documentFile} filename={document?.name} onDownload={handleDownload} onPrint={handlePrint} />
 
-          <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-6 py-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Quick actions</h4>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button size="sm" variant="primary" icon={Sparkles} onClick={() => setShowAskModal(true)}>
-                Ask AI
-              </Button>
-              <Button size="sm" variant="secondary" icon={Share2}>
-                Share
-              </Button>
-              <Button size="sm" variant="ghost" icon={Bot}>
-                Move to matter
-              </Button>
-              <Button size="sm" variant="danger" icon={Trash2} onClick={() => setShowDeleteModal(true)}>
-                Delete
-              </Button>
+          <div className="flex h-full flex-col rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
+            <nav className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">
+              <div className="flex flex-wrap items-center gap-2">
+                {TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={`rounded-full px-4 py-2 capitalize transition ${activeTab === tab ? 'bg-blue-600 text-white shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+              <button type="button" className="rounded-full border border-slate-200 dark:border-slate-700 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </nav>
+
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              <Suspense fallback={
+                <div className="p-4" role="status" aria-live="polite">
+                  {announce('Loading analysis…')}
+                  <div className="space-y-3">
+                    <SkeletonRow className="w-40" />
+                    <SkeletonPanel className="h-24" />
+                    <span className="sr-only">Loading analysis…</span>
+                  </div>
+                </div>
+              }>
+                {tabContent[activeTab]}
+              </Suspense>
+            </div>
+
+            <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-6 py-4">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Quick actions</h4>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button size="sm" variant="primary" icon={Sparkles} onClick={() => setShowAskModal(true)}>
+                  Ask AI
+                </Button>
+                <Button size="sm" variant="secondary" icon={Share2}>
+                  Share
+                </Button>
+                <Button size="sm" variant="ghost" icon={Bot}>
+                  Move to matter
+                </Button>
+                <Button size="sm" variant="danger" icon={Trash2} onClick={() => setShowDeleteModal(true)}>
+                  Delete
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Suspense>
 
       <AskAboutDocumentModal isOpen={showAskModal} onClose={() => setShowAskModal(false)} onSubmit={handleAskQuestion} history={questions} />
 

@@ -140,16 +140,14 @@ export default function Templates() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {categories.map((category) => (
-            <button
+            <Button
               key={category}
-              type="button"
+              variant={filters.category === category ? 'outline' : 'ghost'}
+              size="sm"
               onClick={() => setFilters({ category })}
-              className={`rounded-full border px-3 py-1 text-xs transition ${
-                filters.category === category ? 'border-blue-200 bg-blue-50 text-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800'
-              }`}
             >
               {category}
-            </button>
+            </Button>
           ))}
         </div>
         <div className="flex items-center gap-2">

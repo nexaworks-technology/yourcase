@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Archive,
@@ -20,10 +20,12 @@ import { PageHeader } from '../components/layout/PageHeader'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
-import { MatterFilters } from '../components/matters/MatterFilters'
-import { MatterCard } from '../components/matters/MatterCard'
-import { CreateMatterModal } from '../components/matters/CreateMatterModal'
+const MatterFilters = lazy(() => import('../components/matters/MatterFilters'))
+const MatterCard = lazy(() => import('../components/matters/MatterCard'))
+const CreateMatterModal = lazy(() => import('../components/matters/CreateMatterModal'))
 import { cn } from '../utils/cn'
+import { SkeletonCard, SkeletonRow, SkeletonPanel } from '../components/ui/Skeleton'
+import { useLive } from '../components/ui/LiveAnnouncer'
 
 const lawyersMock = [
   { id: 'lawyer-1', name: 'Sahil Kapoor', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=SK' },
@@ -33,6 +35,7 @@ const lawyersMock = [
 ]
 
 export default function Matters() {
+  const { announce } = useLive()
   const queryClient = useQueryClient()
   const {
     matters,
@@ -337,18 +340,29 @@ export default function Matters() {
         ))}
       </div>
 
-      <MatterFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={() => {
-          resetFilters()
-          setSearchInput('')
-        }}
-        activeCount={activeFilterCount}
-        lawyers={lawyersMock}
-        onViewToggle={handleViewToggle}
-        view={view}
-      />
+      <Suspense fallback={
+        <div className="p-4" role="status" aria-live="polite">
+          {announce('Loading filters…')}
+          <div className="space-y-3">
+            <SkeletonRow className="w-52" />
+            <SkeletonPanel className="h-9" />
+            <span className="sr-only">Loading filters…</span>
+          </div>
+        </div>
+      }>
+        <MatterFilters
+          filters={filters}
+          onChange={setFilters}
+          onReset={() => {
+            resetFilters()
+            setSearchInput('')
+          }}
+          activeCount={activeFilterCount}
+          lawyers={lawyersMock}
+          onViewToggle={handleViewToggle}
+          view={view}
+        />
+      </Suspense>
 
       {selectedArray.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm shadow-sm">
@@ -367,21 +381,39 @@ export default function Matters() {
               <option value="on-hold">Mark as On Hold</option>
               <option value="archived">Mark as Archived</option>
             </select>
-            <Button variant="ghost" size="sm" onClick={handleBulkStatusUpdate}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBulkStatusUpdate}
+              disabled={selectedArray.length === 0}
+              disabledTooltip="Select matters first"
+            >
               Update status
             </Button>
-            <Button variant="ghost" size="sm" icon={Users} onClick={handleBulkAssign}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Users}
+              onClick={handleBulkAssign}
+              disabled={selectedArray.length === 0}
+              disabledTooltip="Select matters first"
+            >
               Assign lawyers
             </Button>
-            <Button variant="ghost" size="sm" icon={Archive} onClick={handleBulkArchive}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Archive}
+              onClick={handleBulkArchive}
+              disabled={selectedArray.length === 0}
+              disabledTooltip="Select matters first"
+            >
               Archive
             </Button>
             <Button variant="ghost" size="sm" icon={FileSpreadsheet} onClick={handleExportCsv}>
               Export CSV
             </Button>
-            <button type="button" onClick={clearSelection} className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
-              Clear
-            </button>
+            <Button variant="ghost" size="sm" onClick={clearSelection}>Clear</Button>
           </div>
         </div>
       )}
@@ -528,12 +560,23 @@ export default function Matters() {
         </div>
       )}
 
-      <CreateMatterModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={(payload) => createMutation.mutate(payload)}
-        lawyers={lawyersMock}
-      />
+      <Suspense fallback={
+        <div className="p-6" role="status" aria-live="polite">
+          {announce('Preparing form…')}
+          <div className="space-y-3">
+            <SkeletonRow className="w-64 h-5" />
+            <SkeletonPanel className="h-24 border-dashed" />
+            <span className="sr-only">Preparing form…</span>
+          </div>
+        </div>
+      }>
+        <CreateMatterModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={(payload) => createMutation.mutate(payload)}
+          lawyers={lawyersMock}
+        />
+      </Suspense>
     </div>
   )
 }

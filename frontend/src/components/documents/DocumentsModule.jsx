@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { Plus, Search } from 'lucide-react'
 
-import { DocumentCard } from './DocumentCard'
+import { lazy, Suspense } from 'react'
+const DocumentCard = lazy(() => import('./DocumentCard').then(m => ({ default: m.DocumentCard || m.default })))
 import { Button } from '../ui/Button'
 import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
@@ -53,18 +54,20 @@ export function DocumentsModule({ documents = [], onUpload, onAnalyze, onDownloa
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {filtered.map((document) => (
-          <DocumentCard
-            key={document.id}
-            document={document}
-            onPreview={() => onDownload?.(document.id)}
-            onAnalyze={() => onAnalyze?.(document.id)}
-            onDownload={() => onDownload?.(document.id)}
-            onDelete={() => {}}
-          />
-        ))}
-      </div>
+      <Suspense fallback={<div className="p-4 text-sm text-slate-500">Loading documents…</div>}>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((document) => (
+            <DocumentCard
+              key={document.id}
+              document={document}
+              onPreview={() => onDownload?.(document.id)}
+              onAnalyze={() => onAnalyze?.(document.id)}
+              onDownload={() => onDownload?.(document.id)}
+              onDelete={() => {}}
+            />
+          ))}
+        </div>
+      </Suspense>
 
       {filtered.length === 0 && (
         <Alert

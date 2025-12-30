@@ -23,6 +23,7 @@ const defaultState = {
     defaultQueryType: 'Summary',
     theme: 'light',
     compactMode: false,
+    doNotDisturb: false,
     defaultView: 'grid',
     language: 'English',
     timezone: 'Asia/Kolkata',

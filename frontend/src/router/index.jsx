@@ -1,4 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { lazy } from 'react'
+import { RouteChunkBoundary } from '../components/RouteChunkBoundary'
 
 import { MainLayout } from '../components/layout/MainLayout'
 import { ProtectedRoute } from '../components/ProtectedRoute'
@@ -10,34 +12,54 @@ import NotFound from '../pages/NotFound'
 import Forbidden from '../pages/Forbidden'
 import ServerError from '../pages/ServerError'
 
-import {
-  DashboardPage,
-  AIAssistantPage,
-  DocumentsPage,
-  DocumentDetailsPage,
-  MattersPage,
-  MatterDetailsPage,
-  WorkflowsPage,
-  WorkflowEditorPage,
-  TemplatesPage,
-  AnalyticsPage,
-  SettingsPage,
-  ProfilePage,
-} from '../pages/protected'
+// Eager-lightweight pages
+import { DashboardPage, AIAssistantPage, WorkflowsPage, WorkflowEditorPage, AnalyticsPage, ProfilePage } from '../pages/protected'
+
+// Lazily load heavier pages (documents/matters/templates/settings)
+const DocumentsPage = lazy(() => import('../pages/Documents'))
+const DocumentDetailsPage = lazy(() => import('../pages/DocumentDetails'))
+const MattersPage = lazy(() => import('../pages/Matters'))
+const MatterDetailsPage = lazy(() => import('../pages/MatterDetails'))
+const TemplatesPage = lazy(() => import('../pages/Templates'))
+const SettingsPage = lazy(() => import('../pages/Settings'))
 
 const protectedChildren = [
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/ai-assistant', element: <AIAssistantPage /> },
-  { path: '/documents', element: <DocumentsPage /> },
-  { path: '/documents/:id', element: <DocumentDetailsPage /> },
-  { path: '/matters', element: <MattersPage /> },
-  { path: '/matters/:id', element: <MatterDetailsPage /> },
+  { path: '/documents', element: (
+      <RouteChunkBoundary label="documents">
+        <DocumentsPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/documents/:id', element: (
+      <RouteChunkBoundary label="document">
+        <DocumentDetailsPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/matters', element: (
+      <RouteChunkBoundary label="matters">
+        <MattersPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/matters/:id', element: (
+      <RouteChunkBoundary label="matter">
+        <MatterDetailsPage />
+      </RouteChunkBoundary>
+    ) },
   { path: '/workflows', element: <WorkflowsPage /> },
   { path: '/workflows/:id', element: <WorkflowEditorPage /> },
-  { path: '/templates', element: <TemplatesPage /> },
+  { path: '/templates', element: (
+      <RouteChunkBoundary label="templates">
+        <TemplatesPage />
+      </RouteChunkBoundary>
+    ) },
   { path: '/analytics', element: <AnalyticsPage /> },
   { path: '/profile', element: <ProfilePage /> },
-  { path: '/settings', element: <SettingsPage />, roles: ['admin'] },
+  { path: '/settings', element: (
+      <RouteChunkBoundary label="settings">
+        <SettingsPage />
+      </RouteChunkBoundary>
+    ), roles: ['admin'] },
 ]
 
 export const router = createBrowserRouter([

@@ -61,14 +61,18 @@ export const matterService = {
   },
 
   async exportMatter(id) {
-    // Use raw axios instance to ensure we get a Blob, not interceptor data unwrap
-    const axios = (await import('axios')).default
+    // Use the same api instance but override responseType and avoid response interceptor unwrap by using request config and returning raw
     const token = localStorage.getItem('auth_token')
-    const res = await axios.get(`${api.defaults.baseURL}/api/matters/${id}/export`, {
+    const res = await api.request({
+      url: `/api/matters/${id}/export`,
+      method: 'GET',
       responseType: 'blob',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
+      transformResponse: [(data) => data], // prevent axios from trying to parse
+      // Do not rely on api.interceptors.response unwrap since we need the raw blob
+      // The api instance unwraps response.data by default; here we directly access res.data (blob)
     })
-    return res.data
+    return res
   },
 }
 

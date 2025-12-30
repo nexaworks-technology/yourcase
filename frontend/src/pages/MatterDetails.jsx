@@ -31,7 +31,9 @@ import { DocumentsModule } from '../components/documents/DocumentsModule'
 import { QueryList } from '../components/ai/QueryList'
 import { FinancialSummary } from '../components/dashboard/FinancialSummary'
 import { Modal } from '../components/ui/Modal'
-import { CreateMatterModal } from '../components/matters/CreateMatterModal'
+// Lazy load the heavy CreateMatterModal to avoid eager bundling
+import { lazy, Suspense } from 'react'
+const CreateMatterModal = lazy(() => import('../components/matters/CreateMatterModal'))
 
 const tabs = ['Overview', 'Documents', 'Queries', 'Timeline', 'Team', 'Financials']
 
@@ -341,15 +343,15 @@ export default function MatterDetails() {
                   <MoreVertical className="h-4 w-4" />
                 </summary>
                 <div className="absolute right-0 mt-2 w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-lg">
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={() => setShowDeleteConfirm(true)}>
-                    <Trash2 className="h-4 w-4" /> Delete
-                  </button>
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={() => setNotice({ type: 'info', message: 'Duplicate matter coming soon.' })}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start" leftIcon={Trash2} onClick={() => setShowDeleteConfirm(true)}>
+                    Delete
+                  </Button>
+                  <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => setNotice({ type: 'info', message: 'Duplicate matter coming soon.' })}>
                     Duplicate
-                  </button>
-                  <button type="button" className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" onClick={handleExport}>
-                    <Download className="h-4 w-4" /> Export
-                  </button>
+                  </Button>
+                  <Button variant="ghost" size="sm" className="w-full justify-start" leftIcon={Download} onClick={handleExport}>
+                    Export
+                  </Button>
                 </div>
               </details>
             </div>
@@ -371,12 +373,14 @@ export default function MatterDetails() {
 
       <div>{tabContent[activeTab]}</div>
 
-      <CreateMatterModal
-        isOpen={showEdit}
-        onClose={() => setShowEdit(false)}
-        onSubmit={(payload) => matterService.updateMatter(id, payload)}
-        lawyers={[]}
-      />
+      <Suspense fallback={null}>
+        <CreateMatterModal
+          isOpen={showEdit}
+          onClose={() => setShowEdit(false)}
+          onSubmit={(payload) => matterService.updateMatter(id, payload)}
+          lawyers={[]}
+        />
+      </Suspense>
 
       <Modal
         isOpen={showArchiveConfirm}

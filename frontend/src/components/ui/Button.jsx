@@ -1,99 +1,200 @@
-import { forwardRef } from 'react'
-import { Loader2 } from 'lucide-react'
 import PropTypes from 'prop-types'
+import { forwardRef, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { cn } from '../../utils/cn'
 
-const variants = {
-  primary:
-    'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg hover:from-blue-600 hover:to-blue-600 hover:shadow-xl active:scale-[0.98] focus-visible:ring-blue-300',
-  secondary:
-    'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm hover:bg-slate-200 dark:bg-slate-700 hover:text-slate-900 dark:text-slate-100 focus-visible:ring-slate-200',
-  outline:
-    'border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-200',
-  ghost:
-    'text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-100',
-  danger:
-    'bg-rose-500 text-white hover:bg-rose-600 focus-visible:ring-rose-200',
-  success:
-    'bg-emerald-500 text-white hover:bg-emerald-600 focus-visible:ring-emerald-200',
-}
+const base =
+  'relative inline-flex items-center justify-center whitespace-nowrap rounded-xl font-medium transition yc-ink focus-visible:yc-focus yc-focus-anim disabled:opacity-60 disabled:pointer-events-none'
 
 const sizes = {
-  sm: 'h-9 min-w-[7rem] px-3 text-sm',
-  md: 'h-11 min-w-[8.5rem] px-4 text-sm',
-  lg: 'h-12 min-w-[10rem] px-5 text-base',
-  xl: 'h-14 min-w-[12rem] px-6 text-base',
+  sm: 'text-xs px-3 py-2 gap-2',
+  md: 'text-sm px-4 py-2.5 gap-2.5',
+  lg: 'text-sm px-5 py-3 gap-3',
 }
 
-export const Button = forwardRef(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'md',
-      className,
-      loading = false,
-      disabled = false,
-      icon: Icon,
-      iconPosition = 'left',
-      onClick,
-      type = 'button',
-      ...props
-    },
-    ref,
-  ) => {
-    const isDisabled = disabled || loading
+const variants = {
+  primary: 'bg-accent text-white hover:opacity-90',
+  secondary:
+    'bg-gray-900 text-white hover:opacity-90 dark:bg-gray-100 dark:text-gray-900',
+  outline:
+    'border border-accent text-accent hover:bg-accent/10 dark:hover:bg-accent/15',
+  ghost:
+    'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
+  link: 'yc-accent-link px-0 py-0',
+}
 
-    const handleClick = (event) => {
-      if (isDisabled) {
-        event.preventDefault()
-        return
-      }
-      onClick?.(event)
+export const Button = forwardRef(function Button({
+  children,
+  className,
+  variant = 'primary',
+  size = 'md',
+  leftIcon: LeftIcon,
+  rightIcon: RightIcon,
+  loading = false,
+  to,
+  as = 'button',
+  iconOnly = false,
+  disabledTooltip,
+  ...rest
+}, ref) {
+  // Warn in dev when iconOnly is used without an aria-label
+  if (iconOnly && process.env.NODE_ENV !== 'production') {
+    const hasAria = rest['aria-label'] || rest['ariaLabel']
+    if (!hasAria) {
+      // eslint-disable-next-line no-console
+      console.warn('Button: iconOnly buttons must include an aria-label for accessibility')
     }
+  }
 
+  const content = (
+    <>
+      {LeftIcon && (
+        <LeftIcon className={cn('h-4 w-4', loading ? 'opacity-0' : '')} aria-hidden="true" />
+      )}
+      {iconOnly ? (
+        <span className="sr-only">{typeof children === 'string' ? children : 'Action'}</span>
+      ) : (
+        <span className={cn(loading ? 'opacity-0' : '')}>{children}</span>
+      )}
+      {RightIcon && (
+        <RightIcon className={cn('h-4 w-4', loading ? 'opacity-0' : '')} aria-hidden="true" />
+      )}
+      {loading && (
+        <span
+          className="absolute inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent"
+          aria-hidden="true"
+        />
+      )}
+    </>
+  )
+
+  const iconOnlySize = {
+    sm: 'h-8 w-8 p-2',
+    md: 'h-9 w-9 p-2.5',
+    lg: 'h-10 w-10 p-2.5',
+  }
+
+  const cls = cn(
+    base,
+    iconOnly ? iconOnlySize[size] : sizes[size],
+    variants[variant],
+    className,
+  )
+
+  const isDisabled = Boolean(rest.disabled) || Boolean(loading)
+  const tipRef = useRef(null)
+  const [showTip, setShowTip] = useState(false)
+  const showTimerRef = useRef(null)
+  const hideTimerRef = useRef(null)
+
+  const startHover = () => {
+    window.clearTimeout(hideTimerRef.current)
+    window.clearTimeout(showTimerRef.current)
+    showTimerRef.current = window.setTimeout(() => setShowTip(true), 220)
+  }
+  const endHover = () => {
+    window.clearTimeout(showTimerRef.current)
+    window.clearTimeout(hideTimerRef.current)
+    hideTimerRef.current = window.setTimeout(() => setShowTip(false), 50)
+  }
+
+  const wrapperProps = disabledTooltip && isDisabled
+    ? {
+        onMouseEnter: startHover,
+        onMouseLeave: endHover,
+      }
+    : {}
+
+  if (to) {
+    if (isDisabled) {
+      // Render a non-interactive element to mimic disabled link button
+      return (
+        <span className="relative inline-block" {...wrapperProps}>
+          <span className={cls} aria-disabled="true">
+            {content}
+          </span>
+          {disabledTooltip && (
+            <span
+              ref={tipRef}
+              className="yc-tooltip left-1/2"
+              style={{ top: '110%' }}
+              data-show={showTip ? 'true' : 'false'}
+              role="status"
+              aria-live="polite"
+            >
+              {disabledTooltip}
+            </span>
+          )}
+        </span>
+      )
+    }
     return (
-      <button
-        ref={ref}
-        type={type}
-        onClick={handleClick}
-        aria-busy={loading}
-        aria-disabled={isDisabled}
-        disabled={isDisabled}
-        className={cn(
-          'relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60',
-          variants[variant],
-          sizes[size],
-          className,
-        )}
-        {...props}
-      >
-        <span className="pointer-events-none absolute inset-0 bg-white dark:bg-slate-900/20 opacity-0 transition-opacity duration-200" aria-hidden="true" />
-        {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <>
-            {Icon && iconPosition === 'left' && <Icon className="h-4 w-4" aria-hidden="true" />}
-            <span>{children}</span>
-            {Icon && iconPosition === 'right' && <Icon className="h-4 w-4" aria-hidden="true" />}
-          </>
-        )}
-      </button>
+      <Link to={to} className={cls} ref={ref} {...rest}>
+        {content}
+      </Link>
     )
-  },
-)
+  }
 
-Button.displayName = 'Button'
+  const Comp = as
+  const buttonEl = (
+    <Comp
+      className={cls}
+      ref={ref}
+      onFocus={(e) => {
+        if (disabledTooltip && isDisabled) {
+          window.clearTimeout(showTimerRef.current)
+          window.clearTimeout(hideTimerRef.current)
+          setShowTip(true)
+        }
+        rest.onFocus?.(e)
+      }}
+      onBlur={(e) => {
+        if (disabledTooltip && isDisabled) {
+          window.clearTimeout(showTimerRef.current)
+          window.clearTimeout(hideTimerRef.current)
+          setShowTip(false)
+        }
+        rest.onBlur?.(e)
+      }}
+      {...rest}
+    >
+      {content}
+    </Comp>
+  )
+
+  if (disabledTooltip && isDisabled) {
+    return (
+      <span className="relative inline-block" {...wrapperProps}>
+        {buttonEl}
+        <span
+          ref={tipRef}
+          className="yc-tooltip left-1/2"
+          style={{ top: '110%' }}
+          data-show={showTip ? 'true' : 'false'}
+          role="status"
+          aria-live="polite"
+        >
+          {disabledTooltip}
+        </span>
+      </span>
+    )
+  }
+
+  return buttonEl
+})
 
 Button.propTypes = {
-  variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'ghost', 'danger', 'success']),
-  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
-  loading: PropTypes.bool,
-  disabled: PropTypes.bool,
-  icon: PropTypes.elementType,
-  iconPosition: PropTypes.oneOf(['left', 'right']),
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  onClick: PropTypes.func,
-  type: PropTypes.string,
+  variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'ghost', 'link']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  leftIcon: PropTypes.elementType,
+  rightIcon: PropTypes.elementType,
+  loading: PropTypes.bool,
+  to: PropTypes.string,
+  as: PropTypes.oneOfType([PropTypes.string, PropTypes.elementType]),
+  iconOnly: PropTypes.bool,
+  disabledTooltip: PropTypes.string,
 }
+
+export default Button

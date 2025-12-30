@@ -17,7 +17,7 @@ import { RecentQueriesWidget } from '../components/dashboard/RecentQueriesWidget
 import { ActivityTimeline } from '../components/dashboard/ActivityTimeline'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
-import { Skeleton } from '../components/ui/Skeleton'
+import { SkeletonRow } from '../components/ui/Skeleton'
 import { dashboardService } from '../services/dashboardService'
 import { cn } from '../utils/cn'
 
@@ -45,7 +45,11 @@ export default function Dashboard() {
             Good evening, Alex · {today}
           </span>
         }
-        actions={<Button icon={Sparkles}>Start new session</Button>}
+        actions={
+          <Button leftIcon={Sparkles} variant="primary" size="md">
+            Start new session
+          </Button>
+        }
       />
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -96,9 +100,9 @@ export default function Dashboard() {
             </div>
             {docsLoading ? (
               <div className="mt-6 space-y-4">
-                <Skeleton variant="text" height={18} />
-                <Skeleton variant="text" height={18} />
-                <Skeleton variant="text" height={18} />
+                <SkeletonRow className="h-4" />
+                <SkeletonRow className="h-4" />
+                <SkeletonRow className="h-4" />
               </div>
             ) : (
               <ul className="mt-6 space-y-4">
@@ -135,8 +139,8 @@ export default function Dashboard() {
             </div>
             {mattersLoading ? (
               <div className="mt-6 space-y-4">
-                <Skeleton variant="text" height={18} />
-                <Skeleton variant="text" height={18} />
+                <SkeletonRow className="h-4" />
+                <SkeletonRow className="h-4" />
               </div>
             ) : (
               <ul className="mt-6 space-y-4">

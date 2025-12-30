@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { cn } from '../../utils/cn'
-import { Skeleton } from '../ui/Skeleton'
+import { SkeletonRow } from '../ui/Skeleton'
 
 const colorMap = {
   primary: 'from-blue-600/90 to-blue-700',
@@ -14,9 +14,9 @@ export function StatCard({ title, value, icon: Icon, trend, color = 'primary', l
   if (loading) {
     return (
       <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-md">
-        <Skeleton variant="text" width="40%" className="mb-4" />
-        <Skeleton variant="text" width="60%" height={36} />
-        <Skeleton variant="text" width="50%" className="mt-6" />
+        <SkeletonRow className="w-2/5 h-4 mb-4" />
+        <SkeletonRow className="w-3/5 h-9" />
+        <SkeletonRow className="w-1/2 h-4 mt-6" />
       </div>
     )
   }

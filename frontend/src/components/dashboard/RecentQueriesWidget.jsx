@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useQuery } from '@tanstack/react-query'
 import { Sparkles } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { Skeleton } from '../ui/Skeleton'
+import { SkeletonRow } from '../ui/Skeleton'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 
@@ -29,9 +29,9 @@ export function RecentQueriesWidget({ onSelect }) {
 
       {isLoading ? (
         <div className="mt-6 space-y-4">
-          <Skeleton variant="text" height={18} />
-          <Skeleton variant="text" height={18} />
-          <Skeleton variant="text" height={18} />
+          <SkeletonRow className="h-4" />
+          <SkeletonRow className="h-4" />
+          <SkeletonRow className="h-4" />
         </div>
       ) : (
         <ul className="mt-6 space-y-4">

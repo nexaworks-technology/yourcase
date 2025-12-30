@@ -3,6 +3,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { SettingsSidebar } from "./SettingsSidebar";
 import SettingsSection from "./SettingsSection";
+import { Button } from "../ui/Button";
 import ThemeSelector from "./ThemeSelector";
 import ChangePasswordForm from "./ChangePasswordForm";
 import NotificationToggles from "./NotificationToggles";
@@ -58,12 +59,7 @@ const sections = {
               2FA is currently{" "}
               <span className="font-semibold text-red-500">disabled</span>.
             </p>
-            <button
-              type="button"
-              className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-500"
-            >
-              Enable 2FA
-            </button>
+            <Button variant="primary" size="md">Enable 2FA</Button>
           </div>
         </SettingsSection>
       </div>
@@ -89,7 +85,8 @@ export function SettingsDrawer({ isOpen, onClose }) {
   const { setTheme: setStoredTheme } = useSettingsStore();
 
   const handleThemeChange = (value) => {
-    setStoredTheme(value);
+    // Keep zustand store and ThemeContext in sync; ThemeProvider also subscribes back
+    try { setStoredTheme(value); } catch(_) {}
     setTheme(value);
   };
   const [activeTab, setActiveTab] = useState("general");

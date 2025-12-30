@@ -1,1 +1,140 @@
 @import 'tailwindcss';
+
+/* Theme fade transition on root */
+html[data-theme] body,
+html[data-theme] #root {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+/* Accent-colored focus ring with outer contrast ring */
+.yc-focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color), 0 0 0 4px var(--yc-focus-outer);
+}
+
+/* Utility classes to use accent color */
+.text-accent { color: var(--accent-color); }
+.bg-accent { background-color: var(--accent-color); }
+.border-accent { border-color: var(--accent-color); }
+.ring-accent { --tw-ring-color: var(--accent-color); }
+
+/* Ripple-like hover overlay using accent color */
+.yc-ink { position: relative; overflow: hidden; }
+.yc-ink::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160%;
+  height: 160%;
+  background: var(--accent-color);
+  opacity: 0;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%) scale(0.9);
+  transition: transform 200ms ease, opacity 200ms ease;
+  pointer-events: none;
+}
+.yc-ink:hover::after { opacity: 0.12; transform: translate(-50%, -50%) scale(1); }
+
+/* Accent link hover polish */
+.yc-accent-link { color: var(--accent-color); text-underline-offset: 2px; }
+.yc-accent-link:hover { text-decoration: underline; opacity: .9; }
+
+/* Gentle focus scale/opacity animation */
+.yc-focus-anim { transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease; }
+.yc-focus-anim:focus-visible { transform: scale(0.985); opacity: 0.98; }
+
+/* Cross-fade overlay for theme switching */
+.yc-theme-fade {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: var(--yc-overlay-bg, #fff);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  z-index: 250;
+}
+.yc-theme-fade[data-show="true"] {
+  opacity: 0.22;
+}
+
+/* Subtle scale/opacity animation for bars during theme switch */
+.yc-theme-anim {
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+.yc-theme-anim[data-active="true"] {
+  transform: scale(0.998);
+  opacity: 0.985;
+}
+
+/* Generic popover enter/exit animation */
+.yc-pop {
+  transform-origin: top right;
+  transform: scale(0.985);
+  opacity: 0;
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+.yc-pop[data-open="true"] {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Toast enter/exit motion. Reduced motion: disabled below. */
+.yc-toast.data-enter { opacity: 0; transform: translateY(8px) scale(0.98); }
+.yc-toast.data-exit { opacity: 1; transform: translateY(0) scale(1); }
+.yc-toast { transition: opacity 160ms ease, transform 160ms ease; }
+.yc-toast.data-enter { opacity: 1; transform: translateY(0) scale(1); }
+.yc-toast.data-exit { opacity: 0; transform: translateY(8px) scale(0.98); }
+
+/* Skeleton motion + shimmer override for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse { animation: none !important; }
+  .yc-toast { transition: none !important; }
+}
+
+/* Respect user "reduced motion" preference */
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body,
+  html[data-theme] #root,
+  .yc-theme-fade,
+  .yc-theme-anim,
+  .yc-tooltip,
+  .yc-pop {
+    transition: none !important;
+  }
+  .yc-theme-anim[data-active="true"] {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .yc-theme-fade[data-show="true"] {
+    opacity: 0 !important; /* disable overlay dim */
+  }
+}
+
+/* Tooltip utility (lightweight) */
+.yc-tooltip {
+  position: absolute;
+  z-index: 200;
+  background: rgba(17, 24, 39, 0.95);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  pointer-events: none;
+  transform: translate(-50%, -8px);
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.yc-tooltip[data-show="true"] {
+  opacity: 1;
+  transform: translate(-50%, -12px);
+}
+
+/* Alignment variants to reduce viewport clipping */
+.yc-tooltip[data-align="left"][data-show="true"] {
+  transform: translate(-20%, -12px);
+}
+.yc-tooltip[data-align="right"][data-show="true"] {
+  transform: translate(-80%, -12px);
+}

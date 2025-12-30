@@ -11,7 +11,15 @@ export function PageHeader({ title, description, breadcrumbs, actions, className
           {description && <p className="mt-2 max-w-3xl text-sm text-slate-600 dark:text-slate-300">{description}</p>}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
+      {actions && (
+        <div className="flex flex-wrap items-center gap-3">
+          {Array.isArray(actions)
+            ? actions.map((node, i) => (
+                <div key={i} className="yc-focus-anim">{node}</div>
+              ))
+            : <div className="yc-focus-anim">{actions}</div>}
+        </div>
+      )}
     </header>
   )
 }

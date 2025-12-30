@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Paperclip, Mic, Send, Loader2 } from 'lucide-react'
+import { Button } from '../ui/Button'
 import { cn } from '../../utils/cn'
 
 const MAX_LENGTH = 10000
@@ -50,33 +51,25 @@ export function ChatInput({ initialValue = '', loading, onSubmit, onAttach }) {
       />
       <div className="mt-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onAttach}
-            className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300"
-            aria-label="Attach document"
-          >
+          <Button variant="secondary" size="sm" iconOnly aria-label="Attach document" onClick={onAttach}>
             <Paperclip className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-slate-500 dark:text-slate-400 dark:text-slate-500 transition hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300"
-            aria-label="Voice input"
-          >
+          </Button>
+          <Button variant="secondary" size="sm" iconOnly aria-label="Voice input">
             <Mic className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
-        <button
-          type="button"
+        <Button
           onClick={handleSubmit}
           disabled={!value.trim() || loading}
-          className={cn(
-            'inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300',
-          )}
+          disabledTooltip={!value.trim() ? 'Type a message to enable' : loading ? 'Sending…' : undefined}
+          variant="primary"
+          size="md"
+          leftIcon={loading ? Loader2 : Send}
+          loading={loading}
+          aria-label="Send message"
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           {loading ? 'Sending…' : 'Send'}
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { formatDistanceToNow } from 'date-fns'
 import { FileIcon, Bot, Download, Trash2 } from 'lucide-react'
+import { Button } from '../ui/Button'
 
 export function DocumentPreview({
   document,
@@ -42,15 +43,9 @@ export function DocumentPreview({
           YourCase AI
         </div>
         <div className="flex gap-2">
-          <button type="button" className="rounded-xl bg-blue-600 px-3 py-2 text-sm text-white" onClick={onAnalyze}>
-            Analyze
-          </button>
-          <button type="button" className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm text-slate-600 dark:text-slate-300" onClick={onDownload}>
-            Download
-          </button>
-          <button type="button" className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-600" onClick={onDelete}>
-            <Trash2 className="mr-1 inline h-4 w-4" /> Delete
-          </button>
+          <Button variant="primary" size="sm" onClick={onAnalyze}>Analyze</Button>
+          <Button variant="outline" size="sm" leftIcon={Download} onClick={onDownload}>Download</Button>
+          <Button variant="ghost" size="sm" leftIcon={Trash2} aria-label="Delete document" onClick={onDelete}>Delete</Button>
         </div>
       </footer>
     </div>

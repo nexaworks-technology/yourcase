@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { AlertCircle, CheckCircle2, FileText, Sparkles, Upload } from 'lucide-react'
-import { Skeleton } from '../ui/Skeleton'
+import { SkeletonRow } from '../ui/Skeleton'
 
 const iconMap = {
   query: Sparkles,
@@ -28,9 +28,9 @@ export function ActivityTimeline() {
       <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Activity timeline</h2>
       {isLoading ? (
         <div className="mt-6 space-y-4">
-          <Skeleton variant="text" height={18} />
-          <Skeleton variant="text" height={18} />
-          <Skeleton variant="text" height={18} />
+          <SkeletonRow className="h-4" />
+          <SkeletonRow className="h-4" />
+          <SkeletonRow className="h-4" />
         </div>
       ) : (
         <div className="mt-6 space-y-6">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Bot, Download, LayoutGrid, List, Plus, Search, Trash2, Eye } from 'lucide-react'
@@ -6,15 +6,18 @@ import { documentService } from '../services/documentService'
 import { matterService } from '../services/matterService'
 import { useDocumentStore } from '../store/documentStore'
 import { PageHeader } from '../components/layout/PageHeader'
-import { DocumentFilters } from '../components/documents/DocumentFilters'
-import { DocumentUpload } from '../components/documents/DocumentUpload'
-import { DocumentCard } from '../components/documents/DocumentCard'
+const DocumentFilters = lazy(() => import('../components/documents/DocumentFilters'))
+const DocumentUpload = lazy(() => import('../components/documents/DocumentUpload'))
+const DocumentCard = lazy(() => import('../components/documents/DocumentCard'))
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
 import { cn } from '../utils/cn'
+import { SkeletonCard, SkeletonRow, SkeletonPanel } from '../components/ui/Skeleton'
+import { useLive } from '../components/ui/LiveAnnouncer'
 
 export default function Documents() {
+  const { announce } = useLive()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const {
@@ -218,16 +221,27 @@ export default function Documents() {
         <Alert variant="error" title="Something went wrong" message={error} dismissible onClose={() => setError(null)} />
       )}
 
-      <DocumentFilters
-        matters={matters}
-        documentTypes={documentTypes}
-        filters={filters}
-        onChange={setFilters}
-        onReset={resetFilters}
-        onViewToggle={toggleView}
-        view={view}
-        activeCount={activeFilterCount}
-      />
+      <Suspense fallback={
+        <div className="p-4" role="status" aria-live="polite">
+          {announce('Loading filters…')}
+          <div className="space-y-3">
+            <SkeletonRow className="w-52" />
+            <SkeletonPanel className="h-9" />
+            <span className="sr-only">Loading filters…</span>
+          </div>
+        </div>
+      }>
+        <DocumentFilters
+          matters={matters}
+          documentTypes={documentTypes}
+          filters={filters}
+          onChange={setFilters}
+          onReset={resetFilters}
+          onViewToggle={toggleView}
+          view={view}
+          activeCount={activeFilterCount}
+        />
+      </Suspense>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm">
         <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
@@ -240,87 +254,129 @@ export default function Documents() {
         </div>
         {selectedIds.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="ghost" size="sm" icon={Download} onClick={handleBulkDownload}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Download}
+              onClick={handleBulkDownload}
+              disabled={selectedIds.length === 0}
+              disabledTooltip="Select documents first"
+            >
               Bulk download
             </Button>
-            <Button variant="ghost" size="sm" icon={Bot} onClick={handleBulkAnalyze} loading={analyzeOne.isLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Bot}
+              onClick={handleBulkAnalyze}
+              loading={analyzeOne.isLoading}
+              disabled={selectedIds.length === 0}
+              disabledTooltip="Select documents first"
+            >
               Analyze with AI
             </Button>
-            <Button variant="ghost" size="sm" icon={Plus} onClick={handleBulkTag}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Plus}
+              onClick={handleBulkTag}
+              disabled={selectedIds.length === 0}
+              disabledTooltip="Select documents first"
+            >
               Tag
             </Button>
-            <Button variant="danger" size="sm" icon={Trash2} onClick={handleBulkDelete} loading={deleteMutation.isLoading}>
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={handleBulkDelete}
+              loading={deleteMutation.isLoading}
+              disabled={selectedIds.length === 0}
+              disabledTooltip="Select documents first"
+            >
               Delete
             </Button>
-            <button type="button" onClick={clearSelection} className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 dark:text-slate-300">
+            <Button variant="ghost" size="sm" onClick={clearSelection}>
               Clear
-            </button>
+            </Button>
           </div>
         )}
       </div>
 
       <div className="space-y-6">
-        {view === 'grid' ? (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {documents.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                view="grid"
-                onPreview={() => navigate(`/documents/${document.id}`)}
-                onAnalyze={() => handleAnalyzeSingle(document.id)}
-                onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
-                  const url = window.URL.createObjectURL(blob)
-                  const anchor = document.createElement('a')
-                  anchor.href = url
-                  anchor.download = document.name || 'document'
-                  anchor.click()
-                  window.URL.revokeObjectURL(url)
-                }).catch((downloadError) => setError(downloadError.message))}
-                onDelete={() => deleteMutation.mutate(document.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.length === documents.length && documents.length > 0}
-                  onChange={(event) => (event.target.checked ? selectAll(documents.map((doc) => doc.id)) : clearSelection())}
-                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
-                />
-              </label>
-              <span>Document</span>
-              <span>Type</span>
-              <span>Matter</span>
-              <span>Uploaded</span>
-              <span>Size</span>
-              <span className="text-right">Status</span>
+        <Suspense fallback={
+          <div className="p-4" role="status" aria-live="polite">
+            {announce('Loading documents…')}
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} className="h-40" />
+              ))}
             </div>
-            {documents.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                view="list"
-                onSelect={selectDocument}
-                selected={selectedDocuments.has(document.id)}
-                onPreview={() => navigate(`/documents/${document.id}`)}
-                onAnalyze={() => handleAnalyzeSingle(document.id)}
-                onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
-                  const url = window.URL.createObjectURL(blob)
-                  const anchor = document.createElement('a')
-                  anchor.href = url
-                  anchor.download = document.name || 'document'
-                  anchor.click()
-                  window.URL.revokeObjectURL(url)
-                }).catch((downloadError) => setError(downloadError.message))}
-                onDelete={() => deleteMutation.mutate(document.id)}
-              />
-            ))}
+            <span className="sr-only">Loading documents…</span>
           </div>
-        )}
+        }>
+          {view === 'grid' ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {documents.map((document) => (
+                <DocumentCard
+                  key={document.id}
+                  document={document}
+                  view="grid"
+                  onPreview={() => navigate(`/documents/${document.id}`)}
+                  onAnalyze={() => handleAnalyzeSingle(document.id)}
+                  onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
+                    const url = window.URL.createObjectURL(blob)
+                    const anchor = document.createElement('a')
+                    anchor.href = url
+                    anchor.download = document.name || 'document'
+                    anchor.click()
+                    window.URL.revokeObjectURL(url)
+                  }).catch((downloadError) => setError(downloadError.message))}
+                  onDelete={() => deleteMutation.mutate(document.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="grid grid-cols-[auto_1.2fr_1fr_1fr_1fr_0.8fr_auto] items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.length === documents.length && documents.length > 0}
+                    onChange={(event) => (event.target.checked ? selectAll(documents.map((doc) => doc.id)) : clearSelection())}
+                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-400"
+                  />
+                </label>
+                <span>Document</span>
+                <span>Type</span>
+                <span>Matter</span>
+                <span>Uploaded</span>
+                <span>Size</span>
+                <span className="text-right">Status</span>
+              </div>
+              {documents.map((document) => (
+                <DocumentCard
+                  key={document.id}
+                  document={document}
+                  view="list"
+                  onSelect={selectDocument}
+                  selected={selectedDocuments.has(document.id)}
+                  onPreview={() => navigate(`/documents/${document.id}`)}
+                  onAnalyze={() => handleAnalyzeSingle(document.id)}
+                  onDownload={() => documentService.downloadDocument(document.id).then((blob) => {
+                    const url = window.URL.createObjectURL(blob)
+                    const anchor = document.createElement('a')
+                    anchor.href = url
+                    anchor.download = document.name || 'document'
+                    anchor.click()
+                    window.URL.revokeObjectURL(url)
+                  }).catch((downloadError) => setError(downloadError.message))}
+                  onDelete={() => deleteMutation.mutate(document.id)}
+                />
+              ))}
+            </div>
+          )}
+        </Suspense>
 
         {documents.length === 0 && !isFetching && (
           <div className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-10 text-center shadow-sm">
@@ -373,14 +429,25 @@ export default function Documents() {
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Upload Documents</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Add files to the vault and immediately analyze them with YourCase AI.</p>
             <div className="mt-6">
-              <DocumentUpload
-                matters={matters}
-                documentTypes={documentTypes}
-                onSuccess={() => {
-                  setShowUpload(false)
-                  queryClient.invalidateQueries(['documents'])
-                }}
-              />
+              <Suspense fallback={
+                <div className="p-6" role="status" aria-live="polite">
+                  {announce('Preparing uploader…')}
+                  <div className="space-y-3">
+                    <SkeletonRow className="w-64 h-5" />
+                    <SkeletonPanel className="h-24 border-dashed" />
+                    <span className="sr-only">Preparing uploader…</span>
+                  </div>
+                </div>
+              }>
+                <DocumentUpload
+                  matters={matters}
+                  documentTypes={documentTypes}
+                  onSuccess={() => {
+                    setShowUpload(false)
+                    queryClient.invalidateQueries(['documents'])
+                  }}
+                />
+              </Suspense>
             </div>
           </div>
         </div>

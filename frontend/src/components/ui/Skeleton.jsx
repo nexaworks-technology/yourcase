@@ -1,44 +1,26 @@
 import PropTypes from 'prop-types'
-import { cn } from '../../utils/cn'
 
-const variantStyles = {
-  text: 'h-4 rounded-full',
-  circular: 'rounded-full',
-  rectangular: 'rounded-xl',
-}
-
-const animationStyles = {
-  pulse: 'animate-pulse bg-slate-200 dark:bg-slate-700/70',
-  wave: 'relative overflow-hidden bg-slate-200 dark:bg-slate-700/70 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.6s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent',
-}
-
-export function Skeleton({ variant = 'text', width = '100%', height, count = 1, className, animation = 'pulse' }) {
-  const style = { width, height }
-
+export function SkeletonCard({ className = '' }) {
   return (
-    <div className="space-y-3">
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className={cn('bg-slate-200 dark:bg-slate-700/60', variantStyles[variant], animationStyles[animation], className)}
-          style={style}
-          aria-hidden="true"
-        />
-      ))}
-    </div>
+    <div className={`animate-pulse rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 ${className}`} aria-hidden="true" />
   )
 }
 
-Skeleton.propTypes = {
-  variant: PropTypes.oneOf(['text', 'circular', 'rectangular']),
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  count: PropTypes.number,
-  className: PropTypes.string,
-  animation: PropTypes.oneOf(['pulse', 'wave']),
+export function SkeletonRow({ className = '' }) {
+  return (
+    <div className={`animate-pulse h-4 rounded bg-slate-200 dark:bg-slate-800 ${className}`} aria-hidden="true" />
+  )
 }
 
-/*
-Example usage:
-<Skeleton variant="rectangular" height={180} animation="wave" />
-*/
+export function SkeletonPanel({ className = '' }) {
+  return (
+    <div className={`animate-pulse rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 ${className}`} aria-hidden="true" />
+  )
+}
+
+SkeletonCard.propTypes = { className: PropTypes.string }
+SkeletonRow.propTypes = { className: PropTypes.string }
+SkeletonPanel.propTypes = { className: PropTypes.string }
+
+export default { SkeletonCard, SkeletonRow, SkeletonPanel }
+
