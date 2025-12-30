@@ -24,8 +24,16 @@ const TemplatesPage = lazy(() => import('../pages/Templates'))
 const SettingsPage = lazy(() => import('../pages/Settings'))
 
 const protectedChildren = [
-  { path: '/dashboard', element: <DashboardPage /> },
-  { path: '/ai-assistant', element: <AIAssistantPage /> },
+  { path: '/dashboard', element: (
+      <RouteChunkBoundary label="dashboard">
+        <DashboardPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/ai-assistant', element: (
+      <RouteChunkBoundary label="ai assistant">
+        <AIAssistantPage />
+      </RouteChunkBoundary>
+    ) },
   { path: '/documents', element: (
       <RouteChunkBoundary label="documents">
         <DocumentsPage />
@@ -46,15 +54,31 @@ const protectedChildren = [
         <MatterDetailsPage />
       </RouteChunkBoundary>
     ) },
-  { path: '/workflows', element: <WorkflowsPage /> },
-  { path: '/workflows/:id', element: <WorkflowEditorPage /> },
+  { path: '/workflows', element: (
+      <RouteChunkBoundary label="workflows">
+        <WorkflowsPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/workflows/:id', element: (
+      <RouteChunkBoundary label="workflow editor">
+        <WorkflowEditorPage />
+      </RouteChunkBoundary>
+    ) },
   { path: '/templates', element: (
       <RouteChunkBoundary label="templates">
         <TemplatesPage />
       </RouteChunkBoundary>
     ) },
-  { path: '/analytics', element: <AnalyticsPage /> },
-  { path: '/profile', element: <ProfilePage /> },
+  { path: '/analytics', element: (
+      <RouteChunkBoundary label="analytics">
+        <AnalyticsPage />
+      </RouteChunkBoundary>
+    ) },
+  { path: '/profile', element: (
+      <RouteChunkBoundary label="profile">
+        <ProfilePage />
+      </RouteChunkBoundary>
+    ) },
   { path: '/settings', element: (
       <RouteChunkBoundary label="settings">
         <SettingsPage />
