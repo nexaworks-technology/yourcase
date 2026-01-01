@@ -1203,6 +1203,26 @@ export default function Settings() {
                     <span>
                       {exportChip.format} · items {Number(exportChip.count || 0)}
                     </span>
+                    <button
+                      type="button"
+                      className="ml-2 inline-flex items-center justify-center rounded px-2 py-0.5 text-[10px] text-blue-600 hover:text-blue-700 focus-visible:yc-focus"
+                      onClick={() => {
+                        try {
+                          const fmt = String(exportChip.format || 'json').toLowerCase()
+                          if (fmt === 'json' || fmt === 'csv' || fmt === 'zip') {
+                            buildExportPreview(fmt)
+                          } else {
+                            buildExportPreview('json')
+                          }
+                        } catch (_) {
+                          buildExportPreview('json')
+                        }
+                      }}
+                      title="Preview last export"
+                      aria-label="Preview last export"
+                    >
+                      Preview
+                    </button>
                   </div>
                   <button
                     type="button"
