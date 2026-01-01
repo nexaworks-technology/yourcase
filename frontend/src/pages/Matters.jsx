@@ -23,7 +23,8 @@ import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
 import { MatterFilters } from '../components/matters/MatterFilters'
 import { MatterCard } from '../components/matters/MatterCard'
-import { CreateMatterModal } from '../components/matters/CreateMatterModal'
+import { Suspense, lazy } from 'react'
+const CreateMatterModal = lazy(() => import('../components/matters/CreateMatterModal').then(m => ({ default: m.CreateMatterModal })))
 import { cn } from '../utils/cn'
 
 const lawyersMock = [
@@ -516,12 +517,14 @@ export default function Matters() {
         </div>
       )}
 
-      <CreateMatterModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={(payload) => createMutation.mutate(payload)}
-        lawyers={lawyersMock}
-      />
+      <Suspense fallback={null}>
+        <CreateMatterModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={(payload) => createMutation.mutate(payload)}
+          lawyers={lawyersMock}
+        />
+      </Suspense>
     </div>
   )
 }
