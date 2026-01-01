@@ -96,6 +96,8 @@ html[data-theme] #root {
 /* Skeleton motion + shimmer override for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse { animation: none !important; }
+  .animate-bounce { animation: none !important; }
+  .transition, .transition-all, .transition-colors, .transition-opacity, .transition-transform { transition: none !important; }
   .yc-toast { transition: none !important; }
 }
 
