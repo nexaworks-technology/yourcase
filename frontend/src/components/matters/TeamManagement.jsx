@@ -7,8 +7,9 @@ import { Button } from '../ui/Button'
 import { Badge } from '../ui/Badge'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
+import { matterService } from '../../services/matterService'
 
-export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdateRole }) {
+export function TeamManagement({ matterId, team = [], onTeamChanged }) {
   const [showInvite, setShowInvite] = useState(false)
   const [invite, setInvite] = useState({ email: '', role: 'associate' })
   const [saving, setSaving] = useState(false)
@@ -17,7 +18,17 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
     if (!invite.email) return
     setSaving(true)
     try {
-      await onAddMember?.(invite)
+      // Look up user by email in firm, then assign
+      const res = await matterService.searchFirmUsers(invite.email, 1)
+      const user = (res.items || [])[0]
+      if (!user) {
+        setSaving(false)
+        return
+      }
+      const currentIds = team.map((m) => m.id)
+      const nextIds = Array.from(new Set([...currentIds, user.id]))
+      await matterService.assignLawyers(matterId, nextIds)
+      onTeamChanged?.()
       setInvite({ email: '', role: 'associate' })
       setShowInvite(false)
     } finally {
@@ -69,18 +80,7 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={member.role}
-                      onChange={(event) => onUpdateRole?.(member.id, event.target.value)}
-                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
-                    >
-                      <option value="lead">Lead counsel</option>
-                      <option value="associate">Associate</option>
-                      <option value="paralegal">Paralegal</option>
-                      <option value="client">Client contact</option>
-                    </select>
-                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{member.role || 'associate'}</td>
                   <td className="px-4 py-3">
                     <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-2">
@@ -113,7 +113,11 @@ export function TeamManagement({ team = [], onAddMember, onRemoveMember, onUpdat
                       variant="ghost"
                       size="sm"
                       icon={Trash2}
-                      onClick={() => onRemoveMember?.(member.id)}
+                      onClick={async () => {
+                        const remaining = team.filter((t) => t.id !== member.id).map((m) => m.id)
+                        await matterService.assignLawyers(matterId, remaining)
+                        onTeamChanged?.()
+                      }}
                     >
                       Remove
                     </Button>

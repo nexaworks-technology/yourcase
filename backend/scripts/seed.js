@@ -38,6 +38,33 @@ async function run() {
       users.push(await User.create(u))
     }
 
+    // Add a larger bench of realistic lawyers
+    const extraLawyers = [
+      { email: 'jordan.patel@yourcase.test', firstName: 'Jordan', lastName: 'Patel' },
+      { email: 'morgan.smith@yourcase.test', firstName: 'Morgan', lastName: 'Smith' },
+      { email: 'riley.chen@yourcase.test', firstName: 'Riley', lastName: 'Chen' },
+      { email: 'alex.khan@yourcase.test', firstName: 'Alex', lastName: 'Khan' },
+      { email: 'taylor.nguyen@yourcase.test', firstName: 'Taylor', lastName: 'Nguyen' },
+      { email: 'sam.jones@yourcase.test', firstName: 'Sam', lastName: 'Jones' },
+      { email: 'casey.wilson@yourcase.test', firstName: 'Casey', lastName: 'Wilson' },
+      { email: 'harper.davis@yourcase.test', firstName: 'Harper', lastName: 'Davis' },
+      { email: 'jamie.shah@yourcase.test', firstName: 'Jamie', lastName: 'Shah' },
+      { email: 'parker.roy@yourcase.test', firstName: 'Parker', lastName: 'Roy' },
+    ]
+    for (const e of extraLawyers) {
+      users.push(
+        await User.create({
+          email: e.email,
+          password: 'Password123',
+          firstName: e.firstName,
+          lastName: e.lastName,
+          role: 'lawyer',
+          firmId: firm._id,
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(e.firstName[0] + e.lastName[0])}`,
+        }),
+      )
+    }
+
     const [admin, lawyer1, lawyer2] = users
 
     const matters = await ClientMatter.insertMany([
@@ -119,6 +146,9 @@ async function run() {
     await session.commitTransaction()
     console.log('Seed completed:')
     console.log({ firm: firm._id.toString(), users: users.length, matters: matters.length, documents: docs.length })
+    console.log('Sample accounts:')
+    console.log('- Admin:', 'admin@yourcase.test / Password123')
+    console.log('- Lawyers:', users.filter(u => u.role === 'lawyer').slice(0, 5).map(u => `${u.email} / Password123`).join(', '))
   } catch (err) {
     await session.abortTransaction()
     console.error('Seed failed:', err)

@@ -1,0 +1,17 @@
+# Global ignores for monorepo safety
+node_modules/
+**/node_modules/
+.env
+**/.env
+.env.*
+**/.env.*
+dist/
+**/dist/
+coverage/
+**/coverage/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/

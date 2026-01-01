@@ -15,6 +15,7 @@ const {
 
 const router = express.Router()
 const { createMatterValidation, updateMatterValidation, validate } = require('../middleware/validation')
+const { searchUsers } = require('../controllers/userController')
 
 // Place specific routes before parameter routes to avoid collisions
 router.get('/search', protect, getMatters)
@@ -32,5 +33,8 @@ router.get('/:matterId', protect, getMatterById)
 router.put('/:matterId', protect, updateMatterValidation, validate, updateMatter)
 router.delete('/:matterId', protect, deleteMatter)
 router.post('/:matterId/assign', protect, assignLawyers)
+
+// Lightweight user search within firm (for assigning lawyers)
+router.get('/users/search', protect, searchUsers)
 
 module.exports = router

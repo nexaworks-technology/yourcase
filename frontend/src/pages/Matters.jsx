@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Archive,
@@ -20,12 +21,10 @@ import { PageHeader } from '../components/layout/PageHeader'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Alert } from '../components/ui/Alert'
-const MatterFilters = lazy(() => import('../components/matters/MatterFilters'))
-const MatterCard = lazy(() => import('../components/matters/MatterCard'))
-const CreateMatterModal = lazy(() => import('../components/matters/CreateMatterModal'))
+import { MatterFilters } from '../components/matters/MatterFilters'
+import { MatterCard } from '../components/matters/MatterCard'
+import { CreateMatterModal } from '../components/matters/CreateMatterModal'
 import { cn } from '../utils/cn'
-import { SkeletonCard, SkeletonRow, SkeletonPanel } from '../components/ui/Skeleton'
-import { useLive } from '../components/ui/LiveAnnouncer'
 
 const lawyersMock = [
   { id: 'lawyer-1', name: 'Sahil Kapoor', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=SK' },
@@ -35,7 +34,7 @@ const lawyersMock = [
 ]
 
 export default function Matters() {
-  const { announce } = useLive()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const {
     matters,
@@ -93,22 +92,8 @@ export default function Matters() {
 
   const createMutation = useMutation({
     mutationFn: (payload) => matterService.createMatter(payload),
-    onSuccess: (created) => {
-      // Normalize created shape
-      const normalized = {
-        id: created._id || created.id,
-        matterNumber: created.matterNumber,
-        clientName: created.clientName,
-        title: created.matterTitle || created.title,
-        type: created.matterType || created.type,
-        status: created.status,
-        priority: created.priority,
-        assignedLawyers: created.assignedLawyers || [],
-        startDate: created.startDate,
-        nextHearing: created.courtDetails?.nextHearing,
-        tags: created.tags || [],
-      }
-      addMatter(normalized)
+    onSuccess: () => {
+      // Rely on refetch to get server-populated assignedLawyers
       queryClient.invalidateQueries(['matters'])
       setNotice({ type: 'success', message: 'Matter created successfully.' })
     },
@@ -340,29 +325,18 @@ export default function Matters() {
         ))}
       </div>
 
-      <Suspense fallback={
-        <div className="p-4" role="status" aria-live="polite">
-          {announce('Loading filters…')}
-          <div className="space-y-3">
-            <SkeletonRow className="w-52" />
-            <SkeletonPanel className="h-9" />
-            <span className="sr-only">Loading filters…</span>
-          </div>
-        </div>
-      }>
-        <MatterFilters
-          filters={filters}
-          onChange={setFilters}
-          onReset={() => {
-            resetFilters()
-            setSearchInput('')
-          }}
-          activeCount={activeFilterCount}
-          lawyers={lawyersMock}
-          onViewToggle={handleViewToggle}
-          view={view}
-        />
-      </Suspense>
+      <MatterFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={() => {
+          resetFilters()
+          setSearchInput('')
+        }}
+        activeCount={activeFilterCount}
+        lawyers={lawyersMock}
+        onViewToggle={handleViewToggle}
+        view={view}
+      />
 
       {selectedArray.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm shadow-sm">
@@ -381,39 +355,21 @@ export default function Matters() {
               <option value="on-hold">Mark as On Hold</option>
               <option value="archived">Mark as Archived</option>
             </select>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBulkStatusUpdate}
-              disabled={selectedArray.length === 0}
-              disabledTooltip="Select matters first"
-            >
+            <Button variant="ghost" size="sm" onClick={handleBulkStatusUpdate}>
               Update status
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={Users}
-              onClick={handleBulkAssign}
-              disabled={selectedArray.length === 0}
-              disabledTooltip="Select matters first"
-            >
+            <Button variant="ghost" size="sm" icon={Users} onClick={handleBulkAssign}>
               Assign lawyers
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={Archive}
-              onClick={handleBulkArchive}
-              disabled={selectedArray.length === 0}
-              disabledTooltip="Select matters first"
-            >
+            <Button variant="ghost" size="sm" icon={Archive} onClick={handleBulkArchive}>
               Archive
             </Button>
             <Button variant="ghost" size="sm" icon={FileSpreadsheet} onClick={handleExportCsv}>
               Export CSV
             </Button>
-            <Button variant="ghost" size="sm" onClick={clearSelection}>Clear</Button>
+            <button type="button" onClick={clearSelection} className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 dark:text-slate-300">
+              Clear
+            </button>
           </div>
         </div>
       )}
@@ -427,7 +383,7 @@ export default function Matters() {
               <MatterCard
                 key={matter.id || matter._id}
                 matter={matter}
-                onView={() => setNotice({ type: 'info', message: 'Matter detail view coming soon.' })}
+                onView={() => navigate(`/matters/${matter.id || matter._id}`)}
                 onEdit={() => {
                   setNotice({ type: 'info', message: 'Matter editing surface coming soon.' })
                 }}
@@ -505,7 +461,7 @@ export default function Matters() {
                       <td className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 dark:text-slate-500">{matter.documentsCount ?? 0}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => setNotice({ type: 'info', message: 'Matter detail view coming soon.' })}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/matters/${matterId}`)}>
                             View
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => setNotice({ type: 'info', message: 'Matter editing surface coming soon.' })}>
@@ -560,23 +516,12 @@ export default function Matters() {
         </div>
       )}
 
-      <Suspense fallback={
-        <div className="p-6" role="status" aria-live="polite">
-          {announce('Preparing form…')}
-          <div className="space-y-3">
-            <SkeletonRow className="w-64 h-5" />
-            <SkeletonPanel className="h-24 border-dashed" />
-            <span className="sr-only">Preparing form…</span>
-          </div>
-        </div>
-      }>
-        <CreateMatterModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={(payload) => createMutation.mutate(payload)}
-          lawyers={lawyersMock}
-        />
-      </Suspense>
+      <CreateMatterModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={(payload) => createMutation.mutate(payload)}
+        lawyers={lawyersMock}
+      />
     </div>
   )
 }
