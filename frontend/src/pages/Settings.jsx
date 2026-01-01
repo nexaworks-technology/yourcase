@@ -694,7 +694,7 @@ export default function Settings() {
           }
 
           // Export preview modal state and builders
-          const [exportPreview, setExportPreview] = useState({ open: false, format: 'json', text: '', title: '' })
+          const [exportPreview, setExportPreview] = useState({ open: false, format: 'json', text: '', csvText: '', title: '', tab: 'json' })
           const buildExportPreview = (format) => {
             const list = filteredSorted()
             const sample = list.slice(0, 10)
@@ -708,9 +708,11 @@ export default function Settings() {
                 open: true,
                 format,
                 text: JSON.stringify(payload, null, 2),
+                csvText: '',
                 title: `Preview JSON (${sample.length}/${list.length})`,
+                tab: 'json',
               })
-            } else {
+            } else if (format === 'csv') {
               const esc = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"'
               const header = ['time_iso','pinned','message']
               const dataRows = sample.map((r) => [new Date(Number(r.t) || 0).toISOString(), r.p ? 'true' : 'false', r.m])
@@ -722,7 +724,32 @@ export default function Settings() {
                 open: true,
                 format,
                 text: csv,
+                csvText: csv,
                 title: `Preview CSV (${sample.length}/${list.length})`,
+                tab: 'csv',
+              })
+            } else {
+              // ZIP preview: provide both JSON and CSV in tabs
+              const pinned = sample.filter((r) => !!r.p).length
+              const payload = {
+                meta: { total: list.length, sample: sample.length, pinned_count_in_sample: pinned, generated_at: new Date().toISOString() },
+                items: sample,
+              }
+              const jsonText = JSON.stringify(payload, null, 2)
+              const esc = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"'
+              const header = ['time_iso','pinned','message']
+              const dataRows = sample.map((r) => [new Date(Number(r.t) || 0).toISOString(), r.p ? 'true' : 'false', r.m])
+              const csv = [
+                header.map(esc).join(','),
+                ...dataRows.map((row) => row.map(esc).join(',')),
+              ].join('\n')
+              setExportPreview({
+                open: true,
+                format: 'zip',
+                text: jsonText,
+                csvText: csv,
+                title: `Preview ZIP (JSON/CSV • ${sample.length}/${list.length})`,
+                tab: 'json',
               })
             }
           }
@@ -845,6 +872,14 @@ export default function Settings() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => buildExportPreview('zip')}
+                    title="Preview ZIP"
+                  >
+                    <Download className="mr-2 h-4 w-4" /> Preview ZIP
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       exportJSON()
                       try {
@@ -912,7 +947,8 @@ export default function Settings() {
                               size="sm"
                               onClick={() => {
                                 try {
-                                  navigator.clipboard.writeText(exportPreview.text)
+                                  const text = exportPreview.format === 'zip' && exportPreview.tab === 'csv' ? exportPreview.csvText : exportPreview.text
+                                  navigator.clipboard.writeText(text)
                                   announce('Copied preview', { toast: { duration: 900 } })
                                 } catch (_) {}
                               }}
@@ -929,10 +965,17 @@ export default function Settings() {
                                     sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify(s))
                                     setExportChip(s)
                                   } catch (_) {}
-                                } else {
+                                } else if (exportPreview.format === 'csv') {
                                   exportCSV()
                                   try {
                                     const s = { type: 'export', format: 'csv', count: filteredSorted().length, ts: Date.now() }
+                                    sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify(s))
+                                    setExportChip(s)
+                                  } catch (_) {}
+                                } else {
+                                  exportZIP()
+                                  try {
+                                    const s = { type: 'export', format: 'zip', count: filteredSorted().length, ts: Date.now() }
                                     sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify(s))
                                     setExportChip(s)
                                   } catch (_) {}
@@ -946,9 +989,35 @@ export default function Settings() {
                         </div>
                       }
                     >
-                      <div className="max-h-[50vh] overflow-auto rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3">
-                        <pre className="text-xs whitespace-pre-wrap break-words text-slate-800 dark:text-slate-100">{exportPreview.text}</pre>
-                      </div>
+                      {exportPreview.format === 'zip' ? (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant={exportPreview.tab === 'json' ? 'secondary' : 'ghost'}
+                              size="xs"
+                              onClick={() => setExportPreview((p) => ({ ...p, tab: 'json' }))}
+                              title="Show JSON"
+                            >
+                              JSON
+                            </Button>
+                            <Button
+                              variant={exportPreview.tab === 'csv' ? 'secondary' : 'ghost'}
+                              size="xs"
+                              onClick={() => setExportPreview((p) => ({ ...p, tab: 'csv' }))}
+                              title="Show CSV"
+                            >
+                              CSV
+                            </Button>
+                          </div>
+                          <div className="max-h-[50vh] overflow-auto rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3">
+                            <pre className="text-xs whitespace-pre-wrap break-words text-slate-800 dark:text-slate-100">{exportPreview.tab === 'csv' ? exportPreview.csvText : exportPreview.text}</pre>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="max-h-[50vh] overflow-auto rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3">
+                          <pre className="text-xs whitespace-pre-wrap break-words text-slate-800 dark:text-slate-100">{exportPreview.text}</pre>
+                        </div>
+                      )}
                     </Modal>
                   )}
                   {showPinnedOnly && pinnedCount > 0 && (
