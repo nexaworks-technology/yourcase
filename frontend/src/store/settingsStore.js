@@ -32,6 +32,7 @@ const defaultState = {
     editorFontSize: 14,
     editorLineSpacing: 1.5,
     autoSave: true,
+    routeRetryTelemetry: false,
   },
 }
 

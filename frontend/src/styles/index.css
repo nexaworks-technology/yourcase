@@ -35,6 +35,10 @@ html[data-theme] #root {
   pointer-events: none;
 }
 .yc-ink:hover::after { opacity: 0.12; transform: translate(-50%, -50%) scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .yc-ink::after { transition: none !important; }
+  .yc-ink:hover::after { opacity: 0.12; transform: translate(-50%, -50%) scale(0.9); }
+}
 
 /* Accent link hover polish */
 .yc-accent-link { color: var(--accent-color); text-underline-offset: 2px; }
@@ -77,6 +81,9 @@ html[data-theme] #root {
 .yc-pop[data-open="true"] {
   transform: scale(1);
   opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .yc-pop { transition: none !important; transform: none !important; opacity: 1 !important; }
 }
 
 /* Toast enter/exit motion. Reduced motion: disabled below. */
@@ -129,6 +136,10 @@ html[data-theme] #root {
 .yc-tooltip[data-show="true"] {
   opacity: 1;
   transform: translate(-50%, -12px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .yc-tooltip { transition: none !important; }
+  .yc-tooltip[data-show="true"] { transform: translate(-50%, -8px) !important; }
 }
 
 /* Alignment variants to reduce viewport clipping */

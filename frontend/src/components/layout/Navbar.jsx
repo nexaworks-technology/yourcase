@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
-import { Bell, CheckCircle, Clock, FileText, Sun, Moon, Laptop, ChevronDown, Check, Copy, Download, Upload, Pin, PinOff, Trash2 } from 'lucide-react'
+import { Bell, CheckCircle, Clock, FileText, Sun, Moon, Laptop, ChevronDown, Check, Copy, Download, Upload, Pin, PinOff, Trash2, Info } from 'lucide-react'
 import { useSettingsStore } from '../../store/settingsStore'
 import { useTheme } from '../../context/ThemeContext'
 import { navItems } from './navItems'
@@ -47,6 +47,14 @@ export function Navbar({ sidebarOpen }) {
   const [csvMsgIdx, setCsvMsgIdx] = useState(1)
   const [showPinnedOnly, setShowPinnedOnly] = useState(false)
   const [pinFirst, setPinFirst] = useState(true)
+  const [pinnedOnlyDefault, setPinnedOnlyDefault] = useState(false)
+  const [pinFirstDefault, setPinFirstDefault] = useState(true)
+  const [qvQuery, setQvQuery] = useState('')
+  const qvInputRef = useRef(null)
+  const recentListRef = useRef(null)
+  const [logPreviewOpen, setLogPreviewOpen] = useState(false)
+  const [logPreview, setLogPreview] = useState([])
+  const [lastBadgeDismissed, setLastBadgeDismissed] = useState(false)
 
   const notifications = useMemo(
     () => [
@@ -112,11 +120,38 @@ export function Navbar({ sidebarOpen }) {
     // Restore quick-view preference: pinned-only
     try {
       const pref = sessionStorage.getItem('yc_toasts_pinned_only')
-      setShowPinnedOnly(pref === '1')
+      if (pref == null) {
+        const d = localStorage.getItem('yc_toasts_pinned_only_default')
+        setShowPinnedOnly(d === '1')
+      } else {
+        setShowPinnedOnly(pref === '1')
+      }
+      const d = localStorage.getItem('yc_toasts_pinned_only_default')
+      setPinnedOnlyDefault(d === '1')
+
       const pf = sessionStorage.getItem('yc_toasts_pin_first')
-      setPinFirst(pf == null ? true : pf === '1')
+      if (pf == null) {
+        const pdf = localStorage.getItem('yc_toasts_pin_first_default')
+        setPinFirst(pdf == null ? true : pdf === '1')
+      } else {
+        setPinFirst(pf === '1')
+      }
+      const pdf = localStorage.getItem('yc_toasts_pin_first_default')
+      setPinFirstDefault(pdf == null ? true : pdf === '1')
+      const q = sessionStorage.getItem('yc_toasts_qv_query')
+      setQvQuery(q ? String(q) : '')
     } catch (_) {}
   }, [helpOpen])
+
+  // Restore badge dismissed state for this session
+  useEffect(() => {
+    try {
+      setLastBadgeDismissed(sessionStorage.getItem('yc_toasts_badge_dismissed') === '1')
+    } catch (_) {}
+    const onCleared = () => setLastBadgeDismissed(true)
+    window.addEventListener('yc_toasts_badge_cleared', onCleared)
+    return () => window.removeEventListener('yc_toasts_badge_cleared', onCleared)
+  }, [])
 
   const formatTime = (t) => {
     try {
@@ -542,6 +577,7 @@ export function Navbar({ sidebarOpen }) {
   }, [showTip])
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-[110] flex h-16 items-center border-b border-gray-200 dark:border-gray-700 dark:border-gray-800 bg-white/95 dark:bg-gray-950/90 px-4 backdrop-blur transition-[padding,box-shadow,backdrop-filter] duration-200 ease-in-out motion-reduce:transition-none sm:px-6 lg:px-8 ${sidebarPaddingClass} ${
         scrolled ? 'shadow-lg shadow-black/10 dark:shadow-black/30' : ''
@@ -903,8 +939,155 @@ export function Navbar({ sidebarOpen }) {
               {/* Recent toasts quick view */}
               <div className="mt-4 rounded-xl border border-gray-100 p-3 dark:border-gray-800" aria-labelledby="recent-toasts-heading">
                 <div className="mb-2 flex items-center justify-between">
-                  <p id="recent-toasts-heading" className="text-xs font-semibold text-gray-900 dark:text-gray-100">Recent toasts (session)</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <p id="recent-toasts-heading" className="text-xs font-semibold text-gray-900 dark:text-gray-100">Recent toasts (session)</p>
+                      {/* Last import/export badge */}
+                      {(() => {
+                        if (lastBadgeDismissed) return null
+                        try {
+                          const raw = sessionStorage.getItem('yc_toasts_last_summary')
+                          if (!raw) return null
+                          const s = JSON.parse(raw)
+                          const mode = s.mode ? `, ${s.mode}` : ''
+                          const txt = s.type === 'export'
+                            ? `last: export ${s.format} · ${s.count}`
+                            : s.type === 'import'
+                            ? `last: import ${s.format}${mode} · kept ${s.kept}`
+                            : null
+                          if (!txt) return null
+                          const when = (() => {
+                            try { return formatTime(Number(s.ts) || Date.now()) } catch { return '' }
+                          })()
+                          return (
+                            <span
+                              className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white pl-2 pr-1 py-0.5 text-[10px] text-gray-700 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                              role="status"
+                              aria-live="polite"
+                              title={`Last ${s.type} at ${when} (click to open Settings)`}
+                            >
+                              <button
+                                type="button"
+                                className="inline-flex items-center gap-1 hover:underline focus-visible:yc-focus"
+                                aria-label="Open Recent toasts in Settings"
+                                onClick={() => {
+                                  try { sessionStorage.setItem('yc_settings_active', 'recent-toasts') } catch (_) {}
+                                  window.location.href = '/settings#recent-toasts'
+                                }}
+                              >
+                                {txt}
+                              </button>
+                              <button
+                                type="button"
+                                className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus-visible:yc-focus dark:text-gray-400 dark:hover:text-gray-200"
+                                aria-label="Dismiss last summary badge"
+                                onClick={() => {
+                                  setLastBadgeDismissed(true)
+                                  try { sessionStorage.setItem('yc_toasts_badge_dismissed', '1') } catch (_) {}
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          )
+                        } catch {
+                          return null
+                        }
+                      })()}
+                    </div>
+                    {(() => {
+                      try {
+                        const total = recentToasts.length
+                        let arr = [...recentToasts]
+                        if (showPinnedOnly) arr = arr.filter((r) => !!r.p)
+                        if (qvQuery.trim().length) arr = arr.filter((r) => r.m.toLowerCase().includes(qvQuery.trim().toLowerCase()))
+                        const shown = Math.min(8, arr.length)
+                        const pinnedCount = arr.filter((r) => !!r.p).length
+                        return (
+                          <button
+                            type="button"
+                            className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] transition ${
+                              showPinnedOnly
+                                ? 'border-accent text-accent bg-white dark:bg-gray-900'
+                                : 'border-gray-200 text-gray-600 bg-white dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
+                            }`}
+                            title={`Showing ${shown} of ${total}; pinned ${pinnedCount}. Click to ${showPinnedOnly ? 'show all' : 'show pinned only'}.`}
+                            aria-pressed={showPinnedOnly}
+                            onClick={() => {
+                              const v = !showPinnedOnly
+                              setShowPinnedOnly(v)
+                              try { sessionStorage.setItem('yc_toasts_pinned_only', v ? '1' : '0') } catch (_) {}
+                              announce(v ? 'Pinned-only filter enabled' : 'Pinned-only filter disabled', { toast: { duration: 900 } })
+                            }}
+                          >
+                            {shown}/{total} · pinned {pinnedCount}
+                          </button>
+                        )
+                      } catch (_) {
+                        return null
+                      }
+                    })()}
+                  </div>
                   <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        ref={qvInputRef}
+                        value={qvQuery}
+                        onChange={(e) => {
+                          const v = e.target.value
+                          setQvQuery(v)
+                          try { sessionStorage.setItem('yc_toasts_qv_query', v) } catch (_) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            e.preventDefault()
+                            setQvQuery('')
+                            try { sessionStorage.removeItem('yc_toasts_qv_query') } catch (_) {}
+                          } else if (e.key === 'Enter') {
+                            // Move focus to the first item in the list for quick keyboard actions
+                            setTimeout(() => {
+                              try {
+                                const root = recentListRef.current
+                                if (!root) return
+                                const first = root.querySelector('li[tabindex="0"]') || root.querySelector('li')
+                                first && first.focus()
+                              } catch (_) {}
+                            }, 0)
+                          }
+                        }}
+                        placeholder="Filter…"
+                        className="rounded-md border border-gray-200 bg-white pl-2 pr-6 py-1 text-[11px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-accent dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-500"
+                        aria-label="Filter recent toasts"
+                        title="Filter by message text"
+                        aria-keyshortcuts="Enter,Esc"
+                      />
+                      {qvQuery && (
+                        <button
+                          type="button"
+                          aria-label="Clear filter"
+                          title="Clear filter"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex h-4 w-4 items-center justify-center rounded text-gray-400 hover:text-gray-700 focus-visible:yc-focus"
+                          onClick={() => {
+                            setQvQuery('')
+                            try { sessionStorage.removeItem('yc_toasts_qv_query') } catch (_) {}
+                            // Return focus to the input after clearing for quick re-entry
+                            try { qvInputRef.current?.focus() } catch (_) {}
+                          }}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                    <span
+                      className="text-[10px] text-gray-500 dark:text-gray-400 hidden xs:inline"
+                      aria-hidden="true"
+                      title="Press Esc to clear; Enter to focus list"
+                    >
+                      <kbd className="rounded border border-gray-300 bg-gray-50 px-1 dark:border-gray-700 dark:bg-gray-800">Esc</kbd>
+                      clears ·
+                      <span className="ml-1">Enter jumps</span>
+                    </span>
                     <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300">
                       <input
                         type="checkbox"
@@ -918,6 +1101,65 @@ export function Navbar({ sidebarOpen }) {
                         className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
                       />
                       Pinned only
+                    </label>
+                    <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300" title="Use Pinned only as default">
+                      <input
+                        type="checkbox"
+                        checked={pinnedOnlyDefault}
+                        onChange={(e) => {
+                          const v = !!e.target.checked
+                          setPinnedOnlyDefault(v)
+                          try { localStorage.setItem('yc_toasts_pinned_only_default', v ? '1' : '0') } catch (_) {}
+                          announce(v ? 'Pinned-only set as default' : 'Pinned-only default cleared', { toast: { duration: 900 } })
+                        }}
+                        className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
+                        title="Restore as default when opening quick view"
+                      />
+                      Default
+                    </label>
+                    <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300" title="Filter to pinned items only">
+                      <input
+                        type="checkbox"
+                        checked={showPinnedOnly}
+                        onChange={(e) => {
+                          const v = !!e.target.checked
+                          setShowPinnedOnly(v)
+                          try { sessionStorage.setItem('yc_toasts_pinned_only', v ? '1' : '0') } catch (_) {}
+                          announce(v ? 'Pinned-only filter enabled' : 'Pinned-only filter disabled', { toast: { duration: 900 } })
+                        }}
+                        className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
+                        title="Show pinned items only"
+                      />
+                      Pinned only
+                    </label>
+                    <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300" title="Sort with pinned items first">
+                      <input
+                        type="checkbox"
+                        checked={pinFirst}
+                        onChange={(e) => {
+                          const v = !!e.target.checked
+                          setPinFirst(v)
+                          try { sessionStorage.setItem('yc_toasts_pin_first', v ? '1' : '0') } catch (_) {}
+                          announce(v ? 'Pinned first sorting enabled' : 'Pinned first sorting disabled', { toast: { duration: 900 } })
+                        }}
+                        className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
+                        title="Show pinned items first"
+                      />
+                      Pin first
+                    </label>
+                    <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300" title="Use Pin first as default">
+                      <input
+                        type="checkbox"
+                        checked={pinFirstDefault}
+                        onChange={(e) => {
+                          const v = !!e.target.checked
+                          setPinFirstDefault(v)
+                          try { localStorage.setItem('yc_toasts_pin_first_default', v ? '1' : '0') } catch (_) {}
+                          announce(v ? 'Pin-first set as default' : 'Pin-first default cleared', { toast: { duration: 900 } })
+                        }}
+                        className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
+                      />
+                      Default
                     </label>
                     <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300">
                       <input
@@ -935,16 +1177,54 @@ export function Navbar({ sidebarOpen }) {
                     </label>
                     <button
                       type="button"
+                      className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      aria-label="About defaults"
+                      title="Defaults persist across sessions (localStorage). Session toggles override for this panel only until you close it."
+                      onClick={() => {
+                        announce('Defaults persist; session toggles override temporarily', { toast: { duration: 1400 } })
+                      }}
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       onClick={() => {
                         setShowPinnedOnly(false)
                         try { sessionStorage.setItem('yc_toasts_pinned_only', '0') } catch (_) {}
+                        setPinFirst(pinFirstDefault)
+                        setQvQuery('')
+                        try { sessionStorage.removeItem('yc_toasts_qv_query') } catch (_) {}
                         announce('Quick view reset', { toast: { duration: 900 } })
                       }}
                       aria-label="Reset quick view filters"
                       title="Reset"
                     >
                       Reset
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      onClick={() => {
+                        try {
+                          localStorage.removeItem('yc_toasts_pinned_only_default')
+                          localStorage.removeItem('yc_toasts_pin_first_default')
+                        } catch (_) {}
+                        setPinnedOnlyDefault(false)
+                        setPinFirstDefault(true)
+                        // Optionally align current view with defaults
+                        setShowPinnedOnly(false)
+                        setPinFirst(true)
+                        try {
+                          sessionStorage.removeItem('yc_toasts_pinned_only')
+                          sessionStorage.removeItem('yc_toasts_pin_first')
+                        } catch (_) {}
+                        announce('Quick view defaults cleared', { toast: { duration: 900 } })
+                      }}
+                      aria-label="Reset default filters"
+                      title="Reset defaults"
+                    >
+                      Reset defaults
                     </button>
                     <span className="hidden sm:inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-[10px] text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300" aria-hidden="true">
                       Shortcuts: <kbd className="mx-1 rounded border border-gray-300 bg-gray-50 px-1">P</kbd> pin • <kbd className="ml-1 rounded border border-gray-300 bg-gray-50 px-1">Del</kbd> delete
@@ -953,6 +1233,8 @@ export function Navbar({ sidebarOpen }) {
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       aria-label="Copy recent toasts as JSON"
+                      title={recentLoading ? 'Please wait…' : 'Copy as JSON'}
+                      disabled={recentLoading}
                       onClick={copyJSON}
                     >
                       <Copy className="h-3.5 w-3.5" /> JSON
@@ -961,6 +1243,8 @@ export function Navbar({ sidebarOpen }) {
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       aria-label="Download recent toasts as CSV"
+                      title={recentLoading ? 'Please wait…' : 'Download CSV'}
+                      disabled={recentLoading}
                       onClick={downloadCSV}
                     >
                       <Download className="h-3.5 w-3.5" /> CSV
@@ -969,6 +1253,8 @@ export function Navbar({ sidebarOpen }) {
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       aria-label="Download recent toasts as ZIP"
+                      title={recentLoading ? 'Please wait…' : 'Download ZIP (JSON+CSV)'}
+                      disabled={recentLoading}
                       onClick={downloadZIP}
                     >
                       <Download className="h-3.5 w-3.5" /> ZIP
@@ -977,6 +1263,8 @@ export function Navbar({ sidebarOpen }) {
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       aria-label="Import recent toasts from JSON"
+                      title={recentLoading ? 'Please wait…' : 'Import JSON'}
+                      disabled={recentLoading}
                       onClick={importJSON}
                     >
                       <Upload className="h-3.5 w-3.5" /> Import
@@ -985,21 +1273,125 @@ export function Navbar({ sidebarOpen }) {
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                       aria-label="Import recent toasts from CSV"
+                      title={recentLoading ? 'Please wait…' : 'Import CSV'}
+                      disabled={recentLoading}
                       onClick={importCSV}
                     >
                       <Upload className="h-3.5 w-3.5" /> CSV
+                    </button>
+                    <span className="mx-1 hidden sm:inline text-gray-300">|</span>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      aria-label="Download route retry log"
+                      title="Download retry log JSON"
+                      onClick={() => {
+                        try {
+                          const raw = sessionStorage.getItem('yc_route_retry_log')
+                          const arr = raw ? JSON.parse(raw) : []
+                          if (!Array.isArray(arr) || arr.length === 0) {
+                            announce('No retry entries found', { toast: { variant: 'error' } })
+                            return
+                          }
+                          const blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = 'route-retry-log.json'
+                          document.body.appendChild(a)
+                          a.click()
+                          a.remove()
+                          URL.revokeObjectURL(url)
+                          announce('Downloaded retry log', { toast: { duration: 900 } })
+                        } catch (_) {
+                          announce('Failed to download log', { toast: { variant: 'error' } })
+                        }
+                      }}
+                    >
+                      <Download className="h-3.5 w-3.5" /> Retry log
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      aria-label="Copy latest retry summary"
+                      title="Copy latest retry summary"
+                      onClick={async () => {
+                        try {
+                          const raw = sessionStorage.getItem('yc_route_retry_log')
+                          const arr = raw ? JSON.parse(raw) : []
+                          if (!Array.isArray(arr) || arr.length === 0) {
+                            announce('No retry entries found', { toast: { variant: 'error' } })
+                            return
+                          }
+                          const retries = arr.filter((e) => e && e.action === 'retry')
+                          const total = retries.length
+                          const last = arr[arr.length - 1]
+                          const when = last?.ts ? new Date(last.ts).toLocaleString() : '—'
+                          const text = `Route retries: ${total}. Last: ${last?.action || '—'} on ${last?.label || '—'} at ${when}.`
+                          await navigator.clipboard.writeText(text)
+                          announce('Copied retry summary', { toast: { variant: 'success', duration: 900 } })
+                        } catch (_) {
+                          announce('Failed to copy summary', { toast: { variant: 'error' } })
+                        }
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Copy summary
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      aria-label="Clear route retry log"
+                      title="Clear retry log"
+                      onClick={() => {
+                        try {
+                          sessionStorage.removeItem('yc_route_retry_log')
+                          announce('Retry log cleared', { toast: { duration: 900 } })
+                        } catch (_) {}
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Clear log
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                      aria-label="Preview route retry log"
+                      title="Preview retry log"
+                      onClick={() => {
+                        try {
+                          const raw = sessionStorage.getItem('yc_route_retry_log')
+                          const arr = raw ? JSON.parse(raw) : []
+                          if (!Array.isArray(arr) || arr.length === 0) {
+                            announce('No retry entries to preview', { toast: { variant: 'error' } })
+                            return
+                          }
+                          setLogPreview(arr.slice(-5))
+                          setLogPreviewOpen(true)
+                        } catch (_) {
+                          announce('Failed to open preview', { toast: { variant: 'error' } })
+                        }
+                      }}
+                    >
+                      <Info className="h-3.5 w-3.5" /> Preview
                     </button>
                   </div>
                 </div>
                 <div className="max-h-40 overflow-auto rounded-lg border border-gray-100 dark:border-gray-800">
                   {recentLoading ? (
-                    <div className="p-3 text-xs text-gray-500">Loading…</div>
+                    <div className="p-3" aria-busy="true" aria-live="polite">
+                      <span className="sr-only">Loading recent toasts…</span>
+                      <div className="animate-pulse motion-reduce:animate-none space-y-2">
+                        <div className="h-4 w-48 rounded bg-gray-100 dark:bg-gray-800" />
+                        <div className="h-4 w-56 rounded bg-gray-100 dark:bg-gray-800" />
+                        <div className="h-4 w-40 rounded bg-gray-100 dark:bg-gray-800" />
+                      </div>
+                    </div>
                   ) : recentToasts.length === 0 ? (
                     <div className="p-3 text-xs text-gray-500">No recent toasts this session.</div>
                   ) : (
-                    <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <ul ref={recentListRef} className="divide-y divide-gray-100 dark:divide-gray-800">
                       {[...recentToasts]
                         .filter((r) => (showPinnedOnly ? !!r.p : true))
+                        .filter((r) => (qvQuery.trim().length ? r.m.toLowerCase().includes(qvQuery.trim().toLowerCase()) : true))
                         .sort((a, b) => (pinFirst ? ((b.p ? 1 : 0) - (a.p ? 1 : 0)) : 0))
                         .slice(0, 8)
                         .map((r, i) => (
@@ -1139,13 +1531,31 @@ export function Navbar({ sidebarOpen }) {
                             const uniq = Array.from(map.values()).sort((a, b) => a.t - b.t)
                             const last10 = uniq.slice(-10)
                             persistRecent(last10)
-                            announce(`Imported ${pendingImport.length} and merged → kept ${last10.length}`, { toast: { variant: 'success' } })
+                            announce(`Import complete · +${pendingImport.length} new · kept ${last10.length}. Click to view.`, {
+                              toast: {
+                                variant: 'success',
+                                duration: 2500,
+                                onClick: () => {
+                                  try { sessionStorage.setItem('yc_settings_active', 'recent-toasts') } catch (_) {}
+                                  window.location.href = '/settings#recent-toasts'
+                                },
+                              },
+                            })
                             try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'json', mode: 'merge', imported: pendingImport.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
                           } else {
                             const items = pendingImport.slice().sort((a, b) => a.t - b.t)
                             const last10 = items.slice(-10)
                             persistRecent(last10)
-                            announce(`Imported ${last10.length} item${last10.length === 1 ? '' : 's'}`, { toast: { variant: 'success' } })
+                            announce(`Import complete · parsed ${pendingImport.length} · kept ${last10.length}. Click to view.`, {
+                              toast: {
+                                variant: 'success',
+                                duration: 2500,
+                                onClick: () => {
+                                  try { sessionStorage.setItem('yc_settings_active', 'recent-toasts') } catch (_) {}
+                                  window.location.href = '/settings#recent-toasts'
+                                },
+                              },
+                            })
                             try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'json', mode: 'replace', imported: pendingImport.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
                           }
                           setImportOpen(false)
@@ -1223,47 +1633,75 @@ export function Navbar({ sidebarOpen }) {
                       <button
                         type="button"
                         className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
-                        onClick={() => {
-                          const items = csvRows
-                            .map((row) => ({
-                              t: Number(row[csvTimeIdx]) || Date.parse(row[csvTimeIdx]) || Date.now(),
-                              m: String(row[csvMsgIdx] ?? ''),
-                            }))
-                            .filter((r) => r.m.trim().length > 0 && !Number.isNaN(r.t))
-                          if (items.length === 0) {
-                            announce('No valid rows after mapping', { toast: { variant: 'error' } })
-                            return
+                      onClick={() => {
+                        const items = csvRows
+                          .map((row) => ({
+                            t: Number(row[csvTimeIdx]) || Date.parse(row[csvTimeIdx]) || Date.now(),
+                            m: String(row[csvMsgIdx] ?? ''),
+                          }))
+                          .filter((r) => r.m.trim().length > 0 && !Number.isNaN(r.t))
+                        if (items.length === 0) {
+                          announce('No valid rows after mapping', { toast: { variant: 'error' } })
+                          return
+                        }
+                        const existing = recentToasts.slice()
+                        if (mergeImport) {
+                          const merged = [...existing, ...items]
+                          const map = new Map()
+                          for (const r of merged) map.set(`${r.t}|${r.m}`, r)
+                          const uniq = Array.from(map.values()).sort((a, b) => a.t - b.t)
+                          const last10 = uniq.slice(-10)
+                          persistRecent(last10)
+                          {
+                            const added = items.length
+                            const kept = last10.length
+                            const pinned = last10.filter((r) => !!r.p).length
+                            announce(`Import complete · +${added} new · kept ${kept} · pinned ${pinned}. Click to view.`, {
+                              toast: {
+                                variant: 'success',
+                                duration: 2500,
+                                onClick: () => {
+                                  try { sessionStorage.setItem('yc_settings_active', 'recent-toasts') } catch (_) {}
+                                  window.location.href = '/settings#recent-toasts'
+                                },
+                              },
+                            })
                           }
-                          const existing = recentToasts.slice()
-                          if (mergeImport) {
-                            const merged = [...existing, ...items]
-                            const map = new Map()
-                            for (const r of merged) map.set(`${r.t}|${r.m}`, r)
-                            const uniq = Array.from(map.values()).sort((a, b) => a.t - b.t)
-                            const last10 = uniq.slice(-10)
-                            persistRecent(last10)
-                            announce(`Imported ${items.length} from CSV (merged)`, { toast: { variant: 'success' } })
-                            try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'csv', mode: 'merge', imported: items.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
-                          } else {
-                            const sorted = items.slice().sort((a, b) => a.t - b.t)
-                            const last10 = sorted.slice(-10)
-                            persistRecent(last10)
-                            announce(`Imported ${Math.min(10, items.length)} from CSV`, { toast: { variant: 'success' } })
-                            try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'csv', mode: 'replace', imported: items.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
+                          try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'csv', mode: 'merge', imported: items.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
+                        } else {
+                          const sorted = items.slice().sort((a, b) => a.t - b.t)
+                          const last10 = sorted.slice(-10)
+                          persistRecent(last10)
+                          {
+                            const parsed = items.length
+                            const kept = last10.length
+                            const pinned = last10.filter((r) => !!r.p).length
+                            announce(`Import complete · parsed ${parsed} · kept ${kept} · pinned ${pinned}. Click to view.`, {
+                              toast: {
+                                variant: 'success',
+                                duration: 2500,
+                                onClick: () => {
+                                  try { sessionStorage.setItem('yc_settings_active', 'recent-toasts') } catch (_) {}
+                                  window.location.href = '/settings#recent-toasts'
+                                },
+                              },
+                            })
                           }
-                          setCsvMapOpen(false)
-                          setCsvRows([])
-                          setCsvHeaders([])
-                        }}
-                      >
-                        Import
-                      </button>
+                          try { sessionStorage.setItem('yc_toasts_last_summary', JSON.stringify({ type: 'import', format: 'csv', mode: 'replace', imported: items.length, kept: last10.length, ts: Date.now() })) } catch (_) {}
+                        }
+                        setCsvMapOpen(false)
+                        setCsvRows([])
+                        setCsvHeaders([])
+                      }}
+                    >
+                      Import
+                    </button>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
           <div className="flex items-center gap-3 bg-white dark:bg-slate-900 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:border-gray-800 rounded-2xl px-3 py-2">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-white text-xs font-semibold">
@@ -1277,6 +1715,81 @@ export function Navbar({ sidebarOpen }) {
         </div>
       </div>
     </header>
+    {/* Modal portal sibling to header to avoid JSX nesting issues */}
+    {logPreviewOpen && (
+      <div className="fixed inset-0 z-[110] flex items-end justify-center md:items-center">
+        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur" onClick={() => setLogPreviewOpen(false)} />
+        <div className="relative mx-0 w-full max-w-2xl overflow-hidden rounded-t-3xl bg-white shadow-xl outline-none md:mx-4 md:rounded-3xl dark:bg-slate-900">
+          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Route retry log preview</h2>
+            <button
+              type="button"
+              className="rounded-full p-2 text-slate-400 transition hover:text-slate-600 focus-visible:yc-focus dark:text-slate-300 dark:hover:text-slate-100"
+              aria-label="Close preview"
+              onClick={() => setLogPreviewOpen(false)}
+            >
+              ×
+            </button>
+          </div>
+          <div className="max-h-[60vh] overflow-y-auto px-6 py-6 text-slate-700 dark:text-slate-300">
+            {logPreview?.length ? (
+              <ul className="space-y-3">
+                {logPreview.map((e, idx) => (
+                  <li key={idx} className="rounded-lg border border-gray-100 p-3 text-xs dark:border-gray-800">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{e.action || 'event'}</span>
+                      <span className="text-gray-500">{e.ts ? new Date(e.ts).toLocaleString() : '—'}</span>
+                    </div>
+                    <div className="mt-1 text-gray-700 dark:text-gray-300">
+                      <div>Label: <span className="text-gray-900 dark:text-gray-100">{e.label || '—'}</span></div>
+                      {e.error && (
+                        <div className="mt-1">
+                          <div className="text-red-600 dark:text-red-400">Error: {e.error?.message || String(e.error)}</div>
+                          {e.error?.stack && (
+                            <pre className="mt-1 max-h-28 overflow-auto rounded bg-gray-50 p-2 text-[10px] dark:bg-gray-950">{e.error.stack}</pre>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-xs text-gray-500">No entries.</div>
+            )}
+          </div>
+          <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+            <span className="text-xs text-gray-500">Showing last {logPreview?.length || 0} entries</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                onClick={async () => {
+                  try {
+                    const raw = sessionStorage.getItem('yc_route_retry_log')
+                    const arr = raw ? JSON.parse(raw) : []
+                    await navigator.clipboard.writeText(JSON.stringify(arr, null, 2))
+                    announce('Copied full retry log', { toast: { variant: 'success', duration: 900 } })
+                  } catch (_) {
+                    announce('Failed to copy log', { toast: { variant: 'error' } })
+                  }
+                }}
+              >
+                <Copy className="h-4 w-4" /> Copy all
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                onClick={() => setLogPreviewOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
 

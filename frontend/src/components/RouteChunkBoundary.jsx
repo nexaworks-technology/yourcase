@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { Component, useState } from 'react'
+import { useSettingsStore } from '../store/settingsStore'
 import { Suspense } from 'react'
 import { useLive } from './ui/LiveAnnouncer'
 import { Button } from './ui/Button'
@@ -309,15 +310,37 @@ Boundary.propTypes = {
 
 export function RouteChunkBoundary({ label, children }) {
   const { announce } = useLive()
+  const { preferences } = useSettingsStore()
+  const telemetryOn = !!preferences?.routeRetryTelemetry
   const [key, setKey] = useState(0)
 
   const onRetry = () => {
+    if (telemetryOn) {
+      try {
+        const raw = sessionStorage.getItem('yc_route_retry_log')
+        const arr = raw ? JSON.parse(raw) : []
+        arr.push({ ts: Date.now(), label: label || 'content', action: 'retry' })
+        sessionStorage.setItem('yc_route_retry_log', JSON.stringify(arr.slice(-100)))
+      } catch (_) {}
+    }
     announce(`Retrying ${label || 'content'}…`, { toast: { duration: 900 } })
     setKey((k) => k + 1)
   }
 
+  const announcePatched = (msg, opts) => {
+    if (telemetryOn && msg) {
+      try {
+        const raw = sessionStorage.getItem('yc_route_retry_log')
+        const arr = raw ? JSON.parse(raw) : []
+        arr.push({ ts: Date.now(), label: label || 'content', action: 'announce', msg })
+        sessionStorage.setItem('yc_route_retry_log', JSON.stringify(arr.slice(-100)))
+      } catch (_) {}
+    }
+    return announce?.(msg, opts)
+  }
+
   return (
-    <Boundary label={label} onRetry={onRetry} announce={announce}>
+    <Boundary label={label} onRetry={onRetry} announce={announcePatched}>
       <Suspense fallback={<Loader label={`Loading ${label || 'content'}…`} />}>
         <div key={key}>{children}</div>
       </Suspense>
