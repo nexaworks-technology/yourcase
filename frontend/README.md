@@ -1,16 +1,43 @@
-# React + Vite
+# YourCase Web — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vite + React app for YourCase. Recent updates focus on:
+- Navbar “Recent toasts” quick view (exports/imports, pinned controls, keyboard shortcuts)
+- CSV import mapping polish (date formats, persisted toggles)
+- Diagnostics (route retry telemetry) and improved error boundary
+- Reduced‑motion accessibility and small skeletons
 
-Currently, two official plugins are available:
+## Quick start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Dev: `npm install` then `npm run dev` (http://localhost:5173)
+- Build: `npm run build` (output in `dist/`)
 
-## React Compiler
+## Key features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Recent toasts quick view (Navbar)
+  - Export JSON/CSV/ZIP; Import JSON/CSV with merge/replace
+  - Filter, “Pinned only”, “Pin first”, per‑row pin/delete, keyboard: P/Del
+  - Stats pill; defaults badges; export chip with deep‑link; small “Copied” pill for copy
 
-## Expanding the ESLint configuration
+- Settings → Recent toasts
+  - CSV Mapping Modal: auto/epoch/dd‑MM/MM‑dd/yyyy‑MM‑dd/ISO
+  - Persisted mapping + toggles (localStorage `yc_csv_mapping`)
+  - Import Preview summary; Export preview (JSON/CSV/ZIP tabs), Copy all, Download now
+  - Clear/Restore badge, Reset dismissal; aria‑busy skeletons and keyboard hints
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Diagnostics
+  - Route retry telemetry toggle (sessionStorage `yc_route_retry_log`)
+  - Preview last entries, Copy all, Download/Clear
+
+## Storage keys
+
+- Session: `yc_toasts_recent`, `yc_toasts_pinned_only`, `yc_toasts_pin_first`, `yc_toasts_qv_query`, `yc_toasts_last_summary`, `yc_toasts_badge_dismissed`, `yc_route_retry_log`
+- Local: `yc_csv_mapping`
+
+## Accessibility
+
+- Respects `prefers-reduced-motion: reduce`
+- Modals and controls keyboard‑friendly; live announcements for key actions
+
+## Notes
+
+If you run into build issues, ensure Node LTS and a clean `node_modules` then `npm ci && npm run build`.
