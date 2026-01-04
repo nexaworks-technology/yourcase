@@ -1177,8 +1177,8 @@ export function Navbar({ sidebarOpen }) {
                       />
                       Default
                       {pinnedOnlyDefault && (
-                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pinned only default active" title="Pinned only default active">
-                          default
+                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pinned only default is ON" title="Pinned only default is ON">
+                          default on
                         </span>
                       )}
                     </label>
@@ -1226,8 +1226,8 @@ export function Navbar({ sidebarOpen }) {
                       />
                       Default
                       {pinFirstDefault && (
-                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pin first default active" title="Pin first default active">
-                          default
+                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pin first default is ON" title="Pin first default is ON">
+                          default on
                         </span>
                       )}
                     </label>
