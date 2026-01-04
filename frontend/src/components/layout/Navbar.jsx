@@ -56,7 +56,13 @@ export function Navbar({ sidebarOpen }) {
   const [logPreview, setLogPreview] = useState([])
   const [lastBadgeDismissed, setLastBadgeDismissed] = useState(false)
   const [exportChip, setExportChip] = useState(() => {
-    try { return JSON.parse(sessionStorage.getItem('yc_toasts_last_summary') || 'null') } catch { return null }
+    try {
+      const dismissed = sessionStorage.getItem('yc_toasts_badge_dismissed') === '1'
+      if (dismissed) return null
+      return JSON.parse(sessionStorage.getItem('yc_toasts_last_summary') || 'null')
+    } catch {
+      return null
+    }
   })
 
   // React to Settings → "Clear badge" to hide export chip immediately
@@ -1387,9 +1393,17 @@ export function Navbar({ sidebarOpen }) {
                       <span className="mx-1 hidden sm:inline text-gray-300">|</span>
                     )}
                     {exportChip && (
-                      <div className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] dark:border-gray-700 dark:bg-gray-900">
+                      <div
+                        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] dark:border-gray-700 dark:bg-gray-900"
+                        title={(() => { try { return exportChip.ts ? new Date(exportChip.ts).toLocaleString() : '' } catch { return '' } })()}
+                      >
                         <span className="inline-flex items-center rounded-full bg-gray-50 px-2 py-0.5 text-[10px] dark:bg-gray-800">Export</span>
                         <span>{exportChip.format} · items {Number(exportChip.count || 0)}</span>
+                        {exportChip.ts ? (
+                          <span className="rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                            {(() => { try { return new Date(exportChip.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } catch { return '' } })()}
+                          </span>
+                        ) : null}
                         <button
                           type="button"
                           className="rounded px-2 py-0.5 text-[10px] text-blue-600 hover:text-blue-700 focus-visible:yc-focus"
@@ -1405,7 +1419,10 @@ export function Navbar({ sidebarOpen }) {
                           type="button"
                           className="inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus-visible:yc-focus dark:text-gray-400 dark:hover:text-gray-200"
                           aria-label="Dismiss export summary"
-                          onClick={() => setExportChip(null)}
+                          onClick={() => {
+                            setExportChip(null)
+                            try { sessionStorage.setItem('yc_toasts_badge_dismissed', '1') } catch {}
+                          }}
                         >
                           ×
                         </button>
