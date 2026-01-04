@@ -61,3 +61,6 @@ Additional guides:
 - `docs/QuickView.md`
 - `docs/CSVMapping.md`
 - `docs/Diagnostics.md`
+- `docs/Architecture.md`
+- `docs/RoutingBoundary.md`
+- `docs/CSVMappingSpec.md`
