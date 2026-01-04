@@ -55,6 +55,9 @@ export function Navbar({ sidebarOpen }) {
   const [logPreviewOpen, setLogPreviewOpen] = useState(false)
   const [logPreview, setLogPreview] = useState([])
   const [lastBadgeDismissed, setLastBadgeDismissed] = useState(false)
+  const [exportChip, setExportChip] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem('yc_toasts_last_summary') || 'null') } catch { return null }
+  })
 
   const notifications = useMemo(
     () => [
@@ -1373,6 +1376,34 @@ export function Navbar({ sidebarOpen }) {
                     >
                       <Info className="h-3.5 w-3.5" /> Preview
                     </button>
+                    {exportChip && (
+                      <span className="mx-1 hidden sm:inline text-gray-300">|</span>
+                    )}
+                    {exportChip && (
+                      <div className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] dark:border-gray-700 dark:bg-gray-900">
+                        <span className="inline-flex items-center rounded-full bg-gray-50 px-2 py-0.5 text-[10px] dark:bg-gray-800">Export</span>
+                        <span>{exportChip.format} · items {Number(exportChip.count || 0)}</span>
+                        <button
+                          type="button"
+                          className="rounded px-2 py-0.5 text-[10px] text-blue-600 hover:text-blue-700 focus-visible:yc-focus"
+                          title="Preview last export"
+                          onClick={() => {
+                            try { window.location.href = '/settings#recent-toasts' } catch {}
+                            announce('Open Settings → Recent toasts to preview the last export', { toast: { duration: 1200 } })
+                          }}
+                        >
+                          Open preview
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-500 hover:text-gray-700 focus-visible:yc-focus dark:text-gray-400 dark:hover:text-gray-200"
+                          aria-label="Dismiss export summary"
+                          onClick={() => setExportChip(null)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="max-h-40 overflow-auto rounded-lg border border-gray-100 dark:border-gray-800">
