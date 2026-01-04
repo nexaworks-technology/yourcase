@@ -59,6 +59,13 @@ export function Navbar({ sidebarOpen }) {
     try { return JSON.parse(sessionStorage.getItem('yc_toasts_last_summary') || 'null') } catch { return null }
   })
 
+  // React to Settings → "Clear badge" to hide export chip immediately
+  useEffect(() => {
+    const onClear = () => setExportChip(null)
+    window.addEventListener('yc_toasts_badge_cleared', onClear)
+    return () => window.removeEventListener('yc_toasts_badge_cleared', onClear)
+  }, [])
+
   const notifications = useMemo(
     () => [
       {

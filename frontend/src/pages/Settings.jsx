@@ -850,6 +850,34 @@ export default function Settings() {
                   >
                     Clear badge
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      try {
+                        const raw = sessionStorage.getItem('yc_toasts_last_summary')
+                        if (!raw) {
+                          announce('No last summary found to restore', { toast: { variant: 'error' } })
+                          return
+                        }
+                        const s = JSON.parse(raw)
+                        if (s?.type === 'export') {
+                          setExportChip(s)
+                          announce('Export badge restored', { toast: { duration: 900 } })
+                        } else if (s?.type === 'import') {
+                          setImportChip(s)
+                          announce('Import badge restored', { toast: { duration: 900 } })
+                        } else {
+                          announce('Unsupported summary type', { toast: { variant: 'error' } })
+                        }
+                      } catch (_) {
+                        announce('Failed to restore badge', { toast: { variant: 'error' } })
+                      }
+                    }}
+                    title="Restore last badge"
+                  >
+                    Restore badge
+                  </Button>
                   <Button variant="ghost" size="sm" onClick={copyAll} title="Copy all">
                     <Copy className="mr-2 h-4 w-4" /> Copy all
                   </Button>
