@@ -1176,6 +1176,11 @@ export function Navbar({ sidebarOpen }) {
                         title="Restore as default when opening quick view"
                       />
                       Default
+                      {pinnedOnlyDefault && (
+                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pinned only default active" title="Pinned only default active">
+                          default
+                        </span>
+                      )}
                     </label>
                     <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300" title="Filter to pinned items only">
                       <input
