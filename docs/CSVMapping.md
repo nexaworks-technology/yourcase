@@ -14,3 +14,6 @@ Tips
 - If Message column is empty and “Ignore blank messages” is off, Continue is blocked.
 - Use Sample JSON/CSV to understand structure; preview before applying replace/merge.
 
+Screenshots / GIFs
+- Place a screenshot/GIF at `docs/assets/csv-mapping.png|gif` and embed:
+  - `![CSV Mapping](./assets/csv-mapping.png)`

@@ -11,3 +11,6 @@ Flows
 Accessibility
 - Dialogs are keyboard accessible; live regions announce state changes.
 
+Screenshots / GIFs
+- Add a screenshot/GIF at `docs/assets/diagnostics.png|gif` and embed:
+  - `![Diagnostics](./assets/diagnostics.png)`

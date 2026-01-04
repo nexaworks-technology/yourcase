@@ -15,3 +15,6 @@ Features
 Storage keys
 - Session: `yc_toasts_recent`, `yc_toasts_pinned_only`, `yc_toasts_pin_first`, `yc_toasts_qv_query`, `yc_toasts_last_summary`, `yc_toasts_badge_dismissed`
 
+Screenshots / GIFs
+- Add a screenshot or GIF at `docs/assets/quickview.png` or `docs/assets/quickview.gif` and reference here:
+  - `![Quick view](./assets/quickview.png)`
