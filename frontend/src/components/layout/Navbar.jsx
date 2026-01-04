@@ -1059,7 +1059,36 @@ export function Navbar({ sidebarOpen }) {
                       }
                     })()}
                   </div>
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
+                  {/* Quick stats pill: shows counts and toggles pinned-only on click */}
+                  <button
+                    type="button"
+                    className="hidden sm:inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] text-gray-700 hover:bg-gray-50 focus-visible:yc-focus dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    onClick={() => {
+                      const next = !showPinnedOnly
+                      setShowPinnedOnly(next)
+                      try { sessionStorage.setItem('yc_toasts_pinned_only', next ? '1' : '0') } catch (_) {}
+                      announce(next ? 'Pinned-only filter enabled' : 'Pinned-only filter disabled', { toast: { duration: 900 } })
+                    }}
+                    title="Click to toggle pinned-only"
+                    aria-label="Toggle pinned-only"
+                  >
+                    {(() => {
+                      // compute shown/total and pinned count from current list
+                      try {
+                        const total = recentToasts.length
+                        const shown = showPinnedOnly ? recentToasts.filter((r) => !!r.p).length : total
+                        const pinned = recentToasts.filter((r) => !!r.p).length
+                        return (
+                          <span>
+                            {shown}/{total} · pinned {pinned}
+                          </span>
+                        )
+                      } catch (_) {
+                        return <span>—</span>
+                      }
+                    })()}
+                  </button>
                     <div className="relative">
                       <input
                         type="text"
