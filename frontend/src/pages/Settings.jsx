@@ -695,6 +695,7 @@ export default function Settings() {
 
           // Export preview modal state and builders
           const [exportPreview, setExportPreview] = useState({ open: false, format: 'json', text: '', csvText: '', title: '', tab: 'json' })
+          const [copiedHint, setCopiedHint] = useState(false)
           const buildExportPreview = (format) => {
             const list = filteredSorted()
             const sample = list.slice(0, 10)
@@ -995,10 +996,15 @@ export default function Settings() {
                                   const text = exportPreview.format === 'zip' && exportPreview.tab === 'csv' ? exportPreview.csvText : exportPreview.text
                                   navigator.clipboard.writeText(text)
                                   announce('Copied preview', { toast: { duration: 900 } })
+                                  setCopiedHint(true)
+                                  window.setTimeout(() => setCopiedHint(false), 900)
                                 } catch (_) {}
                               }}
                             >
                               <Copy className="mr-2 h-4 w-4" /> Copy all
+                              {copiedHint && (
+                                <span className="ml-2 rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] text-green-600">Copied</span>
+                              )}
                             </Button>
                             <Button
                               size="sm"
