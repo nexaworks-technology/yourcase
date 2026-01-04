@@ -903,7 +903,9 @@ export default function Settings() {
                     variant="ghost"
                     size="sm"
                     onClick={() => buildExportPreview('json')}
-                    title="Preview JSON"
+                    title={loading ? 'Please wait…' : 'Preview JSON'}
+                    disabled={loading}
+                    disabledTooltip="Please wait…"
                   >
                     <Download className="mr-2 h-4 w-4" /> Preview JSON
                   </Button>
@@ -911,7 +913,9 @@ export default function Settings() {
                     variant="ghost"
                     size="sm"
                     onClick={() => buildExportPreview('csv')}
-                    title="Preview CSV"
+                    title={loading ? 'Please wait…' : 'Preview CSV'}
+                    disabled={loading}
+                    disabledTooltip="Please wait…"
                   >
                     <Download className="mr-2 h-4 w-4" /> Preview CSV
                   </Button>
@@ -919,7 +923,9 @@ export default function Settings() {
                     variant="ghost"
                     size="sm"
                     onClick={() => buildExportPreview('zip')}
-                    title="Preview ZIP"
+                    title={loading ? 'Please wait…' : 'Preview ZIP'}
+                    disabled={loading}
+                    disabledTooltip="Please wait…"
                   >
                     <Download className="mr-2 h-4 w-4" /> Preview ZIP
                   </Button>
