@@ -55,6 +55,7 @@ export function Navbar({ sidebarOpen }) {
   const [logPreviewOpen, setLogPreviewOpen] = useState(false)
   const [logPreview, setLogPreview] = useState([])
   const [lastBadgeDismissed, setLastBadgeDismissed] = useState(false)
+  const [statsTip, setStatsTip] = useState(false)
   const [exportChip, setExportChip] = useState(() => {
     try {
       const dismissed = sessionStorage.getItem('yc_toasts_badge_dismissed') === '1'
@@ -1072,6 +1073,10 @@ export function Navbar({ sidebarOpen }) {
                     }}
                     title="Click to toggle pinned-only"
                     aria-label="Toggle pinned-only"
+                    onMouseEnter={() => setStatsTip(true)}
+                    onMouseLeave={() => setStatsTip(false)}
+                    onFocus={() => setStatsTip(true)}
+                    onBlur={() => setStatsTip(false)}
                   >
                     {(() => {
                       // compute shown/total and pinned count from current list
@@ -1088,6 +1093,15 @@ export function Navbar({ sidebarOpen }) {
                         return <span>—</span>
                       }
                     })()}
+                    <span
+                      className="yc-tooltip left-1/2"
+                      style={{ top: '110%' }}
+                      data-show={statsTip ? 'true' : 'false'}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      Shown/Total · Pinned — click to toggle pinned-only
+                    </span>
                   </button>
                     <div className="relative">
                       <input
