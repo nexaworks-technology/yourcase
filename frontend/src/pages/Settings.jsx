@@ -855,6 +855,23 @@ export default function Settings() {
                     size="sm"
                     onClick={() => {
                       try {
+                        sessionStorage.removeItem('yc_toasts_badge_dismissed')
+                        // Ask Navbar to re-read summary and show export chip if available
+                        window.dispatchEvent(new Event('yc_toasts_badge_reset'))
+                        announce('Badge dismissal reset', { toast: { duration: 900 } })
+                      } catch (_) {
+                        announce('Failed to reset dismissal', { toast: { variant: 'error' } })
+                      }
+                    }}
+                    title="Reset dismissal (show Navbar export chip)"
+                  >
+                    Reset dismissal
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      try {
                         const raw = sessionStorage.getItem('yc_toasts_last_summary')
                         if (!raw) {
                           announce('No last summary found to restore', { toast: { variant: 'error' } })

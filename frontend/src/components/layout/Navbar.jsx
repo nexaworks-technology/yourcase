@@ -72,6 +72,21 @@ export function Navbar({ sidebarOpen }) {
     return () => window.removeEventListener('yc_toasts_badge_cleared', onClear)
   }, [])
 
+  // When Settings resets dismissal, re-read last summary and show chip if available
+  useEffect(() => {
+    const onReset = () => {
+      try {
+        const raw = sessionStorage.getItem('yc_toasts_last_summary')
+        const s = raw ? JSON.parse(raw) : null
+        setExportChip(s)
+      } catch (_) {
+        setExportChip(null)
+      }
+    }
+    window.addEventListener('yc_toasts_badge_reset', onReset)
+    return () => window.removeEventListener('yc_toasts_badge_reset', onReset)
+  }, [])
+
   const notifications = useMemo(
     () => [
       {
