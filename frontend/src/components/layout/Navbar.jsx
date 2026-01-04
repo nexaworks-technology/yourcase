@@ -1220,6 +1220,11 @@ export function Navbar({ sidebarOpen }) {
                         className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-400"
                       />
                       Default
+                      {pinFirstDefault && (
+                        <span className="ml-1 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300" aria-label="Pin first default active" title="Pin first default active">
+                          default
+                        </span>
+                      )}
                     </label>
                     <label className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300">
                       <input
