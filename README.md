@@ -6,7 +6,7 @@ YourCase is an AI‑assisted legal research platform. This repo contains the web
 
 - `frontend/` — Vite + React app (primary focus of recent updates)
 - `backend/` — server code (not modified in the latest work)
-- `docs/` — feature guides: Quick View, CSV Mapping, Diagnostics
+- `docs/` — documentation (start at `docs/README.md`), feature guides
 
 ## Frontend quick start
 
@@ -57,6 +57,8 @@ YourCase is an AI‑assisted legal research platform. This repo contains the web
 - Keyboard‑accessible modals/controls; announcements via polite live regions
 
 For detailed usage and step‑by‑step instructions, see `frontend/README.md`.
+Documentation index:
+- `docs/README.md`
 Additional guides:
 - `docs/QuickView.md`
 - `docs/CSVMapping.md`
