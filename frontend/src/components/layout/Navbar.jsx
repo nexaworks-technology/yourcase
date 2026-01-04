@@ -1319,7 +1319,17 @@ export function Navbar({ sidebarOpen }) {
                       aria-label="Copy recent toasts as JSON"
                       title={recentLoading ? 'Please wait…' : 'Copy as JSON'}
                       disabled={recentLoading}
-                      onClick={copyJSON}
+                      onClick={(e) => {
+                        copyJSON()
+                        try {
+                          const pill = document.createElement('span')
+                          pill.textContent = 'Copied'
+                          pill.setAttribute('role', 'status')
+                          pill.className = 'ml-1 rounded-full bg-green-500/10 px-1.5 py-0.5 text-[10px] text-green-600'
+                          e.currentTarget.appendChild(pill)
+                          setTimeout(() => pill.remove(), 900)
+                        } catch (_) {}
+                      }}
                     >
                       <Copy className="h-3.5 w-3.5" /> JSON
                     </button>
