@@ -26,6 +26,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - API and Service Patterns: [APIPatterns.md](./APIPatterns.md)
 - Performance Playbook: [PerformancePlaybook.md](./PerformancePlaybook.md)
 - Deploy Targets Cookbook: [DeployCookbook.md](./DeployCookbook.md)
+- State & Persistence Patterns: [StatePatterns.md](./StatePatterns.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
