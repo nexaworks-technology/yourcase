@@ -2,6 +2,15 @@
 
 This document provides a high‑level view of the YourCase web client (frontend) architecture, focusing on routing, state, module boundaries, performance, and accessibility.
 
+## Table of Contents
+- Layers & responsibilities
+- Data & persistence
+- Routing model
+- Performance & code splitting
+- Accessibility & UX
+- Folder layout
+- Extension points
+
 ## Layers & responsibilities
 - App shell: mounts router, theme, and layout (Navbar/Sidebar/Main). Provides skeletons and reduced‑motion guards.
 - Routing: react‑router with `RouteChunkBoundary` wrapping pages to handle load errors, retries, and offline recovery.
@@ -39,4 +48,3 @@ This document provides a high‑level view of the YourCase web client (frontend)
 - Add feature pages with lazy‑loaded heavy parts; wrap in `RouteChunkBoundary`.
 - Use session/local storage helpers consistently for user preferences and ephemeral data.
 - When adding motion, provide reduced‑motion fallbacks or guards.
-
