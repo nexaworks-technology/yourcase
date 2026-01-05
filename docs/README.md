@@ -22,6 +22,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - Build & Deploy: [BuildDeploy.md](./BuildDeploy.md)
 - UI Components Guide: [UIComponents.md](./UIComponents.md)
 - Design System & Theming: [DesignSystem.md](./DesignSystem.md)
+- Error Handling & Toasts: [ErrorHandling.md](./ErrorHandling.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
