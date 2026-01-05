@@ -16,6 +16,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - CSV Import Mapping Specification: [CSVMappingSpec.md](./CSVMappingSpec.md)
 - Diagnostics & Telemetry: [Diagnostics.md](./Diagnostics.md)
 - Accessibility & Reduced Motion: [Accessibility.md](./Accessibility.md)
+- Troubleshooting: [Troubleshooting.md](./Troubleshooting.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
