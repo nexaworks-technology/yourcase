@@ -18,6 +18,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - Accessibility & Reduced Motion: [Accessibility.md](./Accessibility.md)
 - Troubleshooting: [Troubleshooting.md](./Troubleshooting.md)
 - Storage Keys Reference: [StorageKeys.md](./StorageKeys.md)
+- Testing Guide (Playwright): [Testing.md](./Testing.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
