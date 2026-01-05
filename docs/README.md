@@ -30,6 +30,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - Security Checklist: [SecurityChecklist.md](./SecurityChecklist.md)
 - Developer Onboarding: [Onboarding.md](./Onboarding.md)
 - UX Copy & Tone: [UXCopyTone.md](./UXCopyTone.md)
+- Release Process: [ReleaseProcess.md](./ReleaseProcess.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
