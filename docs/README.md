@@ -33,6 +33,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - Release Process: [ReleaseProcess.md](./ReleaseProcess.md)
 - Data Import/Export Formats: [DataFormats.md](./DataFormats.md)
 - Design Tokens Reference: [DesignTokens.md](./DesignTokens.md)
+- Router & Navigation Patterns: [RouterPatterns.md](./RouterPatterns.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
