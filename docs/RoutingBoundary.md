@@ -2,6 +2,12 @@
 
 `RouteChunkBoundary` wraps routes to improve resilience and UX during code‑split loading and runtime errors.
 
+## Table of Contents
+- Behaviors
+- Integration
+- Telemetry
+- Tips
+
 ## Behaviors
 - Retry with exponential backoff: 0.5s → 1s → 2s → 4s (max 4 attempts)
 - Offline detection: shows banner; optional auto‑retry when back online
@@ -23,4 +29,3 @@
 ## Tips
 - Keep heavy sub‑routes/components lazy‑loaded to leverage boundary recovery
 - When adding new routes, wrap them in `RouteChunkBoundary` with a descriptive `label`
-
