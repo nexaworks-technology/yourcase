@@ -2,6 +2,13 @@
 
 Welcome to the YourCase web client docs. This index links to the most relevant guides and references.
 
+## Table of Contents
+- Getting Started
+- Guides (Architecture, Routing, Quick View, CSV Mapping, Diagnostics, Accessibility, Troubleshooting, Storage Keys, Testing, Build & Deploy, UI Components, Design System, Error Handling, API Patterns, Performance, Deploy Cookbook, State Patterns, Security, Onboarding, UX Copy & Tone, Release Process, Data Formats, Design Tokens, Router Patterns, Env Vars, Coding Standards)
+- Assets
+- How to run (frontend)
+- Notes
+
 ## Getting Started
 - Project overview: [Root README](../README.md)
 - Frontend quick start: [frontend/README](../frontend/README.md)
