@@ -2,6 +2,18 @@
 
 Guidelines for defining routes, handling deep links, managing scroll/focus, and integrating the error boundary.
 
+## Table of Contents
+- Routing mode
+- Deep links and anchors
+- Error boundary integration
+- Lazy loading
+- Scroll & focus management
+- Programmatic navigation
+- Route params and search
+- Guards & fallbacks
+- Testing routes
+- Examples
+
 ## Routing mode
 - The app uses React Router. Some environments may use hash routing for predictable static hosting.
 - When using hash routing, deep links look like `/#/settings#recent-toasts`.
@@ -61,4 +73,3 @@ useEffect(() => {
   }
 }, [])
 ```
-
