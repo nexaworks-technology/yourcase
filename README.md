@@ -1,6 +1,20 @@
 # YourCase Web (ycweb)
 
+[![Docs](https://img.shields.io/badge/docs-index-blue)](docs/README.md)
+![Vite](https://img.shields.io/badge/build-Vite%20%2B%20React-646CFF)
+![Node](https://img.shields.io/badge/node-LTS-success)
+![Status](https://img.shields.io/badge/accessibility-reduced--motion%20friendly-brightgreen)
+
 YourCase is an AI‑assisted legal research platform. This repo contains the web client (frontend) and server code (backend) for the YourCase application. The latest work on the web client focuses on usability and reliability: a quick view for recent toasts/exports, CSV import mapping polish, diagnostics, and reduced‑motion accessibility.
+
+## Quick Links
+
+- Docs index: `docs/README.md`
+- Getting started: `frontend/README.md`
+- Build & Deploy: `docs/BuildDeploy.md`
+- Deploy cookbook (Netlify/Vercel/Nginx/GH Pages): `docs/DeployCookbook.md`
+- Testing (Playwright): `docs/Testing.md`
+- Release process: `docs/ReleaseProcess.md`
 
 ## Repository layout
 
@@ -12,6 +26,14 @@ YourCase is an AI‑assisted legal research platform. This repo contains the web
 
 - Dev: `cd frontend && npm install && npm run dev` (http://localhost:5173)
 - Build: `npm run build` (artifacts in `frontend/dist`)
+
+## At‑a‑glance
+
+- Reliable routing with error boundary (retry/backoff, offline‑aware)
+- Recent toasts quick view (export/import JSON/CSV/ZIP, filters, keyboard)
+- CSV import mapping with presets, date formats, and validation
+- Diagnostics toggle (retry telemetry) with preview/copy/download/clear
+- Reduced‑motion accessibility and keyboard‑friendly UI
 
 ## What’s new (high‑level)
 
@@ -66,3 +88,13 @@ Additional guides:
 - `docs/Architecture.md`
 - `docs/RoutingBoundary.md`
 - `docs/CSVMappingSpec.md`
+ - `docs/DesignSystem.md`
+ - `docs/UIComponents.md`
+ - `docs/PerformancePlaybook.md`
+ - `docs/DeployCookbook.md`
+ - `docs/BuildDeploy.md`
+ - `docs/StorageKeys.md`
+ - `docs/Troubleshooting.md`
+ - `docs/Onboarding.md`
+ - `docs/UXCopyTone.md`
+ - `docs/ReleaseProcess.md`
