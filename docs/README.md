@@ -35,6 +35,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - Design Tokens Reference: [DesignTokens.md](./DesignTokens.md)
 - Router & Navigation Patterns: [RouterPatterns.md](./RouterPatterns.md)
 - Environment Variables (Vite): [EnvVars.md](./EnvVars.md)
+- Coding Standards: [CodingStandards.md](./CodingStandards.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
