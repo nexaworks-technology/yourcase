@@ -23,6 +23,7 @@ Welcome to the YourCase web client docs. This index links to the most relevant g
 - UI Components Guide: [UIComponents.md](./UIComponents.md)
 - Design System & Theming: [DesignSystem.md](./DesignSystem.md)
 - Error Handling & Toasts: [ErrorHandling.md](./ErrorHandling.md)
+- API and Service Patterns: [APIPatterns.md](./APIPatterns.md)
 
 ## Assets
 - Screenshots/GIFs live in [docs/assets/](./assets/) — drop files there and reference them from the guides.
