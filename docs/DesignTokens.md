@@ -2,6 +2,17 @@
 
 A compact reference of the core tokens used across the UI and how to apply them with Tailwind utilities.
 
+## Table of Contents
+- Colors
+- Spacing
+- Typography
+- Radius & Shadows
+- Breakpoints
+- Motion
+- Z-index
+- Usage patterns
+- Extending tokens
+
 Note: Tailwind default tokens are used with a few project conventions and one custom color (`accent`) from a CSS variable.
 
 ## Colors
@@ -71,4 +82,3 @@ Examples:
 - Add new tokens in `frontend/tailwind.config.js` under `theme.extend` (e.g., `brand`, `warning`).
 - Prefer CSS variables for values that swap per theme; map to Tailwind extended colors.
 - Document new tokens here with name, purpose, and example utilities.
-
