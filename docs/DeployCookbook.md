@@ -2,6 +2,15 @@
 
 Ready-to-use snippets for deploying the YourCase frontend (Vite + React) as a static site.
 
+## Table of Contents
+- Netlify
+- Vercel (static)
+- Nginx
+- GitHub Pages
+- CloudFront + S3
+- Subpaths
+- Common pitfalls
+
 Important: enable SPA fallback to `index.html` for client-side routing.
 
 ## Netlify
@@ -104,4 +113,3 @@ jobs:
 - White screen on deep links: SPA fallback missing → add rewrites/try_files.
 - Broken assets on subpath: `base` not set → set `base` to the deploy path.
 - Mixed content: ensure HTTPS and absolute asset URLs match the site origin.
-
