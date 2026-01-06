@@ -2,6 +2,17 @@
 
 Guidance to keep the YourCase web client fast in development and production.
 
+## Table of Contents
+- Goals
+- Analyze bundles
+- Code‑splitting strategy
+- Network & assets
+- React rendering
+- CSS & layout
+- Images and fonts
+- Measuring impact
+- Checklist before merging
+
 ## Goals
 - Small initial payload; fast first paint and interaction.
 - Lazy‑load heavy features; predictable chunk boundaries.
@@ -59,4 +70,3 @@ Heuristics
 - [ ] No “also statically imported” warnings during build
 - [ ] No obvious re‑render loops; props/state stable where needed
 - [ ] Reduced‑motion guards applied to new animations
-
