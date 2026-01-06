@@ -2,6 +2,15 @@
 
 This guide captures design tokens, theming decisions, and usage patterns for a consistent UI.
 
+## Table of Contents
+- Theming model
+- Tokens (colors, spacing, typography)
+- Components & states
+- Motion & accessibility
+- Theming usage examples
+- Adding new tokens
+- Do/Don’t
+
 ## Theming model
 - Tailwind with class-based dark mode (`darkMode: 'class'` in `tailwind.config.js`).
 - Theme toggling is handled by adding/removing the `dark` class on `html` or a top-level container.
@@ -67,4 +76,3 @@ This guide captures design tokens, theming decisions, and usage patterns for a c
 - Do: respect reduced motion and ensure accessible contrast.
 - Don’t: hard-code colors inline when an existing token/utility exists.
 - Don’t: rely solely on color to convey state; add icons/labels.
-
