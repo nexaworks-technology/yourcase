@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Copy, Download, RefreshCw, Search as SearchIcon, Trash2, Star, StarOff, Upload } from 'lucide-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
@@ -70,17 +70,105 @@ const apiKeys = [
 ]
 
 export default function Settings() {
-  const [activeSection, setActiveSection] = useState('profile')
+  // Initialize active section from URL on first render for deterministic mounts
+  const [activeSection, setActiveSection] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      return params.get('tab') || 'profile'
+    } catch (_) {
+      return 'profile'
+    }
+  })
   const [profile, setProfile] = useState(initialProfile)
   const [notice, setNotice] = useState(null)
   const { notifications, preferences, theme: storedTheme, accentColor: storedAccent, updateNotifications, updatePreferences, setTheme: setStoredTheme, setAccentColor: setStoredAccent } = useSettingsStore()
   const { theme, accentColor, setTheme, setAccentColor } = useTheme()
   const { announce } = useLive()
+  // E2E-only top-level CSV mapping modal (deterministic for screenshots/tests)
+  const [e2eMapOpen, setE2eMapOpen] = useState(false)
+  const [e2eMapData, setE2eMapData] = useState(null)
+
+  // E2E: mark Settings mounted
+  useEffect(() => {
+    try { window.__ycE2EReady = true } catch (_) {}
+  }, [])
 
   const handleThemeChange = (value) => {
     setStoredTheme(value)
     setTheme(value)
   }
+
+  // Honor ?tab=... after navigation changes as well
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const tab = params.get('tab')
+      if (tab && tab !== activeSection) setActiveSection(tab)
+    } catch (_) {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeof window !== 'undefined' ? window.location.search : undefined])
+
+  // Test-only: ensure Recent toasts section will be active for e2e CSV Mapping capture
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('e2e') === 'csv-map' && activeSection !== 'recent-toasts') {
+        setActiveSection('recent-toasts')
+      }
+    } catch (_) {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeof window !== 'undefined' ? window.location.search : undefined, activeSection])
+
+  // E2E-only: open a deterministic CSV Mapping modal at top-level if requested
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('e2e') === 'csv-map') {
+        setTimeout(() => {
+          const headers = ['time', 'message']
+          const rows = [
+            { time: '2025-01-01T10:00:00Z', message: 'Hello world' },
+            { time: '2025-01-02T12:30:00Z', message: 'Second row' },
+          ]
+          setE2eMapData({ headers, rows })
+          setE2eMapOpen(true)
+          try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+        }, 50)
+      }
+    } catch (_) {}
+  }, [])
+
+  // E2E test hook: expose a global to open CSV Mapping modal on demand
+  useEffect(() => {
+    const openNow = () => {
+      const headers = ['time', 'message']
+      const rows = [
+        { time: '2025-01-01T10:00:00Z', message: 'Hello world' },
+        { time: '2025-01-02T12:30:00Z', message: 'Second row' },
+      ]
+      setE2eMapData({ headers, rows })
+      setE2eMapOpen(true)
+      try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+    }
+    try { window.__openCsvMapForE2E = openNow } catch (_) {}
+    return () => { try { delete window.__openCsvMapForE2E } catch (_) {} }
+  }, [])
+
+  // E2E: open mapping modal when a custom event is dispatched (more robust than globals)
+  useEffect(() => {
+    const handler = () => {
+      const headers = ['time', 'message']
+      const rows = [
+        { time: '2025-01-01T10:00:00Z', message: 'Hello world' },
+        { time: '2025-01-02T12:30:00Z', message: 'Second row' },
+      ]
+      setE2eMapData({ headers, rows })
+      setE2eMapOpen(true)
+      try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+    }
+    try { window.addEventListener('yc:e2e:openCsvMap', handler) } catch (_) {}
+    return () => { try { window.removeEventListener('yc:e2e:openCsvMap', handler) } catch (_) {} }
+  }, [])
 
   // Toast mute toggle stored in preferences.doNotDisturb; honor in announcer via per-call option
   const toggleDnd = (value) => {
@@ -404,6 +492,14 @@ export default function Settings() {
           const [dragOver, setDragOver] = useState(false)
           const [mappingOpen, setMappingOpen] = useState(false)
           const [mappingData, setMappingData] = useState(null) // { headers, rows } from CSV
+
+          // Body marker for E2E: reflect when mapping modal is open
+          useEffect(() => {
+            try {
+              if (mappingOpen) document.body.dataset.mapCsvOpen = '1'
+              else delete document.body.dataset.mapCsvOpen
+            } catch (_) {}
+          }, [mappingOpen])
           // Inline import summary chip (ephemeral)
           const [importChip, setImportChip] = useState(() => {
             try {
@@ -427,6 +523,26 @@ export default function Settings() {
             const onCleared = () => { setImportChip(null); setExportChip(null) }
             window.addEventListener('yc_toasts_badge_cleared', onCleared)
             return () => window.removeEventListener('yc_toasts_badge_cleared', onCleared)
+          }, [])
+
+          // E2E: open CSV Mapping modal deterministically when ?e2e=csv-map is present
+          useEffect(() => {
+            try {
+              const params = new URLSearchParams(window.location.search)
+              if (params.get('e2e') === 'csv-map') {
+                // Defer to next tick to ensure Modal portal container exists
+                setTimeout(() => {
+                  const headers = ['time', 'message']
+                  const rows = [
+                    { time: '2025-01-01T10:00:00Z', message: 'Hello world' },
+                    { time: '2025-01-02T12:30:00Z', message: 'Second row' },
+                  ]
+                  setMappingData({ headers, rows })
+                  setMappingOpen(true)
+                  try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+                }, 0)
+              }
+            } catch (_) {}
           }, [])
 
           // Minimal CSV -> { headers, rows } parser (supports quotes and commas)
@@ -2178,6 +2294,22 @@ export default function Settings() {
         )}
         <main className="space-y-8">{sections}</main>
       </div>
+
+      {e2eMapOpen && e2eMapData && (
+        <CSVMappingModal
+          open={e2eMapOpen}
+          onClose={() => {
+            setE2eMapOpen(false)
+            try { delete document.body.dataset.mapCsvOpen } catch (_) {}
+          }}
+          onConfirm={() => {
+            setE2eMapOpen(false)
+            try { delete document.body.dataset.mapCsvOpen } catch (_) {}
+          }}
+          headers={e2eMapData.headers}
+          rows={e2eMapData.rows}
+        />
+      )}
     </div>
   )
 }
@@ -2838,6 +2970,7 @@ function CSVMappingModal({ open, onClose, onConfirm, headers = [], rows = [] }) 
       isOpen={open}
       onClose={onClose}
       title="Map CSV columns"
+      testId="map-csv-modal"
       size="md"
       onKeyDown={(e) => {
         if (e.defaultPrevented) return

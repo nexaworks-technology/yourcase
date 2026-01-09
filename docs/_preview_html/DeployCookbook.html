@@ -1,0 +1,141 @@
+<h1>Deploy Targets Cookbook</h1>
+<p>Ready-to-use snippets for deploying the YourCase frontend (Vite + React) as a static site.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li>Netlify</li>
+<li>Vercel (static)</li>
+<li>Nginx</li>
+<li>GitHub Pages</li>
+<li>CloudFront + S3</li>
+<li>Subpaths</li>
+<li>Common pitfalls</li>
+</ul>
+<p>Important: enable SPA fallback to <code>index.html</code> for client-side routing.</p>
+<h2>Netlify</h2>
+<ul>
+<li>Build command: <code>npm run build</code></li>
+<li>Publish directory: <code>frontend/dist</code></li>
+<li>Add <code>_redirects</code> file to <code>frontend/public/</code> or root of <code>dist/</code>:</li>
+</ul>
+<pre><code>/*  /index.html  200
+</code></pre>
+<ul>
+<li>netlify.toml (optional):</li>
+</ul>
+<pre><code>[build]
+  command = &quot;npm run build&quot;
+  publish = &quot;frontend/dist&quot;
+
+[[redirects]]
+  from = &quot;/*&quot;
+  to = &quot;/index.html&quot;
+  status = 200
+</code></pre>
+<h2>Vercel (static)</h2>
+<ul>
+<li>Framework preset: Vite</li>
+<li>Build command: <code>npm run build</code></li>
+<li>Output directory: <code>frontend/dist</code></li>
+<li>vercel.json (optional):</li>
+</ul>
+<pre><code>{
+  &quot;rewrites&quot;: [{ &quot;source&quot;: &quot;/(.*)&quot;, &quot;destination&quot;: &quot;/index.html&quot; }]
+}
+</code></pre>
+<h2>Nginx</h2>
+<ul>
+<li>Serve <code>frontend/dist</code> and add SPA fallback:</li>
+</ul>
+<pre><code>server {
+  listen 80;
+  server_name your.domain.com;
+  root /var/www/yourcase/frontend/dist;
+
+  location / {
+    try_files $uri /index.html;
+  }
+
+  location ~* \.(js|css|png|jpg|svg|woff2?)$ {
+    add_header Cache-Control &quot;public, max-age=31536000, immutable&quot;;
+  }
+}
+</code></pre>
+<h2>GitHub Pages</h2>
+<ul>
+<li>Build: <code>npm run build</code> → <code>frontend/dist</code></li>
+<li>If deploying to <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>, set base path in <code>frontend/vite.config.js</code>:</li>
+</ul>
+<pre><code>export default defineConfig({
+  base: &#39;/&lt;repo&gt;/&#39;,
+  plugins: [react()],
+})
+</code></pre>
+<ul>
+<li>Publish <code>dist</code> to <code>gh-pages</code> branch (e.g., with <code>gh-pages</code> npm package or GitHub Action).</li>
+<li>GitHub Action example:</li>
+</ul>
+<pre><code>name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ycweb/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: &#39;npm&#39;
+          cache-dependency-path: ycweb/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ycweb/frontend/dist
+</code></pre>
+<h2>CloudFront + S3</h2>
+<ul>
+<li>Upload <code>frontend/dist</code> to an S3 bucket (static website hosting optional).</li>
+<li>CloudFront behavior:<ul>
+<li>Origin: S3 bucket</li>
+<li>Default Root Object: <code>index.html</code></li>
+<li>Error responses: map 403/404 to <code>/index.html</code> with 200 for SPA fallback.</li>
+</ul>
+</li>
+<li>Add long-cache for <code>*.js,*.css</code> and shorter for HTML.</li>
+</ul>
+<h2>Subpaths</h2>
+<ul>
+<li>If serving under <code>/app/</code>, set <code>base: &#39;/app/&#39;</code> in <code>vite.config.js</code> and ensure rewrites respect the subpath on the host.</li>
+</ul>
+<h3>Hash vs History routing</h3>
+<ul>
+<li>If your hosting cannot provide SPA rewrites, consider hash routing to avoid server rewrites:<ul>
+<li>Switch Router to <code>HashRouter</code> in React Router, and deploy without <code>_redirects</code>.</li>
+<li>URLs become <code>/#/path</code> and work on static hosts without custom rewrites.</li>
+</ul>
+</li>
+<li>Prefer History routing with proper fallback when possible (cleaner URLs, better analytics).</li>
+</ul>
+<h2>SPA fallback checklist</h2>
+<ul>
+<li>Ensure all deep links (e.g., <code>/settings</code>, <code>/matters/123</code>) resolve to <code>index.html</code> on the host.</li>
+<li>Netlify: <code>_redirects</code> contains <code>/*  /index.html  200</code> in <code>dist/</code>.</li>
+<li>Vercel: add a <code>rewrites</code> rule to <code>index.html</code> when using static export.</li>
+<li>Nginx: <code>try_files $uri /index.html;</code> in the main <code>location /</code> block.</li>
+<li>CloudFront: map 403/404 to <code>/index.html</code> with status 200.</li>
+<li>GitHub Pages: set <code>base</code> in <code>vite.config.js</code> to repo subpath and serve <code>dist</code> on <code>gh-pages</code>.</li>
+<li>Verify locally: run <code>npx serve frontend/dist</code> and test deep links.</li>
+</ul>
+<h2>Common pitfalls</h2>
+<ul>
+<li>White screen on deep links: SPA fallback missing → add rewrites/try_files.</li>
+<li>Broken assets on subpath: <code>base</code> not set → set <code>base</code> to the deploy path.</li>
+<li>Mixed content: ensure HTTPS and absolute asset URLs match the site origin.</li>
+</ul>
+

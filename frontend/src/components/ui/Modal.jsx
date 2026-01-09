@@ -21,6 +21,7 @@ export function Modal({
   closeOnOverlayClick = true,
   className,
   footer,
+  testId,
 }) {
   const dialogRef = useRef(null)
 
@@ -66,6 +67,7 @@ export function Modal({
         aria-labelledby="modal-title"
         tabIndex={-1}
         ref={dialogRef}
+        data-testid={testId}
         className={cn(
           'relative mx-0 flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-3xl bg-white dark:bg-slate-900 shadow-xl outline-none animate-[slide-up_0.3s_ease-out] md:mx-4 md:rounded-3xl',
           sizeMap[size],
@@ -112,6 +114,7 @@ Modal.propTypes = {
   closeOnOverlayClick: PropTypes.bool,
   className: PropTypes.string,
   footer: PropTypes.node,
+  testId: PropTypes.string,
 }
 
 /*

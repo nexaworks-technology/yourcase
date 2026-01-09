@@ -1,0 +1,120 @@
+<h1>Testing Guide</h1>
+<p>Table of Contents</p>
+<ul>
+<li>Setup</li>
+<li>Running tests</li>
+<li>Preview server (if needed)</li>
+<li>Selector conventions</li>
+<li>Routing notes</li>
+<li>Common scenarios</li>
+<li>CI tips</li>
+<li>Troubleshooting</li>
+</ul>
+<p>End-to-end (E2E) tests are written with Playwright. This guide covers setup, how to run tests, selector conventions, routing notes, and CI tips.</p>
+<p><a href="./README.md">← Back to docs index</a></p>
+<h2>Setup</h2>
+<ul>
+<li>Install dependencies: <code>cd frontend &amp;&amp; npm install</code></li>
+<li>Install Playwright browsers: <code>npm run test:install</code></li>
+</ul>
+<h2>Running tests</h2>
+<ul>
+<li>Run all tests (Chromium):<ul>
+<li><code>npx playwright test --project=chromium --workers=1</code></li>
+</ul>
+</li>
+<li>Record a new test:<ul>
+<li><code>npx playwright codegen http://localhost:5173</code></li>
+</ul>
+</li>
+<li>Headed mode for debugging:<ul>
+<li><code>npx playwright test --headed --project=chromium --workers=1</code></li>
+</ul>
+</li>
+</ul>
+<h2>Preview server (if needed)</h2>
+<ul>
+<li>Some setups use Playwright’s webServer to build and preview the app:<ul>
+<li>Config file: <code>frontend/playwright.config.ts</code></li>
+<li>Typical flow: build → preview (<code>vite preview</code>) → run tests</li>
+</ul>
+</li>
+<li>If routes are hash-based, make sure tests navigate to <code>/#/path</code>.</li>
+</ul>
+<h2>Selector conventions</h2>
+<ul>
+<li>Prefer role-based and accessible selectors:<ul>
+<li><code>getByRole(&#39;button&#39;, { name: &#39;Preview JSON&#39; })</code></li>
+<li><code>getByLabel(&#39;Search&#39;)</code>, <code>getByPlaceholder(&#39;Search&#39;)</code></li>
+</ul>
+</li>
+<li>Avoid brittle text-only selectors; prefer stable labels/roles.</li>
+<li>If needed, add <code>data-testid=&quot;...&quot;</code> for non-semantic targets and document them.</li>
+</ul>
+<p>Example (Playwright):</p>
+<pre><code class="language-ts">// Wait for a specific button instead of page text
+await page.getByRole(&#39;button&#39;, { name: &#39;Preview JSON&#39; }).waitFor()
+</code></pre>
+<p>Last resort: data-testid</p>
+<ul>
+<li>Use only when role/label/placeholder are not applicable (purely decorative or complex custom UI).</li>
+<li>Naming: kebab-case, feature-scoped (e.g., <code>qv-copy-json</code>, <code>csv-apply-import</code>).</li>
+<li>Example:<pre><code class="language-jsx">&lt;button data-testid=&quot;qv-copy-json&quot; aria-label=&quot;Copy recent toasts as JSON&quot;&gt;Copy&lt;/button&gt;
+</code></pre>
+<pre><code class="language-ts">await page.getByTestId(&#39;qv-copy-json&#39;).click()
+</code></pre>
+</li>
+</ul>
+<h2>Routing notes</h2>
+<ul>
+<li>Settings deep-links may use hashes (e.g., <code>/#/settings#recent-toasts</code>).</li>
+<li>When waiting for a page to load, prefer a stable control over raw text:<ul>
+<li>Example: wait for the Preview button instead of <code>text=Recent toasts</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Hash routing tip (Playwright):</p>
+<pre><code class="language-ts">// If the app uses HashRouter in prod/preview, navigate with a hash prefix
+await page.goto(&#39;http://localhost:4173/#/settings&#39;)
+// Then wait for a stable role-based control
+await page.getByRole(&#39;button&#39;, { name: &#39;Preview JSON&#39; }).waitFor()
+</code></pre>
+<h2>Common scenarios</h2>
+<ul>
+<li>Recent toasts quick view<ul>
+<li>Open quick view, import JSON/CSV, verify counts, toggle pinned-only and pin-first.</li>
+</ul>
+</li>
+<li>CSV mapping<ul>
+<li>Upload small CSV, map columns, choose date format, verify mapped row count, open preview then cancel.</li>
+</ul>
+</li>
+<li>Diagnostics<ul>
+<li>Enable telemetry, trigger a route error (simulate offline), verify log entries, clear log.</li>
+</ul>
+</li>
+</ul>
+<h2>CI tips</h2>
+<ul>
+<li>Use <code>--workers=1</code> to avoid port conflicts when preview server is used.</li>
+<li>Increase timeouts for slower runners: <code>PWTEST_TIMEOUT=60000</code>.</li>
+<li>Artifacts (videos/screenshots) can be enabled in <code>playwright.config.ts</code> (already present if tests were added).</li>
+</ul>
+<h2>Troubleshooting</h2>
+<ul>
+<li>Tests time out waiting for elements<ul>
+<li>Ensure the correct route (hash vs history) and use stable role selectors.</li>
+</ul>
+</li>
+<li>Build/preview failures<ul>
+<li>Run locally: <code>npm run build</code> then <code>vite preview</code> and test against <code>http://localhost:4173</code>.</li>
+</ul>
+</li>
+<li>Flaky UI animations<ul>
+<li>Prefer reduced-motion mode or disable transitional assertions (wait for <code>aria-busy=false</code>).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Last updated: 2026-01-06</p>
+

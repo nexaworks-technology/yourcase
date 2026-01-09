@@ -1,0 +1,107 @@
+<h1>Design System &amp; Theming</h1>
+<p>This guide captures design tokens, theming decisions, and usage patterns for a consistent UI.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li>Theming model</li>
+<li>Tokens (colors, spacing, typography)</li>
+<li>Components &amp; states</li>
+<li>Motion &amp; accessibility</li>
+<li>Theming usage examples</li>
+<li>Adding new tokens</li>
+<li>Do/Don’t</li>
+</ul>
+<h2>Theming model</h2>
+<ul>
+<li>Tailwind with class-based dark mode (<code>darkMode: &#39;class&#39;</code> in <code>tailwind.config.js</code>).</li>
+<li>Theme toggling is handled by adding/removing the <code>dark</code> class on <code>html</code> or a top-level container.</li>
+<li>Prefer semantic utility classes (e.g., <code>text-gray-900 dark:text-gray-100</code>) over hard-coded colors.</li>
+</ul>
+<h2>Tokens</h2>
+<ul>
+<li>Colors<ul>
+<li>Semantic text: <code>text-gray-900</code> (light), <code>dark:text-gray-100</code> (dark)</li>
+<li>Backgrounds: <code>bg-white</code>/<code>bg-slate-950</code> or <code>bg-slate-800</code> for panels</li>
+<li>Borders: <code>border-slate-200</code> (light), <code>dark:border-slate-700</code> (dark)</li>
+<li>Accent: CSS variable <code>--accent-color</code> mapped to Tailwind <code>accent</code> (<code>theme.extend.colors.accent</code>)<ul>
+<li>Usage: <code>text-accent</code>, <code>bg-accent</code>, <code>border-accent</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Spacing<ul>
+<li>Tailwind spacing scale (e.g., <code>px-4</code>, <code>py-3</code>, <code>gap-3</code>, <code>mb-6</code>).</li>
+<li>Keep gutters consistent: 8px multiples (<code>2, 3, 4, 6</code> in Tailwind units).</li>
+</ul>
+</li>
+<li>Typography<ul>
+<li>Headings: <code>text-4xl</code> for primary page titles, <code>text-lg</code> for section titles.</li>
+<li>Body: <code>text-sm</code> default for dense panels; <code>text-base</code> for main content.</li>
+<li>Weight: <code>font-semibold</code> for headings, <code>font-medium</code> for actionable labels.</li>
+</ul>
+</li>
+</ul>
+<h2>Components &amp; states</h2>
+<ul>
+<li>Buttons<ul>
+<li>Primary: <code>bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50</code>.</li>
+<li>Secondary: <code>border border-slate-700 text-gray-100 hover:border-slate-600</code>.</li>
+<li>Ghost: <code>text-gray-400 hover:text-gray-100</code> for low-emphasis actions.</li>
+</ul>
+</li>
+<li>Inputs<ul>
+<li>Panels: <code>bg-slate-800 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-500</code>.</li>
+<li>Focus: <code>focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500</code>.</li>
+</ul>
+</li>
+<li>Cards/Panels<ul>
+<li><code>bg-slate-800 border border-slate-700 rounded-2xl</code> with <code>px-4 py-3</code> content padding.</li>
+</ul>
+</li>
+</ul>
+<h2>Motion &amp; accessibility</h2>
+<ul>
+<li>Reduced motion<ul>
+<li>Honor <code>prefers-reduced-motion: reduce</code>; avoid essential information via animation.</li>
+<li>Skeletons: brief, low-contrast pulse; disable pulse under reduced motion.</li>
+</ul>
+</li>
+<li>Keyboard<ul>
+<li>Clear focus outlines; ensure icon-only buttons have <code>aria-label</code>.</li>
+<li>ESC closes menus/modals; provide hints for keyboard shortcuts where relevant.</li>
+</ul>
+</li>
+<li>Live regions<ul>
+<li>Use polite announcements for imports, reloads, and preference toggles.</li>
+</ul>
+</li>
+</ul>
+<h2>Theming usage examples</h2>
+<ul>
+<li>Text + background</li>
+</ul>
+<pre><code>&lt;div className=&quot;text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-950&quot;&gt;...&lt;/div&gt;
+</code></pre>
+<ul>
+<li>Border + panel</li>
+</ul>
+<pre><code>&lt;div className=&quot;bg-slate-800 border border-slate-700 rounded-lg&quot;&gt;...&lt;/div&gt;
+</code></pre>
+<ul>
+<li>Accent</li>
+</ul>
+<pre><code>&lt;button className=&quot;text-accent hover:opacity-90&quot;&gt;Action&lt;/button&gt;
+</code></pre>
+<h2>Adding new tokens</h2>
+<ul>
+<li>Extend Tailwind in <code>frontend/tailwind.config.js</code> (e.g., add <code>brand</code>, <code>warning</code>).</li>
+<li>Use CSS variables for theme-swappable values when appropriate and map to Tailwind via <code>extend.colors</code>.</li>
+<li>Document new tokens and where to use them in this guide.</li>
+</ul>
+<h2>Do/Don’t</h2>
+<ul>
+<li>Do: use semantic colors and consistent spacing.</li>
+<li>Do: respect reduced motion and ensure accessible contrast.</li>
+<li>Don’t: hard-code colors inline when an existing token/utility exists.</li>
+<li>Don’t: rely solely on color to convey state; add icons/labels.</li>
+</ul>
+

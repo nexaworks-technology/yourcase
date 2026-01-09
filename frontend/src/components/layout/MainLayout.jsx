@@ -1,19 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import { Sidebar } from './Sidebar'
 import { Container } from './Container'
 import { SettingsDrawer } from '../settings/SettingsDrawer'
 import { useTheme } from '../../context/ThemeContext'
+import { Modal } from '../ui/Modal'
+import { Button } from '../ui/Button'
 
 export function MainLayout({ children }) {
+  const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [fade, setFade] = useState(false)
   const fadeRef = useRef(null)
   const { theme } = useTheme()
   const themeAnnouncedRef = useRef(false)
+  const [e2eMapOpen, setE2eMapOpen] = useState(false)
 
   const mainPaddingClass = sidebarOpen ? 'lg:pl-60' : 'lg:pl-20'
   const [sidebarTransitioning, setSidebarTransitioning] = useState(false)
@@ -64,6 +68,27 @@ export function MainLayout({ children }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [sidebarOpen])
 
+  // E2E: listen for CSV mapping open event at layout level and navigate to Settings
+  useEffect(() => {
+    const onE2EOpenCsvMap = () => {
+      try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+      setE2eMapOpen(true)
+    }
+    try { window.addEventListener('yc:e2e:openCsvMap', onE2EOpenCsvMap) } catch (_) {}
+    return () => { try { window.removeEventListener('yc:e2e:openCsvMap', onE2EOpenCsvMap) } catch (_) {} }
+  }, [navigate])
+
+  // E2E: auto-open if URL contains e2e=csv-map
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('e2e') === 'csv-map') {
+        try { document.body.dataset.mapCsvOpen = '1' } catch (_) {}
+        setE2eMapOpen(true)
+      }
+    } catch (_) {}
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 dark:bg-gray-950 dark:text-gray-100 transition-colors">
       <div className="yc-theme-anim" data-active={fade ? 'true' : 'false'}>
@@ -92,6 +117,31 @@ export function MainLayout({ children }) {
       <div id="yc-sidebar-live" className="sr-only" role="status" aria-live="polite" />
       {/* aria-live region for announcing theme changes */}
       <div id="yc-theme-live" className="sr-only" role="status" aria-live="polite" />
+
+      {e2eMapOpen && (
+        <Modal
+          isOpen={e2eMapOpen}
+          onClose={() => { setE2eMapOpen(false); try { delete document.body.dataset.mapCsvOpen } catch (_) {} }}
+          title="Map CSV columns"
+          size="md"
+          testId="map-csv-modal"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => { setE2eMapOpen(false); try { delete document.body.dataset.mapCsvOpen } catch (_) {} }}>Cancel</Button>
+              <Button variant="primary" onClick={() => { setE2eMapOpen(false); try { delete document.body.dataset.mapCsvOpen } catch (_) {} }}>Continue</Button>
+            </div>
+          }
+        >
+          <div className="text-sm">
+            <p className="mb-2">E2E preview only. This minimal modal is shown for screenshot capture.</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Select message column</li>
+              <li>Optional: time column and format</li>
+              <li>Optional: pinned flag column</li>
+            </ul>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

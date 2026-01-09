@@ -1,0 +1,91 @@
+<h1>Environment Variables (Vite)</h1>
+<p>How environment variables work in the frontend (Vite + React), what gets exposed, and safe usage patterns.</p>
+<h2>Key rules</h2>
+<ul>
+<li>Only variables prefixed with <code>VITE_</code> are exposed to the client at build time.</li>
+<li>Access via <code>import.meta.env.VITE_SOMETHING</code> in code.</li>
+<li>Do NOT put secrets in the frontend; anything in <code>VITE_*</code> is public.</li>
+</ul>
+<h2>Files and precedence</h2>
+<p>Vite loads <code>.env</code> files based on mode. Typical files (later overrides earlier):</p>
+<ul>
+<li><code>.env</code> — base defaults for all modes</li>
+<li><code>.env.local</code> — local overrides (ignored by Git, keep secrets out of repo)</li>
+<li><code>.env.development</code>, <code>.env.production</code> — mode‑specific defaults</li>
+<li><code>.env.development.local</code>, <code>.env.production.local</code> — local overrides per mode (ignored by Git)</li>
+</ul>
+<p>Example gitignore policy (already common): do not commit <code>*.local</code> env files.</p>
+<h2>Reading envs</h2>
+<pre><code class="language-js">// Safe access with default
+const apiBase = import.meta.env.VITE_API_BASE || &#39;/api&#39;
+const isDemo = import.meta.env.VITE_DEMO === &#39;true&#39;
+</code></pre>
+<h2>Sample <code>.env.example</code></h2>
+<pre><code class="language-dotenv"># Public (exposed to browser)
+VITE_API_BASE=/api
+VITE_FEATURE_EXPORT_PREVIEW=true
+VITE_BRAND_ACCENT=#3B82F6
+
+# Private (do NOT prefix with VITE_ and do NOT use in frontend)
+# API_SECRET=...   # server-only
+</code></pre>
+<p>Copy <code>.env.example</code> to <code>.env</code> and adjust locally. For machine‑specific values, use <code>.env.local</code>.
+An example file is available at <code>frontend/.env.example</code>.</p>
+<h2>Common patterns</h2>
+<ul>
+<li>API base URL<ul>
+<li><code>VITE_API_BASE=https://api.yourcase.in</code> → used by a shared axios instance.</li>
+</ul>
+</li>
+<li>Feature flags (build‑time)<ul>
+<li><code>VITE_FEATURE_*</code> as strings (<code>&#39;true&#39;/&#39;false&#39;</code>); gate optional UI.</li>
+</ul>
+</li>
+<li>Theming<ul>
+<li><code>VITE_BRAND_ACCENT</code> → set a CSS variable at app boot.</li>
+</ul>
+</li>
+</ul>
+<h3>Example: Setting a CSS var from <code>VITE_BRAND_ACCENT</code></h3>
+<pre><code class="language-js">// src/main.jsx (or App entry)
+const accent = import.meta.env.VITE_BRAND_ACCENT || &#39;#4F46E5&#39;
+document.documentElement.style.setProperty(&#39;--yc-accent&#39;, accent)
+</code></pre>
+<pre><code class="language-css">/* src/styles/index.css */
+:root {
+  --yc-accent: #4F46E5; /* fallback */
+}
+
+.text-accent { color: var(--yc-accent); }
+.bg-accent { background-color: var(--yc-accent); }
+.ring-accent { --tw-ring-color: var(--yc-accent); }
+</code></pre>
+<h2>Do / Don’t</h2>
+<ul>
+<li>Do: read with fallbacks and coerce to the right type.</li>
+<li>Do: document expected vars in <code>.env.example</code> and this doc.</li>
+<li>Don’t: store secrets in <code>VITE_*</code> variables.</li>
+<li>Don’t: assume envs change at runtime — Vite inlines them at build time.</li>
+</ul>
+<h2>Injecting values in CSS/JS</h2>
+<ul>
+<li>JS: use <code>import.meta.env.VITE_*</code> directly.</li>
+<li>CSS variables: assign once at startup, e.g., to <code>:root { --accent-color: &lt;value&gt;; }</code>.</li>
+</ul>
+<h2>Mode tips</h2>
+<ul>
+<li><code>npm run dev</code> → development mode; loads <code>.env.development*</code> then overrides.</li>
+<li><code>npm run build</code> → production mode; loads <code>.env.production*</code> then overrides.</li>
+</ul>
+<h2>Troubleshooting</h2>
+<ul>
+<li>Variable undefined<ul>
+<li>Ensure it starts with <code>VITE_</code>, matches file precedence, and restart dev server after changes.</li>
+</ul>
+</li>
+<li>Different behavior in prod<ul>
+<li>Confirm <code>.env.production*</code> and CI/CD envs are configured; verify bundle contains expected constants.</li>
+</ul>
+</li>
+</ul>
+
