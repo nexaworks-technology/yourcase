@@ -1,6 +1,18 @@
 # CSV Import Mapping Specification
 
+Table of Contents
+- Columns
+- Date formats
+- Toggles (persisted)
+- Validation
+- Import modes
+- Presets
+- Preview & summaries
+- Notes
+
 This document defines the user‑facing CSV mapping flow used in Settings → Recent toasts and its constraints.
+
+[← Back to docs index](./README.md)
 
 ## Columns
 - Time: user‑selected column parsed via selected date format
@@ -37,3 +49,6 @@ This document defines the user‑facing CSV mapping flow used in Settings → Re
 - CSV parser is minimal and may not cover RFC4180 embedded newlines in fields; consider a robust parser if needed
 - For very large CSVs, consider a worker‑based parser and capped samples
 
+---
+
+Last updated: 2026-01-06

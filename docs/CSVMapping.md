@@ -1,6 +1,13 @@
 # CSV Import Mapping
 
+Table of Contents
+- Capabilities
+- Tips
+- Screenshots / GIFs
+
 Where: Settings → Recent toasts → Import CSV.
+
+[← Back to docs index](./README.md)
 
 Capabilities
 - Map CSV columns for Time, Message, and Pinned.
@@ -16,4 +23,10 @@ Tips
 
 Screenshots / GIFs
 - Place a screenshot/GIF at `docs/assets/csv-mapping.png|gif` and embed:
-  - `![CSV Mapping](./assets/csv-mapping.png)`
+  ```md
+  ![CSV Mapping](./assets/csv-mapping.png)
+  ```
+
+---
+
+Last updated: 2026-01-06

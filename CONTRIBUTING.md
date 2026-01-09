@@ -51,9 +51,8 @@ npm run build # production build in dist/
 - Feature guides live in `ycweb/docs/` (QuickView, CSVMapping, Diagnostics).
 
 ## PR checklist
-- [ ] Builds locally without errors
-- [ ] No obvious regressions on desktop/mobile
-- [ ] Keyboard and reduced‑motion tested
-- [ ] Docs updated (README or guides)
-- [ ] Screenshots/GIFs added if UI changed
-
+- [ ] Build passes (`npm run build`) and preview works
+- [ ] Accessibility: keyboard navigation, focus order, reduced‑motion
+- [ ] Desktop and mobile UI verified (no layout regressions)
+- [ ] Docs updated (README and/or guides in `docs/`)
+- [ ] Screenshots/GIFs added if UI changed (with alt text)

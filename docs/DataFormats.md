@@ -1,10 +1,22 @@
 # Data Import/Export Formats
 
+Table of Contents
+- JSON
+- CSV
+- ZIP
+- Validation rules
+- Import modes
+- Export semantics
+- Edge cases & tips
+- Related docs
+
 Reference for the JSON/CSV/ZIP formats used in Recent toasts import/export flows, plus edge cases and validation.
+
+[← Back to docs index](./README.md)
 
 ## JSON
 - Shape: array of entries
-```
+```json
 [
   { "t": 1736066400000, "m": "Indexed 10 documents", "p": true },
   { "t": 1736063100000, "m": "Export complete", "p": false }
@@ -14,6 +26,25 @@ Reference for the JSON/CSV/ZIP formats used in Recent toasts import/export flows
   - `t` (number): timestamp in epoch milliseconds
   - `m` (string): message text (required unless mapping toggle ignores blanks)
   - `p` (boolean, optional): pinned flag
+
+### Schema (example)
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecentToastList",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["t", "m"],
+    "additionalProperties": false,
+    "properties": {
+      "t": { "type": "number", "description": "Epoch milliseconds" },
+      "m": { "type": "string", "minLength": 1, "description": "Message text" },
+      "p": { "type": "boolean", "description": "Pinned flag" }
+    }
+  }
+}
+```
 
 ## CSV
 - Columns: flexible; mapped via CSV Mapping Modal
@@ -25,11 +56,19 @@ Reference for the JSON/CSV/ZIP formats used in Recent toasts import/export flows
   - Treat blank time as now
   - Ignore blank messages
 - Sample CSV
-```
+```csv
 Time,Message,Pinned
 2025-01-05,Indexed 10 documents,true
 1736063100,Export complete,false
 ,,true
+```
+
+### CSV examples with quoting and escapes
+```csv
+Time,Message,Pinned
+2025-02-01,"Message, with comma",true
+2025-02-02,"He said ""ok"" and left",false
+2025-02-03,"Multiline body starts→\nline 2 continues",false
 ```
 
 ## ZIP
@@ -79,3 +118,6 @@ Time,Message,Pinned
 - CSV Mapping Specification: `docs/CSVMappingSpec.md`
 - Quick View: `docs/QuickView.md`
 
+---
+
+Last updated: 2026-01-06

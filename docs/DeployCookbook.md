@@ -109,6 +109,21 @@ jobs:
 ## Subpaths
 - If serving under `/app/`, set `base: '/app/'` in `vite.config.js` and ensure rewrites respect the subpath on the host.
 
+### Hash vs History routing
+- If your hosting cannot provide SPA rewrites, consider hash routing to avoid server rewrites:
+  - Switch Router to `HashRouter` in React Router, and deploy without `_redirects`.
+  - URLs become `/#/path` and work on static hosts without custom rewrites.
+- Prefer History routing with proper fallback when possible (cleaner URLs, better analytics).
+
+## SPA fallback checklist
+- Ensure all deep links (e.g., `/settings`, `/matters/123`) resolve to `index.html` on the host.
+- Netlify: `_redirects` contains `/*  /index.html  200` in `dist/`.
+- Vercel: add a `rewrites` rule to `index.html` when using static export.
+- Nginx: `try_files $uri /index.html;` in the main `location /` block.
+- CloudFront: map 403/404 to `/index.html` with status 200.
+- GitHub Pages: set `base` in `vite.config.js` to repo subpath and serve `dist` on `gh-pages`.
+- Verify locally: run `npx serve frontend/dist` and test deep links.
+
 ## Common pitfalls
 - White screen on deep links: SPA fallback missing → add rewrites/try_files.
 - Broken assets on subpath: `base` not set → set `base` to the deploy path.

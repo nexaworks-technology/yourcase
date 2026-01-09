@@ -17,14 +17,14 @@ Vite loads `.env` files based on mode. Typical files (later overrides earlier):
 Example gitignore policy (already common): do not commit `*.local` env files.
 
 ## Reading envs
-```
+```js
 // Safe access with default
 const apiBase = import.meta.env.VITE_API_BASE || '/api'
 const isDemo = import.meta.env.VITE_DEMO === 'true'
 ```
 
 ## Sample `.env.example`
-```
+```dotenv
 # Public (exposed to browser)
 VITE_API_BASE=/api
 VITE_FEATURE_EXPORT_PREVIEW=true
@@ -35,6 +35,7 @@ VITE_BRAND_ACCENT=#3B82F6
 ```
 
 Copy `.env.example` to `.env` and adjust locally. For machine‑specific values, use `.env.local`.
+An example file is available at `frontend/.env.example`.
 
 ## Common patterns
 - API base URL
@@ -43,6 +44,25 @@ Copy `.env.example` to `.env` and adjust locally. For machine‑specific values,
   - `VITE_FEATURE_*` as strings (`'true'/'false'`); gate optional UI.
 - Theming
   - `VITE_BRAND_ACCENT` → set a CSS variable at app boot.
+
+### Example: Setting a CSS var from `VITE_BRAND_ACCENT`
+
+```js
+// src/main.jsx (or App entry)
+const accent = import.meta.env.VITE_BRAND_ACCENT || '#4F46E5'
+document.documentElement.style.setProperty('--yc-accent', accent)
+```
+
+```css
+/* src/styles/index.css */
+:root {
+  --yc-accent: #4F46E5; /* fallback */
+}
+
+.text-accent { color: var(--yc-accent); }
+.bg-accent { background-color: var(--yc-accent); }
+.ring-accent { --tw-ring-color: var(--yc-accent); }
+```
 
 ## Do / Don’t
 - Do: read with fallbacks and coerce to the right type.
@@ -63,4 +83,3 @@ Copy `.env.example` to `.env` and adjust locally. For machine‑specific values,
   - Ensure it starts with `VITE_`, matches file precedence, and restart dev server after changes.
 - Different behavior in prod
   - Confirm `.env.production*` and CI/CD envs are configured; verify bundle contains expected constants.
-

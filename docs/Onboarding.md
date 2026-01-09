@@ -1,6 +1,23 @@
 # Developer Onboarding
 
+Table of Contents
+- Prerequisites
+- First run
+- Project layout
+- Scripts (frontend)
+- Branch & PR workflow
+- Coding standards
+- Testing
+- Docs
+- Common workflows
+- Storage keys
+- Troubleshooting
+- Security
+- Opening a PR
+
 Welcome to the YourCase web client. This guide gets you productive quickly and points to deeper docs for specific areas.
+
+[← Back to docs index](./README.md)
 
 ## Prerequisites
 - Node.js LTS (v18+ recommended)
@@ -8,7 +25,7 @@ Welcome to the YourCase web client. This guide gets you productive quickly and p
 - Git
 
 ## First run
-```
+```bash
 cd frontend
 npm install
 npm run dev    # http://localhost:5173
@@ -30,6 +47,16 @@ npm run build  # production build → dist/
 - Branch from `main` (e.g., `feature/xyz`); for Portal sessions we use `portalcode`.
 - Keep commits scoped; write clear messages (present tense, affected area first).
 - Open a PR to `main` with a concise summary and screenshots/GIFs when UI changes.
+
+### Opening a PR from `portalcode`
+- Ensure your work is on the `portalcode` branch and pushed to origin.
+- Open the compare link in your browser (replace org/repo if needed):
+  - `https://github.com/nexaworks-technology/yourcase/compare/main...portalcode`
+- Fill out the PR description with:
+  - What changed and why
+  - Screenshots/GIFs (if UI)
+  - Accessibility notes (reduced motion, keyboard)
+  - Any docs updates included
 
 ## Coding standards
 - Follow existing ESLint and repo conventions; prefer accessible components.
@@ -66,3 +93,6 @@ npm run build  # production build → dist/
 - Ensure it builds locally, does not regress accessibility/desktop layout, and updates docs as needed.
 - Provide a short summary with context and, if relevant, a before/after visual.
 
+---
+
+Last updated: 2026-01-06

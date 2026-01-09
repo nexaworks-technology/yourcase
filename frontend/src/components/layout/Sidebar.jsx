@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
-import { User, Menu, X, Bell, UserRound, Mail } from 'lucide-react'
+import { User, Menu, X, Bell, UserRound, Mail, Settings } from 'lucide-react'
 import { navItems } from './navItems'
 
 // navItems now imported from shared file to sync with Navbar
@@ -53,7 +53,7 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
 
   return (
     <aside
-      className={`${expanded ? 'w-60' : 'w-20'} fixed inset-y-0 left-0 z-[120] hidden flex-col border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 shadow-sm transition-[width] duration-300 ease-in-out motion-reduce:transition-none lg:flex`}
+      className={`${expanded ? 'w-60' : 'w-20'} fixed inset-y-0 left-0 z-[120] hidden flex-col bg-gray-800 border-r border-gray-700 text-gray-100 shadow-sm transition-[width] duration-300 ease-in-out motion-reduce:transition-none lg:flex py-5`}
       onMouseEnter={() => {
         if (hoverTimer.current) window.clearTimeout(hoverTimer.current)
         hoverTimer.current = window.setTimeout(() => setHovered(true), 120)
@@ -65,15 +65,13 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
       style={{ willChange: 'width' }}
       aria-label="Primary"
     >
-      <div className="px-4 pb-8 border-b border-gray-100 dark:border-gray-800 mb-5 dark:border-gray-800">
+      <div className="px-4 pb-8 border-b border-gray-700 mb-5">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-1">
             {expanded ? (
               <>
-                <div className="w-11 h-11 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold dark:bg-gray-100 dark:text-gray-900">
-                  Logo
-                </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">YourCase HQ</span>
+                <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 font-semibold text-xs shrink-0">Logo</div>
+                <span className="text-sm font-medium text-gray-100">YourCase HQ</span>
               </>
             ) : (
               <>
@@ -81,7 +79,7 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
                 ref={expandBtnRef}
                 type="button"
                 onClick={handleExpand}
-                className="relative flex w-full items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 text-gray-600 dark:text-gray-300 transition shadow-sm hover:shadow-md focus-visible:yc-focus yc-ink"
+                className="text-gray-400 hover:text-gray-100 transition-colors p-1 flex items-center justify-center"
                 aria-label="Expand sidebar"
                 aria-describedby={expandTip ? 'yc-expand-tip' : undefined}
                 onMouseEnter={() => setExpandTip(true)}
@@ -117,13 +115,7 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
                 </div>
               </button>
               {expandTip && (
-                <span
-                  id="yc-expand-tip"
-                  role="tooltip"
-                  className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 shadow-sm transition-all duration-150 ease-out motion-reduce:transition-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
-                >
-                  Expand (Right Arrow)
-                </span>
+                <span id="yc-expand-tip" role="tooltip" className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-gray-100 shadow-sm">Expand (Right Arrow)</span>
               )}
               </>
             )}
@@ -132,7 +124,7 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
             <div className="relative">
               <button
                 ref={collapseBtnRef}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 transition-colors p-1 flex items-center justify-center focus-visible:yc-focus yc-ink"
+                className="text-gray-400 hover:text-gray-100 transition-colors p-1 flex items-center justify-center"
                 onClick={handleCollapse}
                 aria-label="Collapse sidebar"
                 aria-pressed={!collapsed}
@@ -146,13 +138,7 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
                 <X size={20} />
               </button>
               {collapseTip && (
-                <span
-                  id="yc-collapse-tip"
-                  role="tooltip"
-                  className="pointer-events-none absolute right-0 top-full mt-2 whitespace-nowrap rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 shadow-sm transition-all duration-150 ease-out motion-reduce:transition-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
-                >
-                  Collapse (Left Arrow)
-                </span>
+                <span id="yc-collapse-tip" role="tooltip" className="pointer-events-none absolute right-0 top-full mt-2 whitespace-nowrap rounded-md border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-gray-100 shadow-sm">Collapse (Left Arrow)</span>
               )}
             </div>
           )}
@@ -168,53 +154,29 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`group relative flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors duration-200 motion-reduce:transition-none focus-visible:yc-focus yc-focus-anim yc-ink overflow-hidden ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm font-medium transition-all duration-200 ${
                 active
-                  ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-400/10'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
-              } justify-start`}
+                  ? 'text-blue-400 bg-blue-400/10 border-l-3 border-blue-400 pl-[13px]'
+                  : 'text-gray-400 hover:text-gray-100 hover:bg-gray-700'
+              } ${expanded ? 'justify-start' : 'justify-center'}`}
               title={collapsed ? item.label : ''}
               aria-current={active ? 'page' : undefined}
-              onMouseDown={(e) => {
-                // seed ripple origin via CSS variables consumed by yc-ink
-                const t = e.currentTarget
-                const rect = t.getBoundingClientRect()
-                t.style.setProperty('--ink-x', `${e.clientX - rect.left}px`)
-                t.style.setProperty('--ink-y', `${e.clientY - rect.top}px`)
-              }}
+              onMouseDown={() => {}}
             >
-              {/* Left accent bar (keeps padding consistent to avoid icon shift) */}
-              <span
-                className={`pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-full bg-accent origin-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                  active
-                    ? 'opacity-100 scale-y-100'
-                    : 'opacity-0 scale-y-0 group-hover:opacity-60 group-hover:scale-y-100'
-                }`}
-                aria-hidden="true"
-              />
-              <span className="relative flex h-6 w-6 items-center justify-center text-base text-inherit shrink-0">
-                <Icon size={20} className="shrink-0" />
-              </span>
-              <span
-                className={`ml-3 truncate text-gray-900 dark:text-gray-100 transition-all duration-200 motion-reduce:transition-none group-hover:text-inherit transform-gpu group-hover:translate-x-[2px] motion-reduce:transform-none ${
-                  collapsed ? 'w-0 opacity-0 scale-95' : 'w-auto opacity-100'
-                }`}
-                >
-                {item.label}
-              </span>
-              {/* Assistive text for collapsed state to ensure name is announced */}
+              <Icon size={24} className="shrink-0" />
+              {expanded && <span>{item.label}</span>}
               {collapsed && <span className="sr-only">{item.label}</span>}
             </Link>
           )
         })}
       </nav>
 
-      <div className={`relative flex flex-col gap-2 px-3 pt-5 border-t border-gray-100 dark:border-gray-800 ${expanded ? '' : 'items-center'}`}>
+      <div className={`relative flex flex-col gap-2 px-3 pt-5 border-t border-gray-700 ${expanded ? '' : 'items-center'}`}>
         <button
           ref={profileRef}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium focus-visible:yc-focus ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-gray-700 transition-all text-sm font-medium ${
             expanded ? 'justify-start w-full' : 'justify-center'
-          } ${profileOpen ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
+          } ${profileOpen ? 'bg-gray-700' : ''}`}
           title="Profile menu"
           aria-haspopup="menu"
           aria-expanded={profileOpen}
@@ -226,8 +188,8 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
           </div>
           {expanded && (
             <div className="flex flex-col text-left">
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Moni Roy</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">moni.roy@example.com</span>
+              <span className="text-sm font-medium text-gray-100">Name</span>
+              <span className="text-xs text-gray-400">moni.roy@example.com</span>
             </div>
           )}
         </button>
@@ -235,56 +197,62 @@ export function Sidebar({ isOpen = true, onToggle, onOpenSettings }) {
         {profileOpen && (
           <div
             ref={dropdownRef}
-            className={`absolute ${expanded ? 'left-3 right-3' : 'left-1/2 -translate-x-1/2 w-56'} bottom-[-0.75rem] translate-y-full rounded-2xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 dark:border-gray-800 dark:bg-slate-900`}
+            className={`absolute ${expanded ? 'left-3 right-3' : 'left-1/2 -translate-x-1/2 w-56'} bottom-[-0.75rem] translate-y-full rounded-2xl border border-gray-700 bg-gray-800 shadow-xl`}
           >
-            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Moni Roy</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">moni.roy@example.com</p>
+            <div className="px-4 py-3 border-b border-gray-700">
+              <p className="text-sm font-semibold text-gray-100">Moni Roy</p>
+              <p className="mt-1 text-xs text-gray-400">moni.roy@example.com</p>
             </div>
-            <ul className="py-1 text-sm text-gray-700 dark:text-gray-300">
+            <ul className="py-1 text-sm text-gray-300">
               <li>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-gray-700"
                   onClick={() => {
                     setProfileOpen(false)
                     onOpenSettings?.()
                   }}
                 >
-                  <Settings size={16} className="text-accent" />
+                  <Settings size={16} />
                   Settings
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  className="flex w-full items-center gap-3 px-4 py-2 hover:bg-gray-700"
                   onClick={() => setProfileOpen(false)}
                 >
-                  <Bell size={16} className="text-amber-500" />
+                  <Bell size={16} />
                   Notifications
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  className="flex w/full items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-slate-800"
+                  className="flex w/full items-center gap-3 px-4 py-2 hover:bg-gray-700"
                   onClick={() => setProfileOpen(false)}
                 >
-                  <UserRound size={16} className="text-emerald-500" />
+                  <UserRound size={16} />
                   View profile
                 </button>
               </li>
-              <li className="border-t border-gray-100 dark:border-gray-800">
-                <span className="flex items-center gap-3 px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
-                  <Mail size={14} />
-                  moni.roy@example.com
-                </span>
+              <li className="border-t border-gray-700">
+                <span className="flex items-center gap-3 px-4 py-2 text-xs text-gray-400"><Mail size={14} /> moni.roy@example.com</span>
               </li>
             </ul>
           </div>
         )}
       </div>
+      {!expanded && (
+        <button
+          className="text-gray-400 hover:text-gray-100 transition-colors p-3 flex items-center justify-center w-full"
+          onClick={() => setExpanded(true)}
+          aria-label="Expand sidebar"
+        >
+          <Menu size={20} />
+        </button>
+      )}
     </aside>
   )
 }

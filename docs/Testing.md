@@ -1,6 +1,18 @@
 # Testing Guide
 
+Table of Contents
+- Setup
+- Running tests
+- Preview server (if needed)
+- Selector conventions
+- Routing notes
+- Common scenarios
+- CI tips
+- Troubleshooting
+
 End-to-end (E2E) tests are written with Playwright. This guide covers setup, how to run tests, selector conventions, routing notes, and CI tips.
+
+[← Back to docs index](./README.md)
 
 ## Setup
 - Install dependencies: `cd frontend && npm install`
@@ -27,10 +39,35 @@ End-to-end (E2E) tests are written with Playwright. This guide covers setup, how
 - Avoid brittle text-only selectors; prefer stable labels/roles.
 - If needed, add `data-testid="..."` for non-semantic targets and document them.
 
+Example (Playwright):
+```ts
+// Wait for a specific button instead of page text
+await page.getByRole('button', { name: 'Preview JSON' }).waitFor()
+```
+
+Last resort: data-testid
+- Use only when role/label/placeholder are not applicable (purely decorative or complex custom UI).
+- Naming: kebab-case, feature-scoped (e.g., `qv-copy-json`, `csv-apply-import`).
+- Example:
+  ```jsx
+  <button data-testid="qv-copy-json" aria-label="Copy recent toasts as JSON">Copy</button>
+  ```
+  ```ts
+  await page.getByTestId('qv-copy-json').click()
+  ```
+
 ## Routing notes
 - Settings deep-links may use hashes (e.g., `/#/settings#recent-toasts`).
 - When waiting for a page to load, prefer a stable control over raw text:
   - Example: wait for the Preview button instead of `text=Recent toasts`.
+
+Hash routing tip (Playwright):
+```ts
+// If the app uses HashRouter in prod/preview, navigate with a hash prefix
+await page.goto('http://localhost:4173/#/settings')
+// Then wait for a stable role-based control
+await page.getByRole('button', { name: 'Preview JSON' }).waitFor()
+```
 
 ## Common scenarios
 - Recent toasts quick view
@@ -53,3 +90,6 @@ End-to-end (E2E) tests are written with Playwright. This guide covers setup, how
 - Flaky UI animations
   - Prefer reduced-motion mode or disable transitional assertions (wait for `aria-busy=false`).
 
+---
+
+Last updated: 2026-01-06

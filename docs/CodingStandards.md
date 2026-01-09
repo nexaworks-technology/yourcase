@@ -1,6 +1,20 @@
 # Coding Standards
 
+Table of Contents
+- Language & tooling
+- ESLint
+- Structure
+- Naming
+- Imports
+- Accessibility
+- Styling
+- State
+- Testing
+- Commits & PRs
+
 Conventions to keep the codebase consistent and accessible.
+
+[← Back to docs index](./README.md)
 
 ## Language & tooling
 - JS/JSX (ES2020+). ESLint configured in `frontend/eslint.config.js`.
@@ -55,3 +69,6 @@ Conventions to keep the codebase consistent and accessible.
 - Commit messages: present tense, scope first (e.g., "Navbar: add quick stats pill").
 - PRs: concise summary, screenshots for UI changes, checklist (build, a11y, docs).
 
+---
+
+Last updated: 2026-01-06

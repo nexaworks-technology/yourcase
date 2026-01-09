@@ -29,6 +29,18 @@ Tips
 - For deeper analysis, add a temporary visualizer plugin locally (do not commit):
   - `npm i -D rollup-plugin-visualizer`
   - Import in `vite.config.js` and open the generated report.
+  - Example (do NOT commit):
+    ```js
+    // vite.config.js (local only)
+    import { defineConfig } from 'vite'
+    import react from '@vitejs/plugin-react'
+    import { visualizer } from 'rollup-plugin-visualizer'
+
+    export default defineConfig({
+      plugins: [react(), visualizer({ open: true, filename: 'stats.html' })],
+    })
+    ```
+  - After review, remove the plugin and stats file before committing.
 
 ## Code‑splitting strategy
 - Keep `manualChunks` for: pdfjs, router, query, store, icons, and page bundles.

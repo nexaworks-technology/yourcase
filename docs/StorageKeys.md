@@ -1,6 +1,14 @@
 # Storage Keys Reference
 
+Table of Contents
+- Session Storage
+- Local Storage
+- Resetting Keys
+- Notes
+
 This document lists sessionStorage and localStorage keys used by the YourCase web client, their purpose, and reset guidance.
+
+[← Back to docs index](./README.md)
 
 ## Session Storage
 - yc_toasts_recent
@@ -47,3 +55,6 @@ localStorage.removeItem('yc_csv_mapping');
 - Session keys apply per‑tab; actions in another tab may not reflect automatically.
 - Local keys persist across sessions; prefer explicit reset if behavior seems stale.
 
+---
+
+Last updated: 2026-01-06

@@ -2,6 +2,16 @@
 
 Short guide to build the YourCase frontend and deploy it as a static site.
 
+## Table of Contents
+- Build
+- Preview (local)
+- Environment variables
+- Static hosting
+- Base path (optional)
+- Continuous Integration
+- Caching tips
+- Troubleshooting
+
 ## Build
 - From `frontend/`:
   - Install deps: `npm install`
@@ -21,6 +31,7 @@ Short guide to build the YourCase frontend and deploy it as a static site.
   - Netlify: `_redirects` with `/*  /index.html  200`
   - Vercel: framework auto-detect or set routes to fallback to `index.html`
   - Nginx: `try_files $uri /index.html;`
+  - Verify artifact contains `_redirects` (if used): after `npm run build`, check `frontend/dist/_redirects` exists.
 
 ## Base path (optional)
 - If serving under a subpath (e.g., `/app/`), set `base` in `vite.config.js`:
@@ -65,4 +76,3 @@ jobs:
 - White screen after deploy: check SPA fallback to `index.html` is enabled.
 - Broken links under subpaths: set `base` in `vite.config.js` to match deploy path.
 - Build failures: verify Node LTS and run `npm ci && npm run build` locally.
-

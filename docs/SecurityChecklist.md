@@ -1,6 +1,22 @@
 # Security Checklist
 
+Table of Contents
+- Content & rendering
+- Downloads & blobs
+- HTTP & services
+- Secrets & environment
+- Dependencies
+- Storage & privacy
+- XSS/Injection
+- Navigation & routing
+- File handling (uploads)
+- Build & supply chain
+- Logging & diagnostics
+- Reviews & PRs
+
 Baseline practices to keep the YourCase web client safe and maintainable.
+
+[← Back to docs index](./README.md)
 
 ## Content & rendering
 - Never inject untrusted HTML. Prefer text content; sanitize if rich HTML is required.
@@ -57,3 +73,6 @@ Baseline practices to keep the YourCase web client safe and maintainable.
 - Include security impact in PR descriptions when adding new deps/features.
 - Request a second review for code paths that touch downloads/uploads or dynamic rendering.
 
+---
+
+Last updated: 2026-01-06

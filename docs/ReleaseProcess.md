@@ -52,3 +52,25 @@ git push origin vX.Y.Z
 - Add a CI workflow to build on tag push and attach `frontend/dist` as an artifact.
 - Optional: auto‑publish to your hosting platform on tagged builds.
 
+## Release notes template
+Use this template when drafting notes for GitHub Releases or internal announcements:
+
+```
+# YourCase Web vX.Y.Z — YYYY‑MM‑DD
+
+## Highlights
+- Brief, user‑facing summary of the most important changes.
+
+## Changes
+- Feature: short description of new/updated features.
+- Performance: any build/runtime performance improvements.
+
+## Fixes
+- Bug: concise description of the fix and affected area.
+
+## Docs
+- Updated guides or README sections; new docs added.
+
+## Build
+- Dependency bumps, tooling changes, CI improvements.
+```

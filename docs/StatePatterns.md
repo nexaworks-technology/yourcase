@@ -1,6 +1,17 @@
 # State & Persistence Patterns
 
+Table of Contents
+- Choose the right state owner
+- Persistence tiers
+- Patterns
+- Avoid anti‑patterns
+- Examples
+- Cross‑tab considerations
+- Testing
+
 Guidelines for choosing where state lives, how it flows, and when to persist it.
+
+[← Back to docs index](./README.md)
 
 ## Choose the right state owner
 - Component state (useState/useReducer)
@@ -69,3 +80,6 @@ const saveMapping = (next) => {
 - Prefer resetting storage in setup/teardown for deterministic tests
 - Use stable helpers to read/write storage in tests to avoid typos
 
+---
+
+Last updated: 2026-01-06

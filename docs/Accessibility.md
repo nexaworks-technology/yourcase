@@ -37,7 +37,24 @@ This guide documents the accessibility practices used in the YourCase web client
 - Verify screen reader announcements for key actions.
 - Check contrast with common tools; validate in light/dark themes.
 
+## Reduced Motion Test Steps
+- System setting: enable “Reduce motion” (macOS: Accessibility → Display; Windows: Accessibility → Visual effects; Linux/ChromeOS: system settings or browser flags).
+- Browser check: verify `window.matchMedia('(prefers-reduced-motion: reduce)').matches === true` in DevTools console.
+- App behaviors to verify:
+  - No animated countdowns; timers switch to static labels.
+  - Ripple/ink effects disabled (buttons/links still interactive).
+  - Skeletons/pulses replaced with static placeholders.
+  - Tooltips/popovers open without motion or with minimal fade.
+  - Navbar quick view and Settings panels do not slide; appear instantly.
+- Keyboard and SR:
+  - Focus order unchanged with reduced motion.
+  - aria-live announcements remain concise (no repeated messages).
+- DevTools simulation (optional): emulate reduced motion in Chrome DevTools → Rendering → Emulate CSS media feature prefers-reduced-motion.
+
+---
+
+Last updated: 2026-01-06
+
 ## References
 - WAI-ARIA Authoring Practices: https://www.w3.org/WAI/ARIA/apg/
 - WCAG 2.2 (Focus visible, reduced motion): https://www.w3.org/TR/WCAG22/
-
