@@ -85,14 +85,14 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
                 ⋮
               </summary>
               <div className="absolute right-0 mt-2 w-36 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-lg">
-                {actions.map(({ icon: Icon, label, onClick, danger }) => (
+                {actions.map(({ icon: IconComponent, label, onClick, danger }) => (
                   <button
                     key={label}
                     type="button"
                     onClick={onClick}
                     className={cn('flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800', danger && 'text-rose-600 hover:bg-rose-50')}
                   >
-                    <Icon className="h-4 w-4" />
+                    <IconComponent className="h-4 w-4" />
                     {label}
                   </button>
                 ))}
@@ -136,8 +136,8 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
         <span>{matter?.name || 'Unassigned matter'}</span>
         <span>.{extension}</span>
       </div>
-      <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-between gap-2 rounded-2xl bg-white dark:bg-slate-900/90 dark:bg-slate-900/90 p-2 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100">
-        {actions.map(({ icon: Icon, label, onClick, danger }) => (
+      <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-between gap-2 rounded-2xl bg-white dark:bg-slate-900/90 p-2 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100">
+        {actions.map(({ icon: IconComponent, label, onClick, danger }) => (
           <button
             key={label}
             type="button"
@@ -145,7 +145,7 @@ export function DocumentCard({ document, onPreview, onAnalyze, onDownload, onDel
             className={cn('inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800', danger && 'text-rose-600 hover:bg-rose-50')}
             aria-label={label}
           >
-            <Icon className="h-4 w-4" />
+            <IconComponent className="h-4 w-4" />
           </button>
         ))}
       </div>

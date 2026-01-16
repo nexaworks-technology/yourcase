@@ -1,10 +1,30 @@
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
-const path = require('path')
 const fs = require('fs')
+const path = require('path')
 const cookieParser = require('cookie-parser')
-require('dotenv').config()
+const dotenv = require('dotenv')
+
+const dotenvPath = (() => {
+  const candidatePaths = [
+    path.join(process.cwd(), '.env'),
+    path.join(__dirname, '.env'),
+    path.join(process.cwd(), 'backend/.env'),
+    path.join(process.cwd(), '../backend/.env'),
+  ]
+
+  for (const candidate of candidatePaths) {
+    if (fs.existsSync(candidate)) {
+      return candidate
+    }
+  }
+
+  console.warn('⚠️  No .env file found. Using defaults from environment variables.')
+  return undefined
+})()
+
+dotenv.config({ path: dotenvPath })
 
 const { connectDB } = require('./config/database')
 const { errorHandler } = require('./middleware/errorHandler')
@@ -55,9 +75,9 @@ app.use((req, res, next) => {
 app.use(errorHandler)
 
 // Pin default port to 4000 as requested
-const DEFAULT_PORT = Number(process.env.PORT) || 4000
+const REQUESTED_PORT = Number(process.env.PORT) || 4000
 
-function startServer(port = DEFAULT_PORT, attemptsLeft = 5) {
+function startServer(port = REQUESTED_PORT, attemptsLeft = 5) {
   const server = app
     .listen(port, () => {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
@@ -65,9 +85,9 @@ function startServer(port = DEFAULT_PORT, attemptsLeft = 5) {
       console.log(`📡 Mode: ${process.env.NODE_ENV || 'development'}`)
       console.log(`🌐 Port: ${port}`)
       console.log(`🔍 Health: http://localhost:${port}/health`)
-      if (port !== DEFAULT_PORT) {
+      if (REQUESTED_PORT && port !== REQUESTED_PORT) {
         console.warn(
-          `⚠️  Requested port ${DEFAULT_PORT} was busy. Started on ${port} instead. Update your frontend API base URL if needed.`,
+          `⚠️  Requested port ${REQUESTED_PORT} was busy. Started on ${port} instead. Update your frontend API base URL if needed.`,
         )
       }
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')

@@ -12,8 +12,10 @@ async function connectDB(attempt = 1) {
   }
 
   try {
-    // Since Mongoose 6+, no need to pass useNewUrlParser/useUnifiedTopology
-    await mongoose.connect(uri)
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
 
     console.log(`MongoDB connected: ${mongoose.connection.host}`)
   } catch (error) {
